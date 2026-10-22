@@ -292,9 +292,28 @@ function iv3main() {
   /* heavy setup runs in small chunks so the page stays responsive while it loads */
   var Q = [];
   function later(fn) { Q.push(fn); }
-  function runQ() { var fn = Q.shift(); if (!fn) { ST.refresh(); return; } safe(fn); setTimeout(runQ, 0); }
+  function runQ() { var fn = Q.shift(); if (!fn) { ST.refresh(); safe(restoreScroll); return; } safe(fn); setTimeout(runQ, 0); }
   document.documentElement.classList.add('iv3-js');
   root.classList.add('iv3-anim');
+  /* restore the scroll position ourselves, after pinned sections exist (avoids jumps and slow catch-up) */
+  var savedY = 0;
+  try {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    var sv = (sessionStorage.getItem('iv3y') || '').split('|');
+    if (sv[1] === location.pathname) savedY = +sv[0] || 0;
+    sessionStorage.removeItem('iv3y');
+  } catch (e) {}
+  window.addEventListener('pagehide', function () { try { sessionStorage.setItem('iv3y', Math.round(window.pageYOffset) + '|' + location.pathname); } catch (e) {} });
+  function restoreScroll() {
+    var target = null;
+    if (location.hash && location.hash.length > 1) { try { target = document.querySelector(location.hash); } catch (e) {} }
+    if (!target && savedY > 0) target = savedY;
+    if (target === null) return;
+    if (lenis) lenis.scrollTo(target, { immediate: true, force: true });
+    else if (typeof target === 'number') window.scrollTo(0, target); else target.scrollIntoView();
+    ST.update();
+    ST.getAll().forEach(function (t) { var tw = t.getTween && t.getTween(); if (tw) tw.progress(1); });
+  }
   var lenis = null;
   later(function () {
     if (!window.Lenis) return;
@@ -303,10 +322,6 @@ function iv3main() {
     lenis.on('scroll', ST.update);
     G.ticker.add(function (t) { lenis.raf(t * 1000); });
     G.ticker.lagSmoothing(0);
-    if (location.hash && location.hash.length > 1) {
-      var target = document.querySelector(location.hash);
-      if (target) setTimeout(function () { lenis.scrollTo(target, { immediate: true }); }, 60);
-    }
   });
 
   /* hero scroll-out */
@@ -323,7 +338,7 @@ function iv3main() {
     if (!words.length) return;
     G.set(words, { opacity: 0.12 });
     G.set('#iv3ProbEnd', { scale: 0.6, autoAlpha: 0, rotate: -4 });
-    var tl = G.timeline({ scrollTrigger: { trigger: '#iv3Prob', start: 'top top', end: '+=170%', pin: true, scrub: 0.6 } });
+    var tl = G.timeline({ scrollTrigger: { trigger: '#iv3Prob', start: 'top top', end: '+=170%', pin: true, scrub: true } });
     tl.to(words, { opacity: 1, stagger: 0.12, duration: 0.3, ease: 'none' })
       .to('#iv3ProbEnd', { scale: 1, autoAlpha: 1, rotate: 0, duration: 1.2, ease: 'back.out(2)' }, '+=0.2')
       .to({}, { duration: 0.6 });
@@ -338,7 +353,7 @@ function iv3main() {
     function dist() { return Math.max(0, track.scrollWidth - window.innerWidth); }
     var tween = G.to(track, {
       x: function () { return -dist(); }, ease: 'none',
-      scrollTrigger: { trigger: pin, start: 'center center', end: function () { return '+=' + dist(); }, pin: true, scrub: 0.8, invalidateOnRefresh: true, anticipatePin: 1,
+      scrollTrigger: { trigger: pin, start: 'center center', end: function () { return '+=' + dist(); }, pin: true, scrub: true, invalidateOnRefresh: true, anticipatePin: 1,
         onUpdate: function (s) { var b = $('iv3ServBar'); if (b) b.style.transform = 'scaleX(' + s.progress.toFixed(3) + ')'; } }
     });
     qa('.iv3-card').forEach(function (card) {
@@ -374,7 +389,7 @@ function iv3main() {
     G.set(qa('#iv3Chips span'), { x: -30, autoAlpha: 0 });
     G.set('#iv3Graph', { y: 30, autoAlpha: 0 });
     G.set(qa('.iv3-s4 .iv3-site-art i'), { scale: 0 });
-    var tl = G.timeline({ scrollTrigger: { trigger: '#iv3ProcPin', start: 'top top', end: '+=330%', pin: true, scrub: 0.7 },
+    var tl = G.timeline({ scrollTrigger: { trigger: '#iv3ProcPin', start: 'top top', end: '+=330%', pin: true, scrub: true },
       onUpdate: function () { var t = this.time(), L = this.labels; setStep(t >= L.p4 ? 3 : t >= L.p3 ? 2 : t >= L.p2 ? 1 : 0, this.progress()); } });
     tl.to(msgs, { autoAlpha: 1, y: 0, scale: 1, stagger: 0.5, duration: 0.6, ease: 'power2.out' })
       .to({}, { duration: 0.4 })
@@ -447,7 +462,7 @@ function iv3main() {
   later(function () {
     var left = qa('.iv3-vs-col:first-child li'), right = qa('.iv3-vs-col + .iv3-vs-col li');
     left.forEach(function (li) { li.querySelector('s').style.setProperty('--strike', '0%'); });
-    var tl = G.timeline({ scrollTrigger: { trigger: '#iv3Vs', start: 'top 75%', end: 'bottom 60%', scrub: 0.6 } });
+    var tl = G.timeline({ scrollTrigger: { trigger: '#iv3Vs', start: 'top 75%', end: 'bottom 60%', scrub: true } });
     tl.from(left, { x: -30, autoAlpha: 0, stagger: 0.15, duration: 0.4 }, 0)
       .from(right, { x: 30, autoAlpha: 0, stagger: 0.15, duration: 0.4 }, 0.1);
     left.forEach(function (li, k) { tl.to(li.querySelector('s'), { '--strike': '100%', duration: 0.4, ease: 'none' }, 0.3 + k * 0.15); });
