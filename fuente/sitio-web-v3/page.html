@@ -293,10 +293,10 @@
   #iv3 .iv3-trust { display: inline-flex; align-items: center; gap: 10px; font: 400 12px var(--mono); color: var(--muted); }
   #iv3 .iv3-trust b { width: 8px; height: 8px; background: #3DDC84; display: inline-block; }
   #iv3 .iv3-btn.iv3-busy { pointer-events: none; opacity: .7; }
-  #iv3 .iv3-status { margin-top: 18px; font-size: 15px; display: none; align-items: flex-start; gap: 10px; padding: 14px 16px; }
-  #iv3 .iv3-status svg { flex: 0 0 20px; width: 20px; height: 20px; }
-  #iv3 .iv3-status.iv3-ok { display: flex; background: rgba(61,220,132,.12); color: #8EF0B8; }
-  #iv3 .iv3-status.iv3-err { display: flex; background: rgba(229,52,42,.14); color: #FF9A8F; }
+  #iv3 .iv3-fstatus { margin-top: 18px; font: 500 15px/1.45 var(--body); letter-spacing: 0; display: none; align-items: flex-start; gap: 10px; padding: 14px 16px; }
+  #iv3 .iv3-fstatus svg { flex: 0 0 20px; width: 20px; height: 20px; }
+  #iv3 .iv3-fstatus.iv3-ok { display: flex; background: rgba(61,220,132,.12); color: #8EF0B8; }
+  #iv3 .iv3-fstatus.iv3-err { display: flex; background: rgba(229,52,42,.14); color: #FF9A8F; }
   #iv3 .iv3-mcta { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; display: none; text-align: center; padding: 16px; background: var(--red); font: italic 600 17px/1 var(--disp); letter-spacing: .07em; text-transform: uppercase; box-shadow: 0 12px 30px rgba(0,0,0,.45); transform: translateY(150%); transition: transform .5s var(--ease); }
   #iv3 .iv3-mcta.iv3-show { transform: none; }
 
@@ -639,7 +639,7 @@
         <button type="submit" class="iv3-btn" id="iv3Send" data-magnetic><span id="iv3SendT">Enviar mensaje</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
-      <div class="iv3-status" id="iv3FormStatus" role="status" aria-live="polite"></div>
+      <div class="iv3-fstatus" id="iv3FormStatus" role="status" aria-live="polite"></div>
     </form>
   </div>
 </section>

@@ -184,7 +184,7 @@ function iv3main() {
     var OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>';
     var BAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 7v6M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>';
     function show(kind, msg) {
-      status.className = 'iv3-status ' + (kind === 'ok' ? 'iv3-ok' : 'iv3-err');
+      status.className = 'iv3-fstatus ' + (kind === 'ok' ? 'iv3-ok' : 'iv3-err');
       status.innerHTML = (kind === 'ok' ? OK : BAD) + '<span></span>';
       status.querySelector('span').textContent = msg;
     }
@@ -204,7 +204,7 @@ function iv3main() {
       fd.set('your-message', msg || '(Sin mensaje)');
       if (!fd.get('your-subject')) fd.set('your-subject', 'Nuevo mensaje desde innovasites.co');
       btn.classList.add('iv3-busy'); btn.setAttribute('aria-busy', 'true'); btnT.textContent = 'Enviando';
-      status.className = 'iv3-status'; status.innerHTML = '';
+      status.className = 'iv3-fstatus'; status.innerHTML = '';
       fetch(endpoint, { method: 'POST', body: fd, credentials: 'same-origin' })
         .then(function (r) { return r.json(); })
         .then(function (d) {
