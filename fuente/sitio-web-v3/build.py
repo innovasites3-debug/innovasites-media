@@ -5,7 +5,7 @@ DIST = pathlib.Path(__file__).resolve().parent / 'dist'
 OUT = pathlib.Path('/mnt/user-data/outputs')
 DIST.mkdir(exist_ok=True)
 
-BOOT = ('<script>(function(){var b64="%s";var bytes=Uint8Array.from(atob(b64),function(c){return c.charCodeAt(0);});'
+BOOT = ('<script>/*iv3boot*/(function(){var b64="%s";var bytes=Uint8Array.from(atob(b64),function(c){return c.charCodeAt(0);});'
         'var code=new TextDecoder("utf-8").decode(bytes);var s=document.createElement("script");s.textContent=code;'
         'document.currentScript.parentNode.insertBefore(s,document.currentScript.nextSibling);})();</script>')
 
