@@ -79,24 +79,7 @@ function iv3main() {
   });
   function measureBands() { bands.forEach(function (b) { b.w = b.el.scrollWidth / 4; }); }
 
-  /* ---------------- hero split ---------------- */
   var chars = [];
-  safe(function () {
-    qa('[data-split]').forEach(function (el) {
-      (function walk(node) {
-        Array.prototype.slice.call(node.childNodes).forEach(function (n) {
-          if (n.nodeType === 3) {
-            var frag = document.createDocumentFragment();
-            n.textContent.split('').forEach(function (ch) {
-              if (ch === ' ') { frag.appendChild(document.createTextNode(' ')); return; }
-              var s = document.createElement('span'); s.className = 'iv3-ch'; s.textContent = ch; frag.appendChild(s); chars.push(s);
-            });
-            n.parentNode.replaceChild(frag, n);
-          } else if (n.nodeType === 1) walk(n);
-        });
-      })(el);
-    });
-  });
 
   /* ---------------- problem words ---------------- */
   var words = [];
@@ -118,25 +101,19 @@ function iv3main() {
     })(p);
   });
 
-  /* ---------------- hero pixel field (light) ---------------- */
+  /* ---------------- hero pixel field (dots are CSS, canvas only draws near the pointer) ---------------- */
   var field = (function () {
     var cv = $('iv3Field');
     if (!cv) return null;
-    var c = cv.getContext('2d', { alpha: true }), base = document.createElement('canvas'), bc = base.getContext('2d');
-    var W = 0, H = 0, dpr = 1, cell = 26, cols = 0, rows = 0, visible = true, last = 0, step = 1000 / 60;
+    var c = cv.getContext('2d');
+    var W = 0, H = 0, cell = 26, cols = 0, rows = 0, visible = true, last = 0, step = 1000 / 30;
     var mouse = { x: -999, y: -999, tx: 0, ty: 0, seen: false }, sparks = [], t0 = performance.now();
     function size() {
       var r = cv.getBoundingClientRect();
-      dpr = Math.min(1.5, window.devicePixelRatio || 1);
-      W = r.width; H = r.height;
+      W = Math.round(r.width); H = Math.round(r.height);
+      cv.width = W; cv.height = H;
       cell = W < 700 ? 22 : 26;
-      step = W < 700 ? 1000 / 30 : 1000 / 60;
       cols = Math.ceil(W / cell) + 1; rows = Math.ceil(H / cell) + 1;
-      cv.width = base.width = Math.round(W * dpr); cv.height = base.height = Math.round(H * dpr);
-      c.setTransform(dpr, 0, 0, dpr, 0, 0); bc.setTransform(dpr, 0, 0, dpr, 0, 0);
-      bc.clearRect(0, 0, W, H);
-      bc.fillStyle = 'rgba(255,255,255,0.07)';
-      for (var y = 0; y < rows; y++) for (var x = 0; x < cols; x++) bc.fillRect(x * cell - 1, y * cell - 1, 2, 2);
     }
     if (FINE) {
       cv.parentNode.addEventListener('pointermove', function (e) {
@@ -151,9 +128,8 @@ function iv3main() {
       var t = (now - t0) / 1000;
       if (!mouse.seen) { mouse.tx = W * (0.64 + 0.2 * Math.cos(t * 0.35)); mouse.ty = H * (0.5 + 0.22 * Math.sin(t * 0.5)); }
       if (mouse.x < -900) { mouse.x = mouse.tx; mouse.y = mouse.ty; }
-      mouse.x += (mouse.tx - mouse.x) * 0.12; mouse.y += (mouse.ty - mouse.y) * 0.12;
+      mouse.x += (mouse.tx - mouse.x) * 0.2; mouse.y += (mouse.ty - mouse.y) * 0.2;
       c.clearRect(0, 0, W, H);
-      c.drawImage(base, 0, 0, W, H);
       var R = Math.max(150, W * 0.15), R2 = R * R;
       var x0 = Math.max(0, Math.floor((mouse.x - R) / cell)), x1 = Math.min(cols, Math.ceil((mouse.x + R) / cell));
       var y0 = Math.max(0, Math.floor((mouse.y - R) / cell)), y1 = Math.min(rows, Math.ceil((mouse.y + R) / cell));
@@ -168,10 +144,10 @@ function iv3main() {
           c.fillRect(px - s / 2, py - s / 2, s, s);
         }
       }
-      if (Math.random() < 0.15 && sparks.length < 18) sparks.push({ x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows), l: 0, red: Math.random() < 0.6 });
+      if (Math.random() < 0.25 && sparks.length < 14) sparks.push({ x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows), l: 0, red: Math.random() < 0.6 });
       var ss = cell * 0.55;
       for (var n = sparks.length - 1; n >= 0; n--) {
-        var sp = sparks[n]; sp.l += 0.025;
+        var sp = sparks[n]; sp.l += 0.05;
         if (sp.l >= 1) { sparks.splice(n, 1); continue; }
         var al = Math.round(Math.sin(sp.l * Math.PI) * 20);
         c.fillStyle = sp.red ? REDS[al] : WHITES[Math.round(al * 0.8)];
@@ -180,7 +156,6 @@ function iv3main() {
     }
     size();
     if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(cv);
-    document.addEventListener('visibilitychange', function () { if (document.hidden) visible = false; });
     return {
       size: size,
       tick: function (now) { if (!visible || document.hidden || now - last < step - 2) return; last = now; draw(now); },
@@ -323,7 +298,7 @@ function iv3main() {
   var lenis = null;
   later(function () {
     if (!window.Lenis) return;
-    lenis = new window.Lenis({ lerp: 0.1, smoothWheel: true, wheelMultiplier: 1 });
+    lenis = new window.Lenis({ lerp: 0.14, smoothWheel: true, wheelMultiplier: 1.1 });
     window.iv3Lenis = lenis;
     lenis.on('scroll', ST.update);
     G.ticker.add(function (t) { lenis.raf(t * 1000); });
@@ -332,12 +307,6 @@ function iv3main() {
       var target = document.querySelector(location.hash);
       if (target) setTimeout(function () { lenis.scrollTo(target, { immediate: true }); }, 60);
     }
-  });
-
-  /* hero entrance: text stays visible (fast LCP), letters get a quick pop */
-  safe(function () {
-    G.from(chars, { yPercent: 35, skewX: -14, color: '#E5342A', duration: 0.7, ease: 'power3.out', stagger: 0.025, clearProps: 'color,transform' });
-    G.from(qa('.iv3-hero-row, .iv3-hero-top'), { y: 18, duration: 0.8, ease: 'power3.out', stagger: 0.1, clearProps: 'transform' });
   });
 
   /* hero scroll-out */
@@ -508,9 +477,12 @@ function iv3main() {
 
   requestAnimationFrame(function () { setTimeout(runQ, 0); });
 
-  /* main ticker */
+  /* main ticker (pixel field waits until the page has settled) */
+  var fieldOn = false;
+  function startField() { fieldOn = true; }
+  if (document.readyState === 'complete') setTimeout(startField, 1200); else window.addEventListener('load', function () { setTimeout(startField, 1200); });
   G.ticker.add(function (t) {
-    if (field) field.tick(performance.now());
+    if (field && fieldOn) field.tick(performance.now());
     if (cur && mp.on) {
       mp.rx = lerp(mp.rx, mp.x, 0.22); mp.ry = lerp(mp.ry, mp.y, 0.22);
       cur.style.transform = 'translate3d(' + mp.rx.toFixed(1) + 'px,' + mp.ry.toFixed(1) + 'px,0)';
