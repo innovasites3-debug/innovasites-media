@@ -1,4 +1,4 @@
-COPYS PARA LOS 4 CARRUSELES INTERMEDIOS — INNOVASITES
+COPYS PARA LOS 8 CARRUSELES INTERMEDIOS — INNOVASITES
 (separado del calendario en Excel)
 =======================================================
 
@@ -60,7 +60,59 @@ COMENTARIO FIJADO (publicado por la cuenta):
 =======================================================
 
 
-CARRUSEL 2 — Sábado 14 de noviembre de 2026
+CARRUSEL 2 — Viernes 6 de noviembre de 2026
+Tema: "Wifi público: 4 reglas antes de conectarte"
+Tipo: educativo, conecta con el reel "El Wi-Fi gratis del café" (lun 2 nov)
+-------------------------------------------------------
+
+GUION DE SLIDES (6 láminas):
+
+Slide 1 (portada):
+"WIFI PÚBLICO: 4 REGLAS ANTES DE CONECTARTE"
+(subtítulo) El café, el aeropuerto, el centro comercial...
+
+Slide 2:
+REGLA 1
+"Evita entrar a tu banco o correo"
+Esas redes abiertas pueden ver lo que haces
+
+Slide 3:
+REGLA 2
+"Verifica el nombre exacto con un empleado"
+Una letra distinta puede ser una red falsa copiando el nombre real
+
+Slide 4:
+REGLA 3
+"Usa tus datos móviles para pagos"
+Es mucho más seguro que cualquier wifi abierto
+
+Slide 5:
+REGLA 4
+"Activa una VPN si vas a trabajar fuera de casa"
+Cifra tu conexión aunque la red no sea confiable
+
+Slide 6 (cierre):
+"Guarda esto antes de tu próximo café"
+Cada pixel cuenta… y tu seguridad también
+@innova_sites
+
+COPY DE LA PUBLICACIÓN:
+¿Te conectarías al wifi gratis del centro comercial? 👀
+
+4 reglas simples antes de usar cualquier red pública. Guárdalas y revísalas la próxima vez que veas "Wifi_Gratis" en la lista.
+
+Cada pixel cuenta… y tu seguridad también.
+
+Hashtags: #seguridaddigital #wifi #ciberseguridad #tips #innovasites
+
+COMENTARIO FIJADO (publicado por la cuenta):
+"¿Te conectarías al wifi gratis del centro comercial? Cuéntanos 👇"
+
+
+=======================================================
+
+
+CARRUSEL 3 — Sábado 14 de noviembre de 2026
 Tema: "Tu contraseña a prueba de hackers: 3 pasos"
 Tipo: educativo, conecta con los reels de contraseñas (#1 y #8)
 -------------------------------------------------------
@@ -107,7 +159,64 @@ COMENTARIO FIJADO (publicado por la cuenta):
 =======================================================
 
 
-CARRUSEL 3 — Viernes 27 de noviembre de 2026 (Black Friday)
+CARRUSEL 4 — Sábado 21 de noviembre de 2026
+Tema: "5 frases que usan los estafadores para generar pánico"
+Tipo: educativo, conecta con el reel "La llamada del banco" (mié 18 nov)
+-------------------------------------------------------
+
+GUION DE SLIDES (7 láminas):
+
+Slide 1 (portada):
+"5 FRASES QUE USAN LOS ESTAFADORES PARA GENERAR PÁNICO"
+(subtítulo) Si las escuchas, respira antes de actuar
+
+Slide 2:
+FRASE 1
+"Tu cuenta será bloqueada en 24 horas"
+El miedo a perder el acceso te hace actuar sin pensar
+
+Slide 3:
+FRASE 2
+"Es urgente, no cuelgues"
+Un estafador real nunca quiere que lo pienses dos veces
+
+Slide 4:
+FRASE 3
+"Soy de seguridad, necesito verificar tu clave"
+Ninguna empresa real te pide la clave por teléfono
+
+Slide 5:
+FRASE 4
+"Si no pagas ahora, pierdes todo"
+La presión por el tiempo es la señal más común
+
+Slide 6:
+FRASE 5
+"No le digas a nadie, es confidencial"
+Te aíslan para que no pidas una segunda opinión
+
+Slide 7 (cierre):
+"¿Cuál de estas ya te dijeron?"
+Cada pixel cuenta… y tu seguridad también
+@innova_sites
+
+COPY DE LA PUBLICACIÓN:
+El miedo es la herramienta favorita de un estafador ⚠️
+
+Estas 5 frases buscan que actúes antes de pensar. Guarda este post y la próxima vez que las escuches, cuelga y verifica por tu cuenta.
+
+Cada pixel cuenta… y tu seguridad también.
+
+Hashtags: #seguridaddigital #estafas #ciberseguridad #tips #innovasites
+
+COMENTARIO FIJADO (publicado por la cuenta):
+"¿Cuál de estas frases ya te dijeron? Cuéntanos sin miedo 👇"
+
+
+=======================================================
+
+
+CARRUSEL 5 — Viernes 27 de noviembre de 2026 (Black Friday)
 Tema: "Checklist: compra segura en Black Friday"
 Tipo: educativo, oportuno por la fecha
 -------------------------------------------------------
@@ -169,7 +278,53 @@ COMENTARIO FIJADO (publicado por la cuenta):
 =======================================================
 
 
-CARRUSEL 4 — Sábado 12 de diciembre de 2026
+CARRUSEL 6 — Sábado 5 de diciembre de 2026
+Tema: "Antes y después: así transformamos una web"
+Tipo: venta directa — portafolio InnovaSites
+-------------------------------------------------------
+
+GUION DE SLIDES (6 láminas):
+
+Slide 1 (portada):
+"ANTES Y DESPUÉS"
+(subtítulo) Así se ve una transformación real
+
+Slide 2:
+"EL PROBLEMA"
+Una web lenta, desactualizada o que no transmite confianza pierde clientes antes de que te escriban
+
+Slide 3:
+"ANTES"
+Mockup/captura del sitio antiguo (usar el comparador antes/después de innovasites.co como referencia)
+
+Slide 4:
+"DESPUÉS"
+Mockup/captura del sitio rediseñado: rápido, responsivo, hecho a la medida
+
+Slide 5:
+"SIN PLANTILLAS"
+Cada proyecto se arma desde cero, a la medida de tu marca y tu público
+
+Slide 6 (cierre / CTA):
+"¿Tu web necesita este cambio?"
+Escríbenos, respondemos en menos de 24 horas
+WhatsApp: +57 302 461 7516 · @innova_sites
+
+COPY DE LA PUBLICACIÓN:
+Una buena web no es solo que se vea bonita: es que convierta visitas en clientes.
+
+Así se ve una transformación real. Si la tuya necesita este cambio, hablemos — te respondemos en menos de 24 horas.
+
+Hashtags: #diseñoweb #portafolio #innovasites #cali #antesydespues
+
+COMENTARIO FIJADO (publicado por la cuenta):
+"¿Qué le cambiarías a tu web ahora mismo? Cuéntanos 👇"
+
+
+=======================================================
+
+
+CARRUSEL 7 — Sábado 12 de diciembre de 2026
 Tema: "¿Tu marca está lista para 2027?"
 Tipo: venta directa — servicios InnovaSites
 -------------------------------------------------------
@@ -219,3 +374,51 @@ Hashtags: #diseñoweb #marcapersonal #innovasites #cali #2027
 
 COMENTARIO FIJADO (publicado por la cuenta):
 "¿Qué necesita tu marca en 2027? Cuéntanos y te ayudamos a armarlo 👇"
+
+
+=======================================================
+
+
+CARRUSEL 8 — Sábado 19 de diciembre de 2026
+Tema: "Regalos digitales seguros: lo que debes saber antes de comprar"
+Tipo: educativo, conecta con el reel "La tarjeta de regalo navideña" (lun 14 dic)
+-------------------------------------------------------
+
+GUION DE SLIDES (6 láminas):
+
+Slide 1 (portada):
+"REGALOS DIGITALES SEGUROS"
+(subtítulo) Lo que debes saber antes de comprar
+
+Slide 2:
+"COMPRA SOLO EN LA TIENDA OFICIAL"
+Las tarjetas de regalo de terceros a mitad de precio casi siempre son robadas o falsas
+
+Slide 3:
+"NUNCA LAS COMPRES POR PRESIÓN"
+Si alguien te pide una "urgente" por mensaje, es casi siempre una estafa
+
+Slide 4:
+"GUARDA EL RECIBO Y EL CÓDIGO"
+Son tu única prueba de compra si algo sale mal
+
+Slide 5:
+"VERIFICA EL SALDO ANTES DE REGALARLA"
+Algunas estafas venden tarjetas ya usadas o vacías
+
+Slide 6 (cierre):
+"Regala bonito, regala seguro"
+Cada pixel cuenta… y tu seguridad también
+@innova_sites
+
+COPY DE LA PUBLICACIÓN:
+Las tarjetas de regalo son de los regalos favoritos en diciembre... y también de los estafadores 🎁⚠️
+
+Guarda estos 4 puntos antes de comprar la tuya este año.
+
+Cada pixel cuenta… y tu seguridad también.
+
+Hashtags: #seguridaddigital #navidad #ciberseguridad #tips #innovasites
+
+COMENTARIO FIJADO (publicado por la cuenta):
+"¿Ya compraste una tarjeta de regalo este año? Cuéntanos 👇"
