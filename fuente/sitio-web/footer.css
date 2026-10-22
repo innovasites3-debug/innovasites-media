@@ -1,0 +1,88 @@
+  #is2f {
+    --bg: #0A0C11;
+    --bg-2: #11141B;
+    --red: #E5342A;
+    --red-2: #FF5A45;
+    --white: #FFFFFF;
+    --muted: #A2A8B4;
+    --muted-2: #626876;
+    --line: rgba(255,255,255,0.09);
+    --line-2: rgba(255,255,255,0.16);
+    --disp: 'Oswald', sans-serif;
+
+    all: initial;
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    background: var(--bg);
+    color: var(--white);
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    cursor: none;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  #is2f *, #is2f *::before, #is2f *::after { box-sizing: border-box; }
+  #is2f img, #is2f svg { display: block; max-width: 100%; }
+  #is2f a { color: inherit; text-decoration: none; }
+  #is2f button { font-family: inherit; cursor: none !important; border: 0; background: none; color: inherit; padding: 0; }
+  #is2f :focus-visible { outline: 2px solid var(--red-2); outline-offset: 3px; }
+  @media (pointer: coarse) { #is2f, #is2f a, #is2f button { cursor: auto; } }
+  @media (prefers-reduced-motion: reduce) { #is2f *, #is2f *::before, #is2f *::after { transition-duration: 0.001ms !important; } }
+  #is2f .is2f-wrap { max-width: 1280px; margin: 0 auto; padding: 0 28px; position: relative; }
+
+  /* CTA band */
+  #is2f .is2f-cta { background: var(--red); position: relative; overflow: hidden; }
+  #is2f .is2f-cta::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(-45deg, rgba(0,0,0,.07) 0 14px, transparent 14px 28px); }
+  #is2f .is2f-cta-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 26px; padding-top: 56px; padding-bottom: 56px; }
+  #is2f .is2f-cta h2 { font-family: var(--disp); font-style: italic; font-weight: 600; text-transform: uppercase; font-size: clamp(34px, 5vw, 68px); line-height: .92; margin: 0; max-width: 13em; }
+  #is2f .is2f-cta-btn {
+    display: inline-flex; align-items: center; gap: 12px; background: var(--bg); color: var(--white);
+    font-family: var(--disp); font-style: italic; font-weight: 600; text-transform: uppercase; letter-spacing: .02em; font-size: 17px;
+    padding: 19px 30px; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+    transition: background .25s ease, color .25s ease; will-change: transform;
+  }
+  #is2f .is2f-cta-btn:hover { background: var(--white); color: var(--bg); }
+  #is2f .is2f-cta-btn svg { width: 18px; height: 18px; transition: transform .3s ease; }
+  #is2f .is2f-cta-btn:hover svg { transform: translateX(5px); }
+
+  /* main columns */
+  #is2f .is2f-main { padding: 90px 0 40px; }
+  #is2f .is2f-grid { display: grid; grid-template-columns: 1fr; gap: 48px; }
+  #is2f .is2f-brand p { color: var(--muted); max-width: 34ch; margin: 18px 0 0; font-size: 16.5px; }
+  #is2f .is2f-logo { display: flex; align-items: center; gap: 12px; font-family: var(--disp); font-style: italic; font-weight: 600; font-size: 22px; }
+  #is2f .is2f-logo img { height: 42px; width: auto; }
+  #is2f .is2f-logo b { color: var(--red); font-weight: 600; }
+  #is2f .is2f-social { display: flex; gap: 10px; margin-top: 28px; }
+  #is2f .is2f-soc { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--line-2); display: grid; place-items: center; transition: background .25s ease, border-color .25s ease; will-change: transform; }
+  #is2f .is2f-soc svg { width: 20px; height: 20px; fill: none; stroke: var(--white); }
+  #is2f .is2f-soc:hover { background: var(--red); border-color: var(--red); }
+  #is2f .is2f-title { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted-2); display: block; margin-bottom: 18px; }
+  #is2f .is2f-links { display: flex; flex-direction: column; gap: 6px; }
+  #is2f .is2f-links a { font-family: var(--disp); font-style: italic; font-weight: 600; text-transform: uppercase; font-size: 24px; line-height: 1.25; width: max-content; position: relative; transition: color .2s ease, transform .3s ease; }
+  #is2f .is2f-links a:hover { color: var(--red); transform: translateX(6px); }
+  #is2f .is2f-contact a { display: block; font-size: 18px; margin-bottom: 14px; width: max-content; max-width: 100%; border-bottom: 1px solid var(--line-2); padding-bottom: 2px; transition: border-color .2s ease, color .2s ease; }
+  #is2f .is2f-contact a:hover { border-color: var(--red); color: var(--red-2); }
+  #is2f .is2f-contact small { display: block; color: var(--muted-2); font-size: 13px; margin-bottom: 2px; }
+  @media (min-width: 860px) { #is2f .is2f-grid { grid-template-columns: 1.4fr 1fr 1.2fr; gap: 60px; } }
+
+  /* giant wordmark */
+  #is2f .is2f-word {
+    display: block; text-align: center; white-space: nowrap; user-select: none;
+    font-family: var(--disp); font-style: italic; font-weight: 700; text-transform: uppercase;
+    font-size: 17.2vw; line-height: .8; letter-spacing: -.02em; margin: 48px 0 -1.6vw; padding-right: .06em;
+    color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.14);
+    background: linear-gradient(90deg, var(--red), var(--red-2)); -webkit-background-clip: text; background-clip: text;
+    background-size: var(--fill, 0%) 100%; background-repeat: no-repeat;
+  }
+
+  /* bottom bar */
+  #is2f .is2f-bottom { position: relative; z-index: 2; border-top: 1px solid var(--line); background: var(--bg); }
+  #is2f .is2f-bottom-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 18px; padding-bottom: 18px; flex-wrap: wrap; }
+  #is2f .is2f-legal { display: flex; flex-wrap: wrap; gap: 8px 22px; color: var(--muted); font-size: 14px; }
+  #is2f .is2f-legal a:hover { color: var(--white); }
+  #is2f .is2f-top { width: 52px; height: 52px; border-radius: 50%; background: var(--white); color: var(--bg); display: grid; place-items: center; transition: background .25s ease, color .25s ease; will-change: transform; }
+  #is2f .is2f-top:hover { background: var(--red); color: var(--white); }
+  #is2f .is2f-top svg { width: 20px; height: 20px; }

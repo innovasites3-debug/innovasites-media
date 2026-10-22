@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Paquete phishing</title>
+<style>
+  @font-face { font-family: 'Oswald'; font-weight: 600; src: url('fonts/oswald-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Oswald'; font-weight: 700; src: url('fonts/oswald-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 400; src: url('fonts/inter-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 500; src: url('fonts/inter-latin-500-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 600; src: url('fonts/inter-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 700; src: url('fonts/inter-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 400; src: url('fonts/space-mono-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 700; src: url('fonts/space-mono-latin-700-normal.woff2') format('woff2'); }
+
+  :root {
+    --bg: #0A0C11; --bg2: #11141B; --bg3: #181C25;
+    --red: #E5342A; --red2: #FF5A45; --dark-red: #7A1712;
+    --white: #FFFFFF; --muted: #A9AFBB; --muted2: #6B7180;
+    --line: rgba(255,255,255,.1);
+    --disp: 'Oswald', sans-serif; --body: 'Inter', sans-serif; --mono: 'Space Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); font-family: var(--body); color: var(--white); }
+  .abs { position: absolute; }
+  .disp { font-family: var(--disp); font-weight: 700; font-style: italic; text-transform: uppercase; line-height: .9; letter-spacing: -.005em; }
+  .mono { font-family: var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+  .red { color: var(--red); }
+  .hide { opacity: 0; }
+
+  #bgpx { position: absolute; inset: 0; }
+  #flash { position: absolute; inset: 0; background: var(--red); opacity: 0; mix-blend-mode: normal; }
+  #vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(10,12,17,0) 40%, rgba(5,6,9,.85) 100%); pointer-events: none; }
+
+  /* brand chip */
+  #chip { left: 80px; top: 196px; display: flex; align-items: center; gap: 14px; font-size: 22px; color: var(--muted); }
+  #chip b { width: 14px; height: 14px; background: var(--red); }
+
+  /* captions */
+  .cap { left: 80px; right: 80px; top: 250px; }
+  .cap .lab { font-size: 26px; color: var(--red2); margin-bottom: 22px; display: flex; align-items: center; gap: 16px; }
+  .cap .lab::before { content: ""; width: 44px; height: 4px; background: currentColor; }
+  .cap .big { font-size: 112px; }
+  .cap .mid { font-size: 92px; }
+  .cap .line { display: block; }
+  .cap .sub { margin-top: 26px; font-size: 34px; color: var(--muted); font-family: var(--body); font-weight: 500; }
+
+  /* phone */
+  #phone { left: 250px; top: 690px; width: 580px; height: 1190px; border-radius: 70px; background: #050608; border: 12px solid #23272F; box-shadow: 0 0 0 2px #3a3f4a, 0 60px 120px rgba(0,0,0,.7); transform-origin: 50% 20%; }
+  #phone::before { content: ""; position: absolute; top: 18px; left: 50%; width: 150px; height: 38px; margin-left: -75px; border-radius: 30px; background: #000; z-index: 20; }
+  #scr { position: absolute; inset: 0; border-radius: 58px; overflow: hidden; background: #111; }
+  .layer { position: absolute; inset: 0; }
+
+  /* lock screen */
+  #lock { background: linear-gradient(170deg, #1d2333 0%, #0d0f16 60%, #120708 100%); }
+  #lock .time { position: absolute; top: 120px; left: 0; right: 0; text-align: center; font-family: var(--body); font-weight: 600; font-size: 128px; letter-spacing: -.03em; color: rgba(255,255,255,.92); }
+  #lock .date { position: absolute; top: 96px; left: 0; right: 0; text-align: center; font-size: 26px; font-weight: 500; color: rgba(255,255,255,.7); }
+  .notif { position: absolute; left: 18px; right: 18px; padding: 22px 24px; border-radius: 30px; background: rgba(40,44,54,.92); box-shadow: 0 20px 40px rgba(0,0,0,.45); }
+  .notif .h { display: flex; align-items: center; gap: 14px; font-size: 21px; color: rgba(255,255,255,.65); font-weight: 500; }
+  .notif .h .ic { width: 42px; height: 42px; border-radius: 10px; background: #34C759; display: grid; place-items: center; }
+  .notif .h .ic svg { width: 26px; height: 26px; }
+  .notif .h span:last-child { margin-left: auto; }
+  .notif .t { margin-top: 12px; font-size: 26px; font-weight: 700; }
+  .notif .b { margin-top: 6px; font-size: 24px; line-height: 1.32; color: rgba(255,255,255,.88); }
+  .notif .b u { color: #7ab8ff; text-decoration: none; }
+
+  /* sms */
+  #sms { background: #0b0b0d; }
+  #sms .top { position: absolute; top: 0; left: 0; right: 0; height: 190px; background: #16161a; border-bottom: 1px solid #262629; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 20px; gap: 8px; }
+  #sms .avatar { width: 76px; height: 76px; border-radius: 50%; background: #5d6270; display: grid; place-items: center; font-size: 30px; font-weight: 600; }
+  #sms .num { font-size: 22px; color: #ddd; }
+  .bub { position: absolute; left: 22px; max-width: 430px; padding: 20px 24px; border-radius: 28px; background: #26262b; font-size: 25px; line-height: 1.38; }
+  .bub u { color: #5fa8ff; text-decoration: underline; }
+  .tap { position: absolute; width: 90px; height: 90px; margin: -45px 0 0 -45px; border-radius: 50%; border: 5px solid #fff; background: rgba(255,255,255,.25); opacity: 0; }
+
+  /* fake site */
+  #site { background: #f2f0ff; color: #222; }
+  #site .bar { position: absolute; top: 0; left: 0; right: 0; height: 170px; background: #e8e8ec; padding: 86px 20px 0; }
+  #site .url { height: 64px; border-radius: 16px; background: #fff; display: flex; align-items: center; gap: 12px; padding: 0 20px; font-size: 26px; color: #333; font-family: var(--body); font-weight: 500; }
+  #site .url i { width: 18px; height: 22px; border: 3px solid #999; border-radius: 4px; }
+  #site .pg { position: absolute; top: 170px; left: 0; right: 0; bottom: 0; overflow: hidden; }
+  #site .hd { height: 120px; background: #5b2bd6; display: flex; align-items: center; gap: 16px; padding: 0 28px; }
+  #site .hd .lg { width: 70px; height: 70px; image-rendering: pixelated; }
+  #site .hd b { font-family: 'Comic Sans MS', var(--body); font-weight: 800; font-size: 36px; color: #ffe100; text-shadow: 3px 3px 0 #ff2fa3; letter-spacing: .02em; }
+  #site .bd { padding: 36px 30px; }
+  #site h3 { font-size: 38px; font-weight: 800; color: #c4003a; line-height: 1.1; }
+  #site p { margin-top: 14px; font-size: 25px; line-height: 1.4; color: #444; }
+  #site .track { margin-top: 26px; height: 22px; border-radius: 12px; background: #ddd; overflow: hidden; }
+  #site .track i { display: block; height: 100%; width: 72%; background: repeating-linear-gradient(45deg, #ffb400 0 16px, #ff8a00 16px 32px); }
+  #site .pkg { margin: 30px auto 0; width: 230px; height: 230px; }
+  #site .fld { margin-top: 18px; }
+  #site .fld small { display: block; font-size: 20px; color: #666; margin-bottom: 8px; font-weight: 600; }
+  #site .fld div { height: 70px; border: 3px solid #b9b3d8; border-radius: 12px; background: #fff; display: flex; align-items: center; padding: 0 18px; font-size: 28px; font-family: var(--mono); letter-spacing: .06em; color: #111; }
+  #site .row { display: flex; gap: 16px; }
+  #site .row .fld { flex: 1; }
+  #site .pay { margin-top: 28px; height: 90px; border-radius: 16px; background: #00b05a; color: #fff; font-size: 36px; font-weight: 800; display: grid; place-items: center; box-shadow: 0 8px 0 #007a3d; }
+  #site .caret { display: inline-block; width: 3px; height: 34px; background: #111; margin-left: 2px; }
+  #ring { position: absolute; overflow: visible; }
+
+  /* bank */
+  #bank { background: #000; }
+  #bank .proc { position: absolute; top: 420px; left: 0; right: 0; text-align: center; font-size: 28px; color: #aaa; }
+  #bank .spin { margin: 0 auto 26px; width: 80px; height: 80px; border-radius: 50%; border: 8px solid #333; border-top-color: #fff; }
+  .bn { position: absolute; left: 18px; right: 18px; padding: 20px 22px; border-radius: 28px; background: rgba(48,52,62,.96); }
+  .bn .h { display: flex; align-items: center; gap: 12px; font-size: 20px; color: rgba(255,255,255,.65); font-weight: 600; }
+  .bn .h .ic { width: 38px; height: 38px; border-radius: 9px; background: #1f6feb; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 20px; }
+  .bn .h span:last-child { margin-left: auto; font-weight: 500; }
+  .bn .t { margin-top: 10px; font-size: 25px; font-weight: 700; }
+  .bn .t em { font-style: normal; color: #ff6b5e; }
+
+  /* saldo */
+  #saldo { left: 80px; right: 80px; top: 250px; }
+  #saldo .lab { font-size: 26px; color: var(--muted); }
+  #saldo .num { margin-top: 10px; font-size: 168px; font-variant-numeric: tabular-nums; }
+  #nooo { left: 0; right: 0; top: 930px; text-align: center; font-size: 260px; color: var(--white); text-shadow: 10px 10px 0 var(--red); }
+
+  /* rewind */
+  #rew { inset: 0; }
+  #rew .lines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 3px, transparent 3px 9px); }
+  #rew .tag { position: absolute; left: 80px; top: 196px; font-size: 40px; color: #fff; display: flex; align-items: center; gap: 18px; }
+  #rew .tag svg { width: 60px; height: 40px; }
+
+  /* tips */
+  #tipsHead { left: 80px; right: 80px; top: 250px; }
+  #tipsHead .lab { font-size: 26px; color: var(--red2); display: flex; align-items: center; gap: 16px; }
+  #tipsHead .lab::before { content: ""; width: 44px; height: 4px; background: currentColor; }
+  #tipsHead .t { margin-top: 18px; font-size: 120px; }
+  #tipsBar { left: 80px; right: 80px; top: 560px; height: 8px; background: var(--bg3); }
+  #tipsBar i { display: block; height: 100%; background: var(--red); transform-origin: left; }
+  .tip { left: 80px; right: 80px; top: 660px; padding: 56px 56px 64px; background: var(--bg2); border: 2px solid var(--line); clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px); }
+  .tip .n { font-size: 210px; color: var(--red); line-height: .8; }
+  .tip .ico { position: absolute; right: 56px; top: 64px; width: 200px; }
+  .tip h4 { margin-top: 48px; font-size: 96px; }
+  .tip p { margin-top: 28px; font-size: 42px; line-height: 1.4; color: var(--muted); font-weight: 500; }
+  .tip .ex { margin-top: 30px; display: flex; flex-direction: column; gap: 14px; font-family: var(--mono); font-size: 28px; }
+  .tip .ex div { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--bg); border: 2px solid var(--line); }
+  .tip .ex b { width: 40px; height: 40px; display: grid; place-items: center; font-family: var(--body); font-weight: 800; font-size: 26px; color: #fff; flex: none; }
+  .tip .ex .no b { background: var(--red); }
+  .tip .ex .ok b { background: #2E9D5B; }
+  .tip .ex .no span { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 3px; color: var(--muted); }
+
+  /* stamp */
+  #stamp { left: 130px; top: 1060px; padding: 26px 40px; background: var(--red); color: #fff; font-size: 108px; box-shadow: 14px 14px 0 #000; }
+
+  /* end card */
+  #wipe { left: 0; right: 0; bottom: 0; height: 1920px; background: var(--red); transform-origin: bottom; }
+  #endc { inset: 0; }
+  #endc .wm { position: absolute; left: 0; right: 0; top: 480px; text-align: center; font-size: 168px; }
+  #endc .wm span { display: inline-block; }
+  #endc .pxrow { position: absolute; left: 50%; top: 340px; width: 300px; margin-left: -150px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+  #endc .pxrow b { aspect-ratio: 1; background: var(--red); }
+  #endc .tl1 { position: absolute; left: 80px; right: 80px; top: 720px; text-align: center; font-size: 64px; color: var(--muted); }
+  #endc .tl2 { position: absolute; left: 80px; right: 80px; top: 800px; text-align: center; font-size: 80px; }
+  #endc .svc { position: absolute; left: 80px; right: 80px; top: 960px; display: flex; justify-content: center; gap: 22px; font-size: 24px; color: var(--muted); }
+  #endc .svc i { width: 10px; height: 10px; background: var(--red); align-self: center; }
+  #endc .cta { position: absolute; left: 110px; right: 110px; top: 1090px; padding: 40px 44px; background: var(--red); clip-path: polygon(26px 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%, 0 26px); text-align: center; }
+  #endc .cta .a { font-size: 64px; }
+  #endc .cta .b { margin-top: 12px; font-size: 34px; font-weight: 600; }
+  #endc .hdl { position: absolute; left: 0; right: 0; top: 1360px; text-align: center; font-size: 36px; color: #fff; letter-spacing: .1em; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bgpx" width="1080" height="1920"></canvas>
+  <div id="flash"></div>
+
+  <!-- phone -->
+  <div id="phone" class="abs">
+    <div id="scr">
+      <div id="lock" class="layer">
+        <div class="date">Martes 20 de octubre</div>
+        <div class="time">9:41</div>
+        <div class="notif" id="n1" style="top:330px">
+          <div class="h"><span class="ic"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 3C6.5 3 2 6.9 2 11.6c0 2.7 1.5 5.1 3.8 6.6L5 21.5l4-2.1c.9.2 1.9.3 3 .3 5.5 0 10-3.9 10-8.6S17.5 3 12 3z"/></svg></span><span>MENSAJES</span><span>ahora</span></div>
+          <div class="t">89274</div>
+          <div class="b">¡Felicidades! Tienes un paquete pendiente. Confirma tu entrega aquí: <u>envios-entregas-seguro.xyz/p/88</u></div>
+        </div>
+      </div>
+      <div id="sms" class="layer">
+        <div class="top"><div class="avatar">89</div><div class="num">89274</div></div>
+        <div class="bub" id="bub1" style="top:240px">¡Felicidades! Tienes un paquete pendiente. Confirma tu entrega aquí: <u id="smsLink">envios-entregas-seguro.xyz/p/88</u></div>
+        <div class="bub" id="bub2" style="top:450px">Tu paquete será devuelto en 24 horas si no confirmas.</div>
+        <div class="tap" id="tap1"></div>
+      </div>
+      <div id="site" class="layer">
+        <div class="bar"><div class="url" id="url"><i></i><span id="urlTxt">envios-entregas-seguro.xyz</span></div></div>
+        <div class="pg">
+          <div id="sitePg" style="position:absolute;left:0;right:0;top:0">
+            <div class="hd"><span class="lg" id="siteLogo"></span><b>ENVIOS EXPRES</b></div>
+            <div class="bd">
+              <h3>¡Su paquete está retenido!</h3>
+              <p>Confirme sus datos para recibir su premio hoy mismo.</p>
+              <div class="track"><i></i></div>
+              <div class="pkg" id="sitePkg"></div>
+              <h3 style="margin-top:40px">Pague solo $1.99 de envío</h3>
+              <div class="fld"><small>NOMBRE EN LA TARJETA</small><div>LAURA M</div></div>
+              <div class="fld"><small>NÚMERO DE TARJETA</small><div id="cardNum"></div></div>
+              <div class="row"><div class="fld"><small>VENCE</small><div id="cardExp"></div></div><div class="fld"><small>CVV</small><div id="cardCvv"></div></div></div>
+              <div class="pay" id="payBtn">PAGAR $1.99</div>
+            </div>
+          </div>
+        </div>
+        <div class="tap" id="tap2"></div>
+      </div>
+      <div id="bank" class="layer">
+        <div class="proc" id="proc"><div class="spin" id="spin"></div>Procesando pago…</div>
+        <div id="bankList"></div>
+      </div>
+      <div id="lock2" class="layer" style="background:linear-gradient(170deg,#1d2333 0%,#0d0f16 60%,#120708 100%)">
+        <div style="position:absolute;top:96px;left:0;right:0;text-align:center;font-size:26px;font-weight:500;color:rgba(255,255,255,.7)">Miércoles 21 de octubre</div>
+        <div style="position:absolute;top:120px;left:0;right:0;text-align:center;font-weight:600;font-size:128px;letter-spacing:-.03em;color:rgba(255,255,255,.92)">8:15</div>
+        <div class="notif" id="n2" style="top:330px">
+          <div class="h"><span class="ic"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 3C6.5 3 2 6.9 2 11.6c0 2.7 1.5 5.1 3.8 6.6L5 21.5l4-2.1c.9.2 1.9.3 3 .3 5.5 0 10-3.9 10-8.6S17.5 3 12 3z"/></svg></span><span>MENSAJES</span><span>ahora</span></div>
+          <div class="t">89274</div>
+          <div class="b">¡Felicidades! Tienes OTRO paquete pendiente. Confirma aquí: <u>envios-entregas-seguro.xyz/p/91</u></div>
+        </div>
+        <div style="position:absolute;left:18px;right:18px;top:620px;text-align:center;font-size:24px;color:rgba(255,255,255,.5)" id="delTxt">Mensaje eliminado</div>
+      </div>
+    </div>
+  </div>
+  <svg id="ring" class="abs" width="700" height="220" viewBox="0 0 700 220"><path id="ringPath" d="M60,120 C40,50 300,18 520,30 C680,40 690,170 520,190 C330,212 70,200 48,130" fill="none" stroke="#E5342A" stroke-width="10" stroke-linecap="round"/></svg>
+  <div id="flag1" class="abs"></div>
+  <div id="gift" class="abs"></div>
+
+  <!-- captions -->
+  <div id="chip" class="abs mono"><b></b>InnovaSites · Seguridad digital</div>
+
+  <div class="cap abs" id="c1">
+    <div class="lab mono">Alerta</div>
+    <div class="disp big"><span class="line">Este mensaje</span><span class="line">te puede vaciar</span><span class="line red">la cuenta</span></div>
+  </div>
+  <div class="cap abs" id="c1b" style="top:250px">
+    <div class="disp big"><span class="line">No lo abras.</span><span class="line red">Todavía.</span></div>
+  </div>
+  <div class="cap abs" id="c2">
+    <div class="disp big"><span class="line">¿Un paquete?</span><span class="line red">¿Para mí?</span></div>
+  </div>
+  <div class="cap abs" id="c2b">
+    <div class="disp mid"><span class="line">Yo no pedí nada…</span><span class="line red">¡pero lo quiero!</span></div>
+  </div>
+  <div class="cap abs" id="c3">
+    <div class="lab mono">Señal de alerta 01</div>
+    <div class="disp mid"><span class="line">Esa dirección no es</span><span class="line">de ninguna</span><span class="line red">empresa real</span></div>
+  </div>
+  <div class="cap abs" id="c4">
+    <div class="lab mono">Señal de alerta 02</div>
+    <div class="disp mid"><span class="line">¿Pagar por un</span><span class="line">regalo que</span><span class="line red">no pediste?</span></div>
+  </div>
+  <div class="cap abs" id="c4b">
+    <div class="lab mono">Señal de alerta 02</div>
+    <div class="disp mid"><span class="line">“Solo son $1.99,</span><span class="line red">tranqui…”</span></div>
+  </div>
+  <div id="saldo" class="abs">
+    <div class="lab mono">Saldo disponible</div>
+    <div class="num disp" id="saldoNum">$4,580.00</div>
+  </div>
+  <div id="nooo" class="abs disp">NOOOO</div>
+
+  <div class="cap abs" id="c6">
+    <div class="disp big"><span class="line">Tranquilo.</span><span class="line red">Le pasa</span><span class="line red">a muchos.</span></div>
+  </div>
+
+  <div id="tipsHead" class="abs">
+    <div class="lab mono">Cómo no caer</div>
+    <div class="t disp">3 reglas</div>
+  </div>
+  <div id="tipsBar" class="abs"><i id="tipsFill"></i></div>
+  <div class="tip abs" id="tip1">
+    <div class="n disp">01</div><div class="ico" id="ico1"></div>
+    <h4 class="disp">No abras el link</h4>
+    <p>Entra tú mismo a la app o a la página oficial de la empresa de envíos.</p>
+  </div>
+  <div class="tip abs" id="tip2">
+    <div class="n disp">02</div><div class="ico" id="ico2"></div>
+    <h4 class="disp">Revisa la dirección</h4>
+    <p>Antes de escribir cualquier dato, mira bien la página web.</p>
+    <div class="ex"><div class="no"><b>✕</b><span>envios-entregas-seguro.xyz</span></div><div class="ok"><b>✓</b>La web oficial que ya conoces</div></div>
+  </div>
+  <div class="tip abs" id="tip3">
+    <div class="n disp">03</div><div class="ico" id="ico3"></div>
+    <h4 class="disp">Nadie cobra por un regalo</h4>
+    <p>Si te piden pagar para recibir un premio, es estafa. Siempre.</p>
+  </div>
+
+  <div class="cap abs" id="c8">
+    <div class="disp big"><span class="line">Segunda vez</span><span class="line">que “gano”</span><span class="line red">un paquete…</span></div>
+  </div>
+  <div id="stamp" class="abs disp">Hoy no, estafador.</div>
+
+  <div id="rew" class="abs"><div class="lines"></div><div class="tag mono"><svg viewBox="0 0 60 40" fill="#fff"><path d="M30 0v40L0 20zM60 0v40L30 20z"/></svg>Rebobinando</div></div>
+
+  <div id="wipe" class="abs"></div>
+  <div id="endc" class="abs">
+    <div class="pxrow" id="endPx"></div>
+    <div class="wm disp" id="wm"></div>
+    <div class="tl1 disp" id="tl1">Cada pixel cuenta…</div>
+    <div class="tl2 disp" id="tl2">y tu seguridad <span class="red">también</span></div>
+    <div class="svc mono" id="svc"><span>Sitios web seguros</span><i></i><span>Contenido</span><i></i><span>Branding</span></div>
+    <div class="cta" id="cta"><div class="a disp">Guárdalo y compártelo</div><div class="b">con quien siempre “gana” paquetes</div></div>
+    <div class="hdl mono" id="hdl">@innova_sites</div>
+  </div>
+
+  <div id="vignette"></div>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const cl = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => cl((t - a) / (b - a));
+const eo = p => 1 - Math.pow(1 - p, 3);
+const eo5 = p => 1 - Math.pow(1 - p, 5);
+const eio = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const back = p => { const c = 1.9; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+function hash(n) { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+function S(el, o, tr) { el.style.opacity = o; el.style.transform = tr || ''; el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'; }
+
+function placeOn(tap, target) {
+  const s = $('scr').getBoundingClientRect(), r = target.getBoundingClientRect(), k = s.width / 556;
+  tap.style.left = ((r.left + r.width / 2 - s.left) / k) + 'px'; tap.style.top = ((r.top + r.height / 2 - s.top) / k) + 'px';
+}
+/* pixel art (same language as the site) */
+const PX = {
+  box: ['..*....*..', '...*..*...', '##########', '#....#...#', '##########', '.#...#..#.', '.#...#..#.', '.#...#..#.', '.#...#..#.', '.########.'],
+  flag: ['##.......', '#*****...', '#******..', '#*****...', '#****....', '#........', '#........', '#........', '#........'],
+  link: ['*.........', '.*..###...', '..*#...#..', '..#*...#..', '.#..*.#...', '#....*....', '#...#.*...', '.#..#..*..', '..##....*.', '.........*'],
+  url: ['##########', '#........#', '#.**.***.#', '#........#', '##########', '.......##.', '......#..#', '......#..#', '.......##.', '........##'],
+  card: ['##########', '#........#', '##########', '#........#', '#.**.....#', '#........#', '##########', '..*....*..', '...*..*...', '....**....'],
+  coin: ['..####..', '.#....#.', '#..**..#', '#.*....#', '#..**..#', '#....*.#', '.#.**.#.', '..####..']
+};
+function pxSVG(name, base, acc) {
+  const m = PX[name]; const w = m[0].length, h = m.length; let r = '';
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const c = m[y][x]; if (c === '.') continue; r += `<rect x="${x + .06}" y="${y + .06}" width=".88" height=".88" fill="${c === '*' ? acc : base}"/>`; }
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block">${r}</svg>`;
+}
+$('siteLogo').innerHTML = pxSVG('box', '#ffe100', '#ff2fa3');
+$('sitePkg').innerHTML = pxSVG('box', '#8b5a2b', '#ff2fa3');
+$('gift').innerHTML = pxSVG('box', '#FFFFFF', '#FF5A45');
+$('flag1').innerHTML = pxSVG('flag', '#FFFFFF', '#E5342A');
+$('ico1').innerHTML = pxSVG('link', '#FFFFFF', '#E5342A');
+$('ico2').innerHTML = pxSVG('url', '#FFFFFF', '#E5342A');
+$('ico3').innerHTML = pxSVG('card', '#FFFFFF', '#E5342A');
+$('endPx').innerHTML = '<b></b>'.repeat(10);
+$('wm').innerHTML = 'INNOVA'.split('').map(c => `<span>${c}</span>`).join('') + 'SITES'.split('').map(c => `<span class="red">${c}</span>`).join('');
+
+/* bank notifications */
+const charges = [['$350.00', 'TIENDA ONLINE'], ['$780.00', 'ELECTRÓNICA'], ['$1,240.00', 'VIAJES'], ['$95.00', 'SUSCRIPCIÓN'], ['$2,100.00', 'CRIPTO'], ['$15.00', 'APP'], ['$0.00', 'SALDO AGOTADO']];
+$('bankList').innerHTML = charges.map((c, i) => `<div class="bn" id="bn${i}"><div class="h"><span class="ic">B</span><span>TU BANCO</span><span>ahora</span></div><div class="t">${i === 6 ? 'Saldo disponible: <em>$0.00</em>' : 'Compra aprobada <em>' + c[0] + '</em> · ' + c[1]}</div></div>`).join('');
+
+/* background pixel field */
+const bg = $('bgpx').getContext('2d');
+function drawBg(t, heat) {
+  bg.fillStyle = '#0A0C11'; bg.fillRect(0, 0, 1080, 1920);
+  const s = 54;
+  for (let y = 0; y < 36; y++) for (let x = 0; x < 20; x++) {
+    const i = y * 20 + x, h = hash(i), tw = .5 + .5 * Math.sin(t * (0.6 + h * 1.6) + h * 40);
+    if (h < .1 + heat * .25) {
+      bg.globalAlpha = (.05 + tw * .16) * (1 + heat * 2.5);
+      bg.fillStyle = '#E5342A'; const z = 10 + tw * 22;
+      bg.fillRect(x * s + (s - z) / 2, y * s + (s - z) / 2, z, z);
+    } else {
+      bg.globalAlpha = .07; bg.fillStyle = '#fff'; bg.fillRect(x * s + 26, y * s + 26, 3, 3);
+    }
+  }
+  bg.globalAlpha = 1;
+}
+
+/* caption animator: lines slide up from a mask, then fade */
+function cap(id, a, b, slam) {
+  const el = $(id); const lines = el.querySelectorAll('.line, .lab, .sub');
+  const vis = t => t >= a - .05 && t <= b + .05;
+  return t => {
+    if (!vis(t)) { S(el, 0); return; }
+    const out = eo(seg(t, b - .28, b));
+    S(el, 1 - out, `translateY(${-out * 40}px)`);
+    lines.forEach((ln, k) => {
+      const p = slam ? back(seg(t, a + k * .09, a + k * .09 + .42)) : eo5(seg(t, a + k * .1, a + k * .1 + .55));
+      const o = cl(seg(t, a + k * .09, a + k * .09 + .15));
+      ln.style.opacity = o;
+      ln.style.transform = slam ? `scale(${1.35 - .35 * p}) translateY(${(1 - p) * 30}px)` : `translateY(${(1 - p) * 90}px)`;
+      ln.style.transformOrigin = 'left center';
+    });
+  };
+}
+
+const caps = [
+  cap('c1', 0.12, 2.1, true), cap('c1b', 2.15, 3.4, true),
+  cap('c2', 3.5, 5.7), cap('c2b', 5.75, 8.35),
+  cap('c3', 9.9, 15.3), cap('c4', 15.5, 19.7), cap('c4b', 19.75, 21.95),
+  cap('c6', 30.7, 33.9, true), cap('c8', 46.0, 47.9)
+];
+
+/* ---------- master timeline ---------- */
+window.render = function (t) {
+  /* heat for background */
+  let heat = 0;
+  if (t > 23 && t < 30) heat = seg(t, 23, 28);
+  drawBg(t, heat);
+
+  /* chip */
+  S($('chip'), (t < 50.4 && !(t > 29.4 && t < 30.6)) ? 1 : 0);
+
+  caps.forEach(f => f(t));
+
+  /* ---- phone presence ---- */
+  const phone = $('phone');
+  let ph = 0, py = 0, sc = 1, rot = 0, shx = 0, shy = 0;
+  const inA = t < 30.6, inB = t >= 45.9 && t < 50.6;
+  if (inA) { ph = 1; py = (1 - eo5(seg(t, 0, .45))) * 500; const o = eio(seg(t, 29.6, 30.5)); py += o * 1400; rot = o * 8; }
+  if (inB) { ph = 1; py = (1 - eo5(seg(t, 45.9, 46.4))) * 1300; const o = eio(seg(t, 50.0, 50.55)); py += o * 1400; }
+  // vibration
+  const vib = (a, b, amp) => { if (t > a && t < b) { shx += Math.sin(t * 95) * amp; rot += Math.sin(t * 83) * amp * .08; } };
+  vib(0.35, 1.05, 10); vib(1.6, 2.2, 8); vib(46.5, 47.1, 10);
+  // zoom on URL in scene 3
+  const z = eio(seg(t, 9.6, 10.3)) * (1 - eio(seg(t, 14.4, 15.1)));
+  sc = 1 + z * .32; py += z * 120;
+  // chaos shake
+  if (t > 23.2 && t < 29.6) { const k = seg(t, 23.2, 27.8); shx += (hash(Math.floor(t * 30)) - .5) * 40 * k; shy += (hash(Math.floor(t * 30) + 9) - .5) * 40 * k; }
+  S(phone, ph, `translate(${shx}px, ${py + shy}px) rotate(${rot}deg) scale(${sc})`);
+
+  /* layers */
+  const layer = (id, on) => S($(id), on ? 1 : 0);
+  layer('lock', t < 3.4);
+  layer('sms', t >= 3.4 && t < 8.4);
+  layer('site', t >= 8.4 && t < 22);
+  layer('bank', t >= 22 && t < 30.6);
+  layer('lock2', t >= 45.9);
+
+  /* S1 notification */
+  { const p = eo5(seg(t, .3, .7)); S($('n1'), cl(seg(t, .3, .45)), `translateY(${(1 - p) * -260}px)`); }
+  /* S2 sms */
+  { S($('bub1'), cl(seg(t, 3.5, 3.7)), `translateY(${(1 - eo(seg(t, 3.5, 3.85))) * 30}px)`);
+    S($('bub2'), cl(seg(t, 4.6, 4.8)), `translateY(${(1 - eo(seg(t, 4.6, 4.95))) * 30}px)`);
+    const tp = seg(t, 7.5, 8.1); const tap = $('tap1'); if (t > 7.4 && t < 8.2) placeOn(tap, $('smsLink'));
+    S(tap, tp > 0 && tp < 1 ? (1 - tp) : 0, `scale(${.4 + tp * 1.4})`);
+    $('smsLink').style.background = (t > 7.5 && t < 8.4) ? 'rgba(95,168,255,.3)' : 'transparent'; }
+  /* gift thought */
+  { const a = 4.2, b = 8.2; const gp = back(seg(t, a, a + .45)), go = 1 - seg(t, b - .3, b);
+    const g = $('gift'); g.style.left = '720px'; g.style.top = '700px'; g.style.width = '260px';
+    S(g, (t > a && t < b) ? go : 0, `scale(${gp}) rotate(${Math.sin(t * 6) * 6}deg) translateY(${Math.sin(t * 4) * 12}px)`); }
+  /* S3 site + ring + flag */
+  { const scroll = eio(seg(t, 16.0, 16.9)) * 560 + eio(seg(t, 19.2, 19.7)) * 160;
+    $('sitePg').style.transform = `translateY(${-scroll}px)`;
+    const urlFlash = t > 10.3 && t < 15 ? (Math.sin(t * 9) > 0 ? 1 : .6) : 0;
+    $('url').style.boxShadow = urlFlash ? `0 0 0 ${4 + urlFlash * 2}px #E5342A` : 'none';
+    const ring = $('ring'); ring.style.left = '190px'; ring.style.top = '772px';
+    const rp = eo(seg(t, 10.4, 11.1)); const L = 1500;
+    $('ringPath').style.strokeDasharray = L; $('ringPath').style.strokeDashoffset = L * (1 - rp);
+    S(ring, (t > 10.4 && t < 14.6) ? 1 - seg(t, 14.3, 14.6) : 0);
+    const f = $('flag1'); f.style.left = '850px'; f.style.top = '640px'; f.style.width = '150px';
+    S(f, (t > 10.9 && t < 14.6) ? 1 - seg(t, 14.3, 14.6) : 0, `scale(${back(seg(t, 10.9, 11.3))}) rotate(${-8 + Math.sin(t * 5) * 4}deg)`); }
+  /* S4 typing */
+  { const digits = '4152 3138 0249 7716'; const n = Math.floor(seg(t, 17.0, 19.0) * digits.length);
+    $('cardNum').innerHTML = digits.slice(0, n) + (t > 16.9 && t < 19.1 && Math.floor(t * 4) % 2 ? '<span class="caret"></span>' : '');
+    $('cardExp').textContent = t > 19.1 ? '08/29' : ''; $('cardCvv').textContent = t > 19.25 ? '•••' : '';
+    const tp = seg(t, 20.6, 21.2); const tap = $('tap2'); if (t > 20.5 && t < 21.3) placeOn(tap, $('payBtn'));
+    S(tap, tp > 0 && tp < 1 ? (1 - tp) : 0, `scale(${.4 + tp * 1.4})`);
+    $('payBtn').style.transform = (t > 20.6 && t < 20.9) ? 'translateY(6px)' : ''; }
+  /* S5 bank */
+  { S($('proc'), t < 23.1 ? 1 : 0); $('spin').style.transform = `rotate(${t * 540}deg)`;
+    charges.forEach((c, i) => { const a = 23.2 + i * .62; const el = $('bn' + i); const p = eo5(seg(t, a, a + .3));
+      const stackY = 110 + (Math.min(6, Math.floor(seg(t, 23.2, 23.2 + 7 * .62) * 7)) - i - 1) * -0 ;
+      const order = Math.max(0, Math.floor((t - 23.2) / .62) - i); // newer on top
+      const y = 120 + order * 150;
+      el.style.top = y + 'px'; S(el, t > a ? cl(seg(t, a, a + .12)) : 0, `translateY(${(1 - p) * -120}px) scale(${.9 + .1 * p})`);
+      if (i === 6) el.style.background = 'rgba(122,23,18,.95)'; });
+    /* rewind: notifications fly up */
+    if (t > 29.6) { charges.forEach((c, i) => { const el = $('bn' + i); el.style.transform += ` translateY(${-seg(t, 29.6, 30.4) * 900}px)`; }); }
+    const sa = 23.0, sb = 28.2;
+    const vals = [4580, 4230, 3450, 2210, 2115, 15, 0, 0];
+    const idx = Math.max(0, Math.min(7, Math.floor((t - 23.2) / .62) + 1));
+    const target = t < 23.2 ? 4580 : vals[idx];
+    const shown = target;
+    $('saldoNum').textContent = '$' + shown.toLocaleString('en-US', { minimumFractionDigits: 2 });
+    $('saldoNum').style.color = shown < 1000 ? '#E5342A' : '#fff';
+    S($('saldo'), (t > 22.3 && t < 29.6) ? cl(seg(t, 22.3, 22.6)) * (1 - seg(t, 29.3, 29.6)) : 0, `translateY(${(1 - eo5(seg(t, 22.3, 22.7))) * 60}px) translateX(${t > 23.2 && t < 28 ? (hash(Math.floor(t * 30)) - .5) * 14 : 0}px)`);
+    const np = back(seg(t, 27.4, 27.8));
+    S($('nooo'), (t > 27.4 && t < 29.6) ? 1 - seg(t, 29.3, 29.6) : 0, `scale(${.2 + .8 * np}) rotate(${-6 + Math.sin(t * 40) * 2}deg) translate(${(hash(Math.floor(t * 30)) - .5) * 24}px, ${(hash(Math.floor(t * 30) + 3) - .5) * 24}px)`);
+    /* red flashes on each charge */
+    let fl = 0; charges.forEach((c, i) => { const a = 23.2 + i * .62; fl = Math.max(fl, (1 - seg(t, a, a + .25)) * (t > a ? .22 : 0)); });
+    fl = Math.max(fl, t > 27.4 && t < 27.9 ? (1 - seg(t, 27.4, 27.9)) * .5 : 0);
+    $('flash').style.opacity = fl; }
+  /* S6 rewind */
+  { const r = (t > 29.5 && t < 30.7) ? 1 : 0; S($('rew'), r);
+    $('rew').style.background = r ? `rgba(10,12,17,${.2})` : 'transparent';
+    $('stage').style.filter = r ? `hue-rotate(${Math.sin(t * 60) * 20}deg) contrast(1.2)` : 'none';
+    $('stage').style.transform = r ? `translateX(${(hash(Math.floor(t * 30)) - .5) * 30}px)` : 'none'; }
+  /* S7 tips */
+  { const on = t > 33.95 && t < 45.9;
+    const hp = eo5(seg(t, 34.0, 34.5));
+    S($('tipsHead'), on ? cl(seg(t, 34, 34.2)) * (1 - seg(t, 45.5, 45.85)) : 0, `translateY(${(1 - hp) * 80}px)`);
+    S($('tipsBar'), on ? cl(seg(t, 34.2, 34.4)) * (1 - seg(t, 45.5, 45.85)) : 0);
+    $('tipsFill').style.transform = `scaleX(${seg(t, 34.4, 45.5)})`;
+    [[34.5, 38.4], [38.0, 42.2], [41.8, 45.85]].forEach((w, i) => {
+      const el = $('tip' + (i + 1)); const pin = eo5(seg(t, w[0], w[0] + .5)), pout = eio(seg(t, w[1] - .4, w[1]));
+      S(el, (t > w[0] && t < w[1]) ? 1 : 0, `translateX(${(1 - pin) * 1100 - pout * 1100}px) rotate(${(1 - pin) * 4}deg)`);
+      const ic = el.querySelector('.ico'); ic.style.transform = `scale(${back(seg(t, w[0] + .35, w[0] + .75))}) rotate(${Math.sin(t * 3) * 4}deg)`;
+    }); }
+  /* S8 */
+  { const sw = eio(seg(t, 47.7, 48.2)); S($('n2'), cl(seg(t, 46.4, 46.55)) * (1 - sw), `translateY(${(1 - eo5(seg(t, 46.4, 46.8))) * -260}px) translateX(${-sw * 700}px)`);
+    S($('delTxt'), cl(seg(t, 48.2, 48.5)));
+    const sp = back(seg(t, 48.25, 48.65));
+    S($('stamp'), (t > 48.25 && t < 50.6) ? 1 - seg(t, 50.2, 50.55) : 0, `rotate(-7deg) scale(${2.2 - 1.2 * sp})`); }
+  /* S9 end */
+  { const wp = eio(seg(t, 50.4, 51.0)), wo = eio(seg(t, 51.0, 51.6));
+    $('wipe').style.transform = `scaleY(${wp})`; $('wipe').style.transformOrigin = wo > 0 ? 'top' : 'bottom';
+    if (wo > 0) $('wipe').style.transform = `scaleY(${1 - wo})`;
+    S($('wipe'), t > 50.4 && t < 51.6 ? 1 : 0);
+    const on = t > 51.0;
+    S($('endc'), on ? 1 : 0);
+    $('endc').style.background = on ? '#0A0C11' : 'transparent';
+    $('endPx').querySelectorAll('b').forEach((b, i) => { const p = back(seg(t, 51.2 + i * .05, 51.5 + i * .05)); b.style.transform = `scale(${p})`; b.style.background = i === 9 ? '#fff' : '#E5342A'; });
+    $('wm').querySelectorAll('span').forEach((s, i) => { const p = eo5(seg(t, 51.3 + i * .045, 51.85 + i * .045)); s.style.transform = `translateY(${(1 - p) * 120}px)`; s.style.opacity = cl(seg(t, 51.3 + i * .045, 51.5 + i * .045)); });
+    const f = (id, a) => S($(id), cl(seg(t, a, a + .3)), `translateY(${(1 - eo5(seg(t, a, a + .5))) * 50}px)`);
+    f('tl1', 52.0); f('tl2', 52.5); f('svc', 53.0); f('hdl', 53.5);
+    const cp = back(seg(t, 53.2, 53.6)); S($('cta'), cl(seg(t, 53.2, 53.35)), `scale(${cp}) rotate(${Math.sin(t * 2.4) * .8}deg)`); }
+};
+window.render(0);
+</script>
+</body>
+</html>

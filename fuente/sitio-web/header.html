@@ -1,0 +1,170 @@
+<div id="is2h">
+<style>
+  #is2h {
+    --bg: #0A0C11;
+    --bg-2: #11141B;
+    --red: #E5342A;
+    --red-2: #FF5A45;
+    --white: #FFFFFF;
+    --muted: #A9AFBB;
+    --muted-2: #6B7180;
+    --line: rgba(255,255,255,0.09);
+    --line-2: rgba(255,255,255,0.18);
+    --disp: 'Oswald', sans-serif;
+    --mono: 'Space Mono', monospace;
+    --ease: cubic-bezier(.2,.8,.2,1);
+    --ease-io: cubic-bezier(.7,0,.2,1);
+
+    all: initial;
+    display: block;
+    font-family: 'Inter', sans-serif;
+    color: var(--white);
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    cursor: none;
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  #is2h *, #is2h *::before, #is2h *::after { box-sizing: border-box; }
+  #is2h img, #is2h svg { display: block; max-width: 100%; }
+  #is2h a { color: inherit; text-decoration: none; cursor: none; }
+  #is2h button { font: inherit; cursor: none !important; border: 0; background: none; color: inherit; padding: 0; margin: 0; }
+  #is2h nav, #is2h p { margin: 0; padding: 0; }
+  #is2h :focus-visible { outline: 2px solid var(--red-2); outline-offset: 3px; }
+  @media (pointer: coarse) { #is2h, #is2h a, #is2h button { cursor: auto !important; } }
+  @media (prefers-reduced-motion: reduce) { #is2h *, #is2h *::before, #is2h *::after { transition-duration: .001ms !important; transition-delay: 0s !important; animation-duration: .001ms !important; } }
+
+  #is2h .is2h-spacer { height: 76px; }
+  #is2h .is2h-skip { position: fixed; left: -9999px; top: 12px; z-index: 3500; background: var(--red); color: var(--white); padding: 12px 18px; font-size: 14px; font-weight: 600; }
+  #is2h .is2h-skip:focus { left: 12px; }
+
+  #is2h .is2h-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 76px;
+    display: flex; align-items: center;
+    background: rgba(10,12,17,0); border-bottom: 1px solid transparent;
+    transition: height .4s var(--ease), background .4s ease, border-color .4s ease, transform .55s var(--ease);
+  }
+  body.admin-bar #is2h .is2h-bar { top: 32px; }
+  @media (max-width: 782px) { body.admin-bar #is2h .is2h-bar { top: 46px; } }
+  #is2h.is2h-scrolled .is2h-bar {
+    height: 64px; background: rgba(10,12,17,.84); border-bottom-color: var(--line);
+    -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
+  }
+  #is2h.is2h-hidden .is2h-bar { transform: translate3d(0, -110%, 0); }
+  #is2h .is2h-prog { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; background: var(--red); transform-origin: left; transform: scaleX(0); }
+
+  #is2h .is2h-row { width: 100%; max-width: 1320px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+
+  #is2h .is2h-logo { display: flex; align-items: center; gap: 12px; font-family: var(--disp); font-style: italic; font-weight: 600; text-transform: uppercase; font-size: 21px; letter-spacing: .01em; white-space: nowrap; }
+  #is2h .is2h-logo img { height: 42px; width: auto; transition: height .4s var(--ease), transform .6s var(--ease); }
+  #is2h.is2h-scrolled .is2h-logo img { height: 36px; }
+  #is2h .is2h-logo:hover img { transform: rotate(-10deg) scale(1.08); }
+  #is2h .is2h-logo b { color: var(--red); font-weight: 600; }
+
+  #is2h .is2h-nav { display: none; position: relative; align-items: center; gap: 2px; padding: 5px; border: 1px solid var(--line); background: rgba(17,20,27,.62); }
+  #is2h .is2h-nav a { position: relative; z-index: 1; padding: 9px 16px; font-size: 14.5px; font-weight: 500; color: var(--muted); transition: color .3s ease; }
+  #is2h .is2h-nav a:hover, #is2h .is2h-nav a.is2h-active { color: var(--white); }
+  #is2h .is2h-roll { display: block; overflow: hidden; height: 1.35em; line-height: 1.35em; }
+  #is2h .is2h-roll span { display: block; text-shadow: 0 1.35em 0 currentColor; transition: transform .45s var(--ease); }
+  #is2h a:hover .is2h-roll span { transform: translate3d(0, -1.35em, 0); }
+  #is2h .is2h-pill { position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 0; width: 0; background: var(--red); opacity: 0; transition: transform .5s var(--ease), width .5s var(--ease), opacity .3s ease; }
+
+  #is2h .is2h-right { display: flex; align-items: center; gap: 10px; }
+  #is2h .is2h-btn {
+    --cut: 11px;
+    position: relative; isolation: isolate; overflow: hidden;
+    display: none; align-items: center; gap: 10px;
+    font-family: var(--disp); font-style: italic; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; font-size: 15px; line-height: 1;
+    background: var(--red); color: var(--white); padding: 13px 22px;
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+    transition: color .35s var(--ease); will-change: transform;
+  }
+  #is2h .is2h-btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--white); transform: translate3d(0, 101%, 0); transition: transform .5s var(--ease); }
+  #is2h .is2h-btn:hover { color: var(--bg); }
+  #is2h .is2h-btn:hover::before { transform: none; }
+  #is2h .is2h-btn svg { width: 16px; height: 16px; transition: transform .4s var(--ease); }
+  #is2h .is2h-btn:hover svg { transform: translateX(4px); }
+
+  #is2h .is2h-burger { width: 52px; height: 52px; display: grid; place-items: center; position: relative; z-index: 1102; border: 1px solid var(--line-2); border-radius: 50%; }
+  #is2h .is2h-burger span { position: absolute; left: 16px; right: 16px; height: 2px; background: var(--white); transition: transform .45s var(--ease), opacity .2s ease, right .45s var(--ease); }
+  #is2h .is2h-burger span:nth-child(1) { transform: translateY(-5px); }
+  #is2h .is2h-burger span:nth-child(2) { transform: translateY(5px); right: 22px; }
+  #is2h.is2h-open .is2h-burger span:nth-child(1) { transform: rotate(45deg); }
+  #is2h.is2h-open .is2h-burger span:nth-child(2) { transform: rotate(-45deg); right: 16px; }
+
+  #is2h.is2h-open .is2h-bar { z-index: 1103; transform: none; background: transparent; border-bottom-color: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  #is2h .is2h-menu {
+    position: fixed; inset: 0; z-index: 1101; background: var(--bg);
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 110px clamp(20px, 5vw, 48px) 36px;
+    clip-path: inset(0 0 100% 0); transition: clip-path .7s var(--ease-io), visibility 0s .7s; visibility: hidden; overflow-y: auto;
+  }
+  #is2h.is2h-open .is2h-menu { clip-path: inset(0 0 0 0); visibility: visible; transition: clip-path .7s var(--ease-io), visibility 0s 0s; }
+  #is2h .is2h-menu-links { display: flex; flex-direction: column; outline: none; }
+  #is2h .is2h-menu a.is2h-big {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    font-family: var(--disp); font-style: italic; font-weight: 600; text-transform: uppercase;
+    font-size: clamp(48px, 13vw, 92px); line-height: 1; padding: 8px 0; border-bottom: 1px solid var(--line);
+    opacity: 0; transform: translate3d(0, 40px, 0); transition: opacity .5s ease, transform .7s var(--ease), color .25s ease;
+  }
+  #is2h .is2h-menu a.is2h-big small { font-family: var(--mono); font-style: normal; font-size: 13px; color: var(--red-2); }
+  #is2h .is2h-menu a.is2h-big:hover { color: var(--red); }
+  #is2h.is2h-open .is2h-menu a.is2h-big { opacity: 1; transform: none; }
+  #is2h.is2h-open .is2h-menu a.is2h-big:nth-child(1) { transition-delay: .2s; }
+  #is2h.is2h-open .is2h-menu a.is2h-big:nth-child(2) { transition-delay: .26s; }
+  #is2h.is2h-open .is2h-menu a.is2h-big:nth-child(3) { transition-delay: .32s; }
+  #is2h.is2h-open .is2h-menu a.is2h-big:nth-child(4) { transition-delay: .38s; }
+  #is2h .is2h-menu-foot { margin-top: 36px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; font-family: var(--mono); font-size: 13px; letter-spacing: .04em; color: var(--muted); opacity: 0; transition: opacity .5s ease .45s; }
+  #is2h.is2h-open .is2h-menu-foot { opacity: 1; }
+  #is2h .is2h-menu-foot a:hover { color: var(--red-2); }
+
+  @media (min-width: 1024px) {
+    #is2h .is2h-nav { display: flex; }
+    #is2h .is2h-btn { display: inline-flex; }
+    #is2h .is2h-burger { display: none; }
+    #is2h .is2h-menu { display: none; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<a href="#main-content" class="is2h-skip">Saltar al contenido principal</a>
+<div class="is2h-spacer" aria-hidden="true"></div>
+<header class="is2h-bar">
+  <div class="is2h-row">
+    <a href="#inicio" class="is2h-logo" aria-label="InnovaSites, ir al inicio">
+      <img src="https://innovasites.co/wp-content/uploads/2024/03/INNOVA-03-03.png" alt="" width="42" height="42">
+      <span>Innova<b>Sites</b></span>
+    </a>
+    <nav class="is2h-nav" id="is2hNav" aria-label="Principal">
+      <span class="is2h-pill" id="is2hPill" aria-hidden="true"></span>
+      <a href="#servicios"><span class="is2h-roll"><span>Servicios</span></span></a>
+      <a href="#proceso"><span class="is2h-roll"><span>Proceso</span></span></a>
+      <a href="#trabajo"><span class="is2h-roll"><span>Portafolio</span></span></a>
+      <a href="#contacto"><span class="is2h-roll"><span>Contacto</span></span></a>
+    </nav>
+    <div class="is2h-right">
+      <a href="#contacto" class="is2h-btn" data-magnetic>Empecemos
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <button class="is2h-burger" id="is2hBurger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="is2hMenu"><span></span><span></span></button>
+    </div>
+  </div>
+  <span class="is2h-prog" id="is2hProg" aria-hidden="true"></span>
+</header>
+<div class="is2h-menu" id="is2hMenu" aria-hidden="true">
+  <nav class="is2h-menu-links" id="is2hMenuNav" tabindex="-1" aria-label="Menú móvil">
+    <a class="is2h-big" href="#servicios">Servicios <small>01</small></a>
+    <a class="is2h-big" href="#proceso">Proceso <small>02</small></a>
+    <a class="is2h-big" href="#trabajo">Portafolio <small>03</small></a>
+    <a class="is2h-big" href="#contacto">Contacto <small>04</small></a>
+  </nav>
+  <div class="is2h-menu-foot">
+    <a href="https://api.whatsapp.com/send/?phone=573024617516" target="_blank" rel="noopener noreferrer">WhatsApp +57 302 461 7516</a>
+    <a href="mailto:info@innovasites.co">info@innovasites.co</a>
+    <a href="https://www.instagram.com/innova_sites/" target="_blank" rel="noopener noreferrer">@innova_sites</a>
+  </div>
+</div>
+<!--JS:header.js-->
+</div>
