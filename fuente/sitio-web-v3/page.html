@@ -1,0 +1,646 @@
+<div id="iv3">
+<style>
+  #iv3 {
+    --bg: #0A0C11; --bg2: #11141B; --bg3: #181C25; --red: #E5342A; --red2: #FF5A45; --red3: #7A1712;
+    --white: #fff; --muted: #A9AFBB; --muted2: #8C92A1; --line: rgba(255,255,255,.1); --line2: rgba(255,255,255,.2);
+    --disp: 'Oswald', sans-serif; --mono: 'Space Mono', monospace; --body: 'Inter', sans-serif;
+    --edge: clamp(16px, 4vw, 48px); --max: 1360px;
+    --ease: cubic-bezier(.2,.8,.2,1);
+    all: initial; display: block; position: relative; width: 100%; overflow-x: clip;
+    background: var(--bg); color: var(--white); font: 400 16px/1.6 var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  #iv3 *, #iv3 *::before, #iv3 *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  #iv3 h1, #iv3 h2, #iv3 h3, #iv3 h4, #iv3 p, #iv3 span, #iv3 li, #iv3 strong, #iv3 b, #iv3 em, #iv3 small, #iv3 label, #iv3 legend, #iv3 blockquote { color: inherit; font-family: inherit; background: none; border: 0; text-shadow: none; }
+  #iv3 a { color: inherit; text-decoration: none; }
+  #iv3 button, #iv3 input, #iv3 textarea { font: inherit; color: inherit; }
+  #iv3 button { background: none; border: 0; cursor: pointer; }
+  #iv3 img { display: block; max-width: 100%; }
+  #iv3 ::selection { background: var(--red); color: #fff; }
+  #iv3 .iv3-sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  #iv3 .iv3-wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--edge); position: relative; }
+  #iv3 .iv3-disp { font-family: var(--disp); font-style: italic; font-weight: 700; text-transform: uppercase; line-height: .92; letter-spacing: -.005em; }
+  #iv3 .iv3-label { display: inline-flex; align-items: center; gap: 12px; font: 400 12px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--red2); }
+  #iv3 .iv3-label::before { content: ""; width: 28px; height: 2px; background: var(--red); }
+  #iv3 .iv3-red { color: var(--red); }
+  #iv3 .iv3-grid-bg { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 64px 64px; mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%); opacity: .55; }
+  #iv3 .iv3-noise { position: absolute; inset: 0; pointer-events: none; opacity: .05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* buttons */
+  #iv3 .iv3-btn { position: relative; display: inline-flex; align-items: center; gap: 12px; padding: 18px 28px; background: var(--red); color: #fff; font: italic 600 17px/1 var(--disp); letter-spacing: .07em; text-transform: uppercase; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); overflow: hidden; isolation: isolate; }
+  #iv3 .iv3-btn::before { content: ""; position: absolute; inset: 0; background: #fff; transform: translateY(101%); transition: transform .5s var(--ease); z-index: -1; }
+  #iv3 .iv3-btn:hover { color: var(--bg); }
+  #iv3 .iv3-btn:hover::before { transform: none; }
+  #iv3 .iv3-btn svg { width: 18px; height: 18px; transition: transform .4s var(--ease); }
+  #iv3 .iv3-btn:hover svg { transform: translateX(5px); }
+  #iv3 .iv3-ghost { background: rgba(10,12,17,.75); display: inline-flex; align-items: center; gap: 10px; padding: 17px 24px; border: 1px solid var(--line2); font: italic 600 17px/1 var(--disp); letter-spacing: .07em; text-transform: uppercase; transition: border-color .3s, background .3s; }
+  #iv3 .iv3-ghost:hover { border-color: #fff; background: rgba(255,255,255,.06); }
+  #iv3 .iv3-ghost b { width: 8px; height: 8px; background: var(--red); display: inline-block; }
+
+  /* ============ HERO ============ */
+  #iv3 .iv3-hero { position: relative; height: 100vh; height: 100svh; min-height: 640px; display: flex; align-items: center; overflow: hidden; }
+  #iv3 .iv3-hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #iv3 .iv3-hero-in { position: relative; z-index: 2; width: 100%; padding-top: 70px; }
+  #iv3 .iv3-hero-top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; margin-bottom: clamp(20px, 3vw, 34px); }
+  #iv3 .iv3-chip { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px; border: 1px solid var(--line2); background: rgba(10,12,17,.6); font: 400 12px/1 var(--mono); letter-spacing: .08em; color: var(--muted); }
+  #iv3 .iv3-chip i { width: 8px; height: 8px; background: var(--red); animation: iv3blink 1.2s steps(2) infinite; }
+  @keyframes iv3blink { 50% { opacity: .15; } }
+  #iv3 .iv3-h1 { font-size: clamp(64px, 14.2vw, 232px); line-height: .84; }
+  #iv3 .iv3-h1 .iv3-h1-kw { display: block; margin-bottom: clamp(14px, 1.6vw, 22px); font: 500 clamp(13px, 1.1vw, 16px)/1.3 var(--body); font-style: normal; text-transform: none; letter-spacing: .01em; color: var(--muted); }
+  #iv3 .iv3-h1 .iv3-ln { display: block; overflow: hidden; padding: 0 .04em .06em 0; margin-bottom: -.06em; }
+  #iv3 .iv3-h1 .iv3-ln > span { display: inline-block; }
+  #iv3 .iv3-h1 .iv3-ln2 { padding-left: clamp(0px, 8vw, 150px); }
+  #iv3 .iv3-h1 .iv3-ch { display: inline-block; }
+  #iv3 .iv3-hero-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 32px; margin-top: clamp(24px, 3.5vw, 44px); }
+  #iv3 .iv3-hero-p { max-width: 520px; font-size: clamp(16px, 1.3vw, 19px); color: var(--muted); }
+  #iv3 .iv3-hero-p b { color: #fff; font-weight: 600; }
+  #iv3 .iv3-hero-ctas { display: flex; flex-wrap: wrap; gap: 14px; }
+  #iv3 .iv3-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+  #iv3 .iv3-tags span { padding: 7px 12px; background: rgba(10,12,17,.88); border: 1px solid var(--line); font: 400 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  #iv3 .iv3-scroll { position: absolute; left: 50%; bottom: 26px; z-index: 2; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; font: 400 10px/1 var(--mono); letter-spacing: .3em; color: var(--muted2); }
+  #iv3 .iv3-scroll i { width: 2px; height: 46px; background: var(--line2); position: relative; overflow: hidden; }
+  #iv3 .iv3-scroll i::after { content: ""; position: absolute; left: 0; top: -14px; width: 2px; height: 14px; background: var(--red); animation: iv3drop 1.6s var(--ease) infinite; }
+  @keyframes iv3drop { to { transform: translateY(60px); } }
+
+  /* ============ PROBLEMA ============ */
+  #iv3 .iv3-prob { position: relative; min-height: 100vh; display: flex; align-items: center; padding: 120px 0; }
+  #iv3 .iv3-prob-txt { font: 600 clamp(32px, 5.4vw, 84px)/1.08 var(--disp); letter-spacing: -.01em; max-width: 1180px; }
+  #iv3 .iv3-prob-txt em { font-style: italic; color: var(--red); }
+  #iv3 .iv3-prob-txt .iv3-w { display: inline-block; margin-right: .22em; }
+  #iv3 .iv3-prob-txt .iv3-br { display: block; height: .35em; }
+  #iv3 .iv3-prob-end { margin-top: clamp(28px, 4vw, 54px); display: inline-block; padding: 14px 22px 12px; background: var(--red); font-size: clamp(30px, 4.6vw, 70px); transform-origin: left center; }
+  #iv3 .iv3-prob .iv3-label { margin-bottom: 30px; }
+
+  /* ============ SERVICIOS (horizontal) ============ */
+  #iv3 .iv3-serv { position: relative; overflow: hidden; padding: 110px 0; }
+  #iv3 .iv3-serv-pin { display: flex; align-items: center; min-height: 100vh; }
+  #iv3 .iv3-serv-track { display: flex; gap: 22px; align-items: stretch; padding: 0 var(--edge) 0 max(var(--edge), calc((100vw - var(--max)) / 2 + var(--edge))); will-change: transform; }
+  #iv3 .iv3-serv-intro { flex: 0 0 auto; width: min(460px, 82vw); display: flex; flex-direction: column; justify-content: center; padding-right: 30px; }
+  #iv3 .iv3-h2 { font-size: clamp(46px, 6.4vw, 104px); margin: 22px 0 22px; }
+  #iv3 .iv3-serv-intro .iv3-h2 { font-size: clamp(40px, 4.6vw, 76px); }
+  #iv3 .iv3-contact-info .iv3-h2 { font-size: clamp(40px, 4.8vw, 80px); }
+  #iv3 .iv3-stack .iv3-proj:last-child { margin-bottom: 0; }
+  #iv3 .iv3-serv-intro p { color: var(--muted); max-width: 380px; }
+  #iv3 .iv3-serv-count { margin-top: 30px; font: 400 13px var(--mono); color: var(--muted2); display: flex; align-items: center; gap: 14px; }
+  #iv3 .iv3-serv-count span { flex: 0 0 140px; height: 2px; background: var(--line2); position: relative; }
+  #iv3 .iv3-serv-count span i { position: absolute; inset: 0; background: var(--red); transform: scaleX(0); transform-origin: left; }
+  #iv3 .iv3-card { position: relative; flex: 0 0 auto; width: min(400px, 82vw); min-height: 500px; padding: 34px 32px; background: var(--bg2); border: 1px solid var(--line); display: flex; flex-direction: column; overflow: hidden; isolation: isolate; clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px); transition: border-color .4s; }
+  #iv3 .iv3-card::before { content: ""; position: absolute; inset: 0; background: var(--red); transform: translateY(101%); transition: transform .6s var(--ease); z-index: -1; }
+  #iv3 .iv3-card:hover::before { transform: none; }
+  #iv3 .iv3-card:hover .iv3-card-n, #iv3 .iv3-card:hover p, #iv3 .iv3-card:hover li { color: #fff; }
+  #iv3 .iv3-card:hover .iv3-px i.r { background: #fff; }
+  #iv3 .iv3-card-n { font: italic 700 120px/0.8 var(--disp); color: rgba(255,255,255,.07); position: absolute; right: 22px; top: 26px; transition: color .4s; }
+  #iv3 .iv3-px { display: grid; grid-template-columns: repeat(9, 1fr); width: 90px; height: 90px; gap: 1px; margin-bottom: auto; }
+  #iv3 .iv3-px i { display: block; transition: transform .35s cubic-bezier(.3,1.6,.5,1) var(--d, 0s); }
+  #iv3.iv3-anim .iv3-px:not(.iv3-on) i { transform: scale(0); }
+  #iv3 .iv3-px i.w { background: #fff; } #iv3 .iv3-px i.r { background: var(--red); }
+  #iv3 .iv3-card h3 { font: italic 700 clamp(30px, 2.6vw, 38px)/1 var(--disp); text-transform: uppercase; margin: 60px 0 14px; }
+  #iv3 .iv3-card p { color: var(--muted); font-size: 15px; transition: color .4s; }
+  #iv3 .iv3-card ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 22px; }
+  #iv3 .iv3-card li { padding: 6px 10px; border: 1px solid var(--line2); font: 400 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); transition: color .4s, border-color .4s; }
+  #iv3 .iv3-card:hover li { border-color: rgba(255,255,255,.5); }
+  #iv3 .iv3-card-end { flex: 0 0 auto; width: min(400px, 82vw); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 22px; padding: 0 20px; }
+  #iv3 .iv3-card-end p { font: italic 700 clamp(34px, 3.4vw, 52px)/1 var(--disp); text-transform: uppercase; }
+
+  /* ============ PROCESO (escena) ============ */
+  #iv3 .iv3-proc { position: relative; }
+  #iv3 .iv3-proc-pin { min-height: 100vh; display: flex; align-items: center; padding: 100px 0 60px; }
+  #iv3 .iv3-proc-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(30px, 5vw, 80px); align-items: center; width: 100%; }
+  #iv3 .iv3-steps { list-style: none; margin-top: 34px; position: relative; padding-left: 26px; }
+  #iv3 .iv3-steps::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; background: var(--line2); }
+  #iv3 .iv3-steps::after { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; background: var(--red); transform: scaleY(var(--p, 1)); transform-origin: top; }
+  #iv3 .iv3-step { padding: 14px 0; opacity: .32; transition: opacity .5s; }
+  #iv3 .iv3-step.iv3-on { opacity: 1; }
+  #iv3 .iv3-step-h { display: flex; align-items: baseline; gap: 14px; }
+  #iv3 .iv3-step-h b { font: 400 12px var(--mono); color: var(--red2); }
+  #iv3 .iv3-step-h strong { font: italic 700 clamp(24px, 2.2vw, 32px)/1.05 var(--disp); text-transform: uppercase; }
+  #iv3 .iv3-step-h span { margin-left: auto; font: 400 11px var(--mono); color: var(--muted2); letter-spacing: .08em; white-space: nowrap; }
+  #iv3 .iv3-step p { color: var(--muted); font-size: 15px; max-width: 440px; max-height: 0; opacity: 0; overflow: hidden; transition: max-height .5s var(--ease), opacity .5s, margin .5s; }
+  #iv3 .iv3-step.iv3-on p { max-height: 90px; opacity: 1; margin-top: 6px; }
+
+  #iv3 .iv3-bw { position: relative; aspect-ratio: 16 / 11; background: #0F1218; border: 1px solid var(--line2); box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.02); overflow: hidden; }
+  #iv3 .iv3-bw-top { height: 38px; display: flex; align-items: center; gap: 7px; padding: 0 14px; border-bottom: 1px solid var(--line); background: #141821; }
+  #iv3 .iv3-bw-top i { width: 9px; height: 9px; background: var(--muted2); }
+  #iv3 .iv3-bw-top i:first-child { background: var(--red); }
+  #iv3 .iv3-bw-url { margin-left: 14px; flex: 1; max-width: 300px; height: 22px; background: rgba(255,255,255,.06); display: flex; align-items: center; gap: 8px; padding: 0 10px; font: 400 11px var(--mono); color: var(--muted); }
+  #iv3 .iv3-bw-url svg { width: 11px; height: 11px; color: var(--muted2); }
+  #iv3 .iv3-bw-body { position: absolute; inset: 38px 0 0 0; }
+  #iv3 .iv3-stage { position: absolute; inset: 0; padding: clamp(16px, 2.4vw, 30px); opacity: 0; visibility: hidden; }
+  #iv3 .iv3-stage.iv3-s4 { opacity: 1; visibility: visible; }
+  #iv3 .iv3-status { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 3; display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px; background: rgba(10,12,17,.92); border: 1px solid var(--line2); font: 400 11px/1 var(--mono); letter-spacing: .06em; white-space: nowrap; }
+  #iv3 .iv3-status i { width: 8px; height: 8px; background: var(--red); }
+  /* stage 1: chat */
+  #iv3 .iv3-chat { display: flex; flex-direction: column; gap: 12px; max-width: 460px; margin: 0 auto; padding-top: 6%; }
+  #iv3 .iv3-msg { max-width: 82%; padding: 12px 16px; font-size: clamp(12px, 1.1vw, 15px); line-height: 1.45; background: #1D222D; border-radius: 16px 16px 16px 4px; }
+  #iv3 .iv3-msg small { display: block; font: 400 10px var(--mono); color: var(--muted2); margin-bottom: 4px; letter-spacing: .06em; text-transform: uppercase; }
+  #iv3 .iv3-msg.iv3-me { align-self: flex-end; background: var(--red); border-radius: 16px 16px 4px 16px; }
+  #iv3 .iv3-msg.iv3-me small { color: rgba(255,255,255,.75); }
+  #iv3 .iv3-typing { align-self: flex-start; display: flex; gap: 5px; padding: 14px 16px; background: #1D222D; border-radius: 16px 16px 16px 4px; }
+  #iv3 .iv3-typing i { width: 6px; height: 6px; background: var(--muted); animation: iv3blink 1s steps(2) infinite; }
+  #iv3 .iv3-typing i:nth-child(2) { animation-delay: .2s; } #iv3 .iv3-typing i:nth-child(3) { animation-delay: .4s; }
+  /* stage 2: propuesta */
+  #iv3 .iv3-doc { position: relative; max-width: 420px; margin: 3% auto 0; background: #F3F1EC; color: #111; padding: clamp(18px, 2.4vw, 30px); box-shadow: 0 20px 50px rgba(0,0,0,.4); }
+  #iv3 .iv3-doc .iv3-doc-h { font: italic 700 clamp(18px, 1.8vw, 24px)/1 var(--disp); text-transform: uppercase; color: #0A0C11; margin-top: 4px; }
+  #iv3 .iv3-doc small { font: 400 10px var(--mono); color: #777; letter-spacing: .08em; }
+  #iv3 .iv3-doc-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #ddd; font-size: clamp(11px, 1vw, 14px); }
+  #iv3 .iv3-doc-row:first-of-type { margin-top: 14px; }
+  #iv3 .iv3-doc-row b { margin-left: auto; width: 18px; height: 18px; background: var(--red); color: #fff; display: grid; place-items: center; font-size: 11px; }
+  #iv3 .iv3-stamp { position: absolute; right: -7%; bottom: -9%; padding: 8px 14px; border: 3px solid var(--red); color: var(--red); font: italic 700 clamp(18px, 2vw, 28px)/1 var(--disp); letter-spacing: .06em; transform: rotate(-10deg); background: rgba(243,241,236,.9); }
+  /* stage 3/4: sitio */
+  #iv3 .iv3-site { position: absolute; inset: 0; display: flex; flex-direction: column; }
+  #iv3 .iv3-site-nav { height: 13%; display: flex; align-items: center; gap: 4%; padding: 0 5%; border-bottom: 1px solid var(--line); }
+  #iv3 .iv3-site-nav i { height: 8px; width: 9%; background: rgba(255,255,255,.18); }
+  #iv3 .iv3-site-nav i:first-child { width: 14%; height: 14px; background: #fff; }
+  #iv3 .iv3-site-nav i:last-child { margin-left: auto; width: 13%; height: 22px; background: var(--red); }
+  #iv3 .iv3-site-hero { position: relative; flex: 1; padding: 5%; display: flex; flex-direction: column; justify-content: center; gap: 4%; overflow: hidden; }
+  #iv3 .iv3-site-h { font: italic 700 clamp(22px, 3.4vw, 50px)/.92 var(--disp); text-transform: uppercase; max-width: 70%; }
+  #iv3 .iv3-site-h em { color: var(--red); font-style: italic; }
+  #iv3 .iv3-site-l { height: 8px; width: 46%; background: rgba(255,255,255,.2); }
+  #iv3 .iv3-site-l.iv3-short { width: 30%; }
+  #iv3 .iv3-site-b { width: 22%; height: 30px; background: var(--red); margin-top: 2%; }
+  #iv3 .iv3-site-art { position: absolute; right: 5%; top: 14%; width: 30%; aspect-ratio: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; }
+  #iv3 .iv3-site-art i { background: var(--red); }
+  #iv3 .iv3-site-art i:nth-child(3n) { background: #fff; } #iv3 .iv3-site-art i:nth-child(5n+1) { background: transparent; }
+  #iv3 .iv3-site-cards { height: 26%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3%; padding: 0 5% 5%; }
+  #iv3 .iv3-site-cards i { background: #1B202A; border-top: 3px solid var(--red); }
+  #iv3 .iv3-wire .iv3-site-nav i, #iv3 .iv3-wire .iv3-site-l, #iv3 .iv3-wire .iv3-site-b, #iv3 .iv3-wire .iv3-site-cards i { background: transparent !important; outline: 1px dashed rgba(255,255,255,.35); border-top-color: transparent; }
+  #iv3 .iv3-wire .iv3-site-art i { background: transparent; outline: 1px dashed rgba(255,255,255,.25); }
+  #iv3 .iv3-wire .iv3-site-h { color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.4); }
+  #iv3 .iv3-wire .iv3-site-h em { color: transparent; }
+  #iv3 .iv3-live-chips { position: absolute; left: 5%; bottom: 7%; display: flex; flex-direction: column; gap: 8px; z-index: 2; }
+  #iv3 .iv3-live-chips span { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; background: #fff; color: #111; font: 700 10px/1 var(--mono); letter-spacing: .04em; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+  #iv3 .iv3-live-chips span b { width: 14px; height: 14px; background: var(--red); color: #fff; display: grid; place-items: center; font-size: 9px; }
+  #iv3 .iv3-graph { position: absolute; right: 5%; bottom: 7%; width: 34%; height: 22%; background: rgba(10,12,17,.9); border: 1px solid var(--line2); padding: 8px 10px; z-index: 2; }
+  #iv3 .iv3-graph small { font: 400 9px var(--mono); color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+  #iv3 .iv3-graph svg { width: 100%; height: calc(100% - 14px); overflow: visible; }
+  #iv3 .iv3-graph path { fill: none; stroke: var(--red); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+
+  /* ============ NUMEROS + MARQUEE ============ */
+  #iv3 .iv3-nums { padding: 120px 0 80px; }
+  #iv3 .iv3-nums-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+  #iv3 .iv3-num { padding: 34px 26px 10px 0; border-right: 1px solid var(--line); }
+  #iv3 .iv3-num + .iv3-num { padding-left: 26px; }
+  #iv3 .iv3-num:last-child { border-right: 0; }
+  #iv3 .iv3-num b { display: block; font: italic 700 clamp(70px, 10vw, 170px)/.9 var(--disp); }
+  #iv3 .iv3-num b sup { color: var(--red); font-size: .45em; vertical-align: top; position: relative; top: .1em; }
+  #iv3 .iv3-num > span { font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  #iv3 .iv3-bands { position: relative; height: 260px; margin: 20px 0 60px; }
+  #iv3 .iv3-band { position: absolute; left: -5%; width: 110%; top: 50%; padding: 22px 0; white-space: nowrap; overflow: hidden; }
+  #iv3 .iv3-band-a { background: var(--red); transform: translateY(-50%) rotate(-4deg); z-index: 2; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+  #iv3 .iv3-band-b { background: var(--bg2); border-top: 1px solid var(--line2); border-bottom: 1px solid var(--line2); transform: translateY(-50%) rotate(3deg); }
+  #iv3 .iv3-band-in { display: inline-flex; will-change: transform; }
+  #iv3 .iv3-band-in span { display: inline-flex; align-items: center; gap: 34px; padding-right: 34px; font: italic 700 clamp(34px, 4.4vw, 64px)/1 var(--disp); text-transform: uppercase; }
+  #iv3 .iv3-band-in span i { width: .32em; height: .32em; background: #fff; display: inline-block; }
+  #iv3 .iv3-band-b .iv3-band-in span { color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,.55); }
+  #iv3 .iv3-band-b .iv3-band-in span i { background: var(--red); }
+
+  /* ============ PORTAFOLIO (stack) ============ */
+  #iv3 .iv3-work { padding: 80px 0 120px; }
+  #iv3 .iv3-work-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 40px; margin-bottom: 50px; }
+  #iv3 .iv3-work-head p { max-width: 380px; color: var(--muted); }
+  #iv3 .iv3-stack { position: relative; }
+  #iv3 .iv3-proj { position: sticky; top: 90px; margin-bottom: 26vh; transform-origin: center top; }
+  #iv3 .iv3-proj-in { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); min-height: min(560px, 74vh); background: var(--bg2); border: 1px solid var(--line2); overflow: hidden; box-shadow: 0 -30px 60px rgba(0,0,0,.45); }
+  #iv3 .iv3-proj-in { position: relative; }
+  #iv3 .iv3-proj-shade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 2; }
+  #iv3 .iv3-proj-txt { padding: clamp(26px, 3.6vw, 54px); display: flex; flex-direction: column; }
+  #iv3 .iv3-proj-meta { display: flex; justify-content: space-between; align-items: center; font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  #iv3 .iv3-proj-meta b { color: var(--red2); font-weight: 400; }
+  #iv3 .iv3-proj h3 { font: italic 700 clamp(34px, 4vw, 64px)/.95 var(--disp); text-transform: uppercase; margin: auto 0 18px; padding-top: 40px; }
+  #iv3 .iv3-proj p { color: var(--muted); max-width: 460px; }
+  #iv3 .iv3-proj ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 24px; }
+  #iv3 .iv3-proj li { padding: 6px 10px; border: 1px solid var(--line2); font: 400 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  #iv3 .iv3-proj-art { position: relative; background: var(--red); overflow: hidden; }
+  #iv3 .iv3-proj:nth-child(even) .iv3-proj-art { background: #EDEBE6; }
+  #iv3 .iv3-proj-art canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #iv3 .iv3-proj-art .iv3-proj-big { position: absolute; left: 6%; bottom: 2%; font: italic 700 clamp(110px, 14vw, 230px)/.8 var(--disp); color: rgba(10,12,17,.9); }
+
+  /* before / after */
+  #iv3 .iv3-ba { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(30px, 5vw, 70px); align-items: center; margin-top: 110px; }
+  #iv3 .iv3-ba h3 { font-size: clamp(34px, 3.6vw, 60px); margin: 18px 0; }
+  #iv3 .iv3-ba p { color: var(--muted); }
+  #iv3 .iv3-ba small { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font: 400 12px var(--mono); color: var(--muted2); }
+  #iv3 .iv3-cmp { position: relative; aspect-ratio: 16 / 10; border: 1px solid var(--line2); overflow: hidden; background: var(--bg2); --pos: 50%; user-select: none; }
+  #iv3 .iv3-cmp-img { position: absolute; inset: 0; background-size: cover; background-position: top center; }
+  #iv3 .iv3-cmp.iv3-in .iv3-cmp-a { background-image: url("https://innovasites.co/wp-content/uploads/2026/08/Captura-de-pantalla-2026-08-04-133702-scaled.png"); }
+  #iv3 .iv3-cmp-b { clip-path: inset(0 0 0 var(--pos)); background-color: var(--bg3); }
+  #iv3 .iv3-cmp.iv3-in .iv3-cmp-b { background-image: url("https://innovasites.co/wp-content/uploads/2026/08/Captura-de-pantalla-2026-08-04-133720.png"); clip-path: inset(0 0 0 var(--pos)); }
+  #iv3 .iv3-cmp-tag { position: absolute; top: 14px; padding: 6px 10px; background: rgba(10,12,17,.85); font: 400 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; z-index: 2; }
+  #iv3 .iv3-cmp-tag.iv3-l { left: 14px; } #iv3 .iv3-cmp-tag.iv3-r { right: 14px; background: var(--red); }
+  #iv3 .iv3-cmp-h { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: #fff; z-index: 2; pointer-events: none; }
+  #iv3 .iv3-cmp-h span { position: absolute; top: 50%; left: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; background: var(--red); display: grid; place-items: center; }
+  #iv3 .iv3-cmp-h svg { width: 20px; height: 20px; }
+  #iv3 .iv3-cmp input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; z-index: 3; }
+
+  /* ============ COMPARACION ============ */
+  #iv3 .iv3-vs { padding: 110px 0; position: relative; }
+  #iv3 .iv3-vs-head { text-align: center; margin-bottom: 56px; }
+  #iv3 .iv3-vs-head .iv3-h2 { margin-bottom: 0; }
+  #iv3 .iv3-vs-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line2); }
+  #iv3 .iv3-vs-col { padding: clamp(24px, 3.4vw, 46px); }
+  #iv3 .iv3-vs-col + .iv3-vs-col { background: var(--red); }
+  #iv3 .iv3-vs-col h3 { font: italic 700 clamp(26px, 2.6vw, 40px)/1 var(--disp); text-transform: uppercase; margin-bottom: 26px; display: flex; align-items: center; gap: 12px; }
+  #iv3 .iv3-vs-col:first-child h3 { color: var(--muted); }
+  #iv3 .iv3-vs-col ul { list-style: none; }
+  #iv3 .iv3-vs-col li { position: relative; display: flex; align-items: center; gap: 14px; padding: 15px 0; border-top: 1px solid var(--line); font-size: clamp(15px, 1.3vw, 18px); }
+  #iv3 .iv3-vs-col + .iv3-vs-col li { border-top-color: rgba(255,255,255,.25); font-weight: 500; }
+  #iv3 .iv3-vs-col:first-child li { color: var(--muted2); }
+  #iv3 .iv3-vs-col:first-child li s { text-decoration: none; background: linear-gradient(var(--muted2), var(--muted2)) no-repeat 0 55% / var(--strike, 100%) 1.5px; }
+  #iv3 .iv3-vs-col li b { flex: 0 0 20px; height: 20px; display: grid; place-items: center; font-size: 12px; }
+  #iv3 .iv3-vs-col:first-child li b { border: 1px solid var(--muted2); }
+  #iv3 .iv3-vs-col + .iv3-vs-col li b { background: #fff; color: var(--red); }
+
+  /* ============ CONTACTO ============ */
+  #iv3 .iv3-contact { position: relative; padding: 60px 0 120px; overflow: hidden; }
+  #iv3 .iv3-giant { white-space: nowrap; font-size: clamp(120px, 22vw, 380px); line-height: .8; padding: 0 0 40px; }
+  #iv3 .iv3-giant span { color: transparent; -webkit-text-stroke: 2px var(--red); }
+  #iv3 .iv3-contact-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(30px, 5vw, 80px); }
+  #iv3 .iv3-contact-info p { color: var(--muted); margin: 20px 0 34px; max-width: 420px; font-size: 17px; }
+  #iv3 .iv3-ways { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+  #iv3 .iv3-way { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--line); transition: padding .4s var(--ease), color .3s; }
+  #iv3 .iv3-way small { display: block; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted2); margin-bottom: 4px; }
+  #iv3 .iv3-way strong { font: italic 600 clamp(20px, 1.8vw, 26px)/1.1 var(--disp); word-break: break-word; }
+  #iv3 .iv3-way svg { flex: 0 0 22px; width: 22px; height: 22px; color: var(--red); transition: transform .4s var(--ease); }
+  #iv3 .iv3-way:hover { padding-left: 12px; }
+  #iv3 .iv3-way:hover svg { transform: rotate(-45deg); }
+  #iv3 .iv3-form { background: var(--bg2); border: 1px solid var(--line2); padding: clamp(24px, 3.4vw, 46px); }
+  #iv3 .iv3-form-t { font: italic 700 clamp(26px, 2.4vw, 36px)/1 var(--disp); text-transform: uppercase; margin-bottom: 24px; }
+  #iv3 .iv3-picks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; border: 0; }
+  #iv3 .iv3-picks legend { width: 100%; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted2); margin-bottom: 10px; }
+  #iv3 .iv3-pick { position: relative; }
+  #iv3 .iv3-pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  #iv3 .iv3-pick span { display: inline-block; padding: 9px 13px; border: 1px solid var(--line2); font: 500 13px/1 var(--body); cursor: pointer; transition: background .25s, border-color .25s; }
+  #iv3 .iv3-pick input:checked + span { background: var(--red); border-color: var(--red); }
+  #iv3 .iv3-pick input:focus-visible + span { outline: 2px solid #fff; outline-offset: 2px; }
+  #iv3 .iv3-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; }
+  #iv3 .iv3-field { position: relative; display: block; padding-top: 18px; }
+  #iv3 .iv3-field.iv3-full { grid-column: 1 / -1; }
+  #iv3 .iv3-field input, #iv3 .iv3-field textarea { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--line2); padding: 12px 0 10px; font-size: 16px; color: #fff; outline: none; border-radius: 0; transition: border-color .3s; }
+  #iv3 .iv3-field textarea { min-height: 96px; resize: vertical; }
+  #iv3 .iv3-field span { position: absolute; left: 0; top: 30px; font-size: 15px; color: var(--muted2); pointer-events: none; transition: transform .3s var(--ease), color .3s, font-size .3s; transform-origin: left; }
+  #iv3 .iv3-field input:focus, #iv3 .iv3-field textarea:focus { border-color: var(--red); }
+  #iv3 .iv3-field input:focus + span, #iv3 .iv3-field input:not(:placeholder-shown) + span, #iv3 .iv3-field textarea:focus + span, #iv3 .iv3-field textarea:not(:placeholder-shown) + span { transform: translateY(-24px) scale(.8); color: var(--red2); }
+  #iv3 .iv3-field.iv3-bad input, #iv3 .iv3-field.iv3-bad textarea { border-color: var(--red2); }
+  #iv3 .iv3-field.iv3-bad span { color: var(--red2); }
+  #iv3 .iv3-form-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; margin-top: 30px; }
+  #iv3 .iv3-trust { display: inline-flex; align-items: center; gap: 10px; font: 400 12px var(--mono); color: var(--muted); }
+  #iv3 .iv3-trust b { width: 8px; height: 8px; background: #3DDC84; display: inline-block; }
+  #iv3 .iv3-btn.iv3-busy { pointer-events: none; opacity: .7; }
+  #iv3 .iv3-status { margin-top: 18px; font-size: 15px; display: none; align-items: flex-start; gap: 10px; padding: 14px 16px; }
+  #iv3 .iv3-status svg { flex: 0 0 20px; width: 20px; height: 20px; }
+  #iv3 .iv3-status.iv3-ok { display: flex; background: rgba(61,220,132,.12); color: #8EF0B8; }
+  #iv3 .iv3-status.iv3-err { display: flex; background: rgba(229,52,42,.14); color: #FF9A8F; }
+  #iv3 .iv3-mcta { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50; display: none; text-align: center; padding: 16px; background: var(--red); font: italic 600 17px/1 var(--disp); letter-spacing: .07em; text-transform: uppercase; box-shadow: 0 12px 30px rgba(0,0,0,.45); transform: translateY(150%); transition: transform .5s var(--ease); }
+  #iv3 .iv3-mcta.iv3-show { transform: none; }
+
+  #iv3.iv3-static .iv3-serv-pin { overflow-x: auto; }
+  #iv3.iv3-anim .iv3-rv { opacity: 0; transform: translateY(46px) skewY(2deg); transition: opacity .9s var(--ease), transform 1s var(--ease); }
+  #iv3.iv3-anim .iv3-rv.iv3-in { opacity: 1; transform: none; }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
+
+  /* cursor */
+  #iv3 .iv3-cur { position: fixed; left: 0; top: 0; z-index: 2000; pointer-events: none; width: 12px; height: 12px; margin: -6px 0 0 -6px; background: var(--red); mix-blend-mode: difference; transition: width .35s var(--ease), height .35s var(--ease), margin .35s var(--ease), background .3s; }
+  #iv3 .iv3-cur.iv3-big { width: 54px; height: 54px; margin: -27px 0 0 -27px; background: #fff; }
+
+  /* intro */
+  #iv3 .iv3-intro { position: fixed; inset: 0; z-index: 3000; display: grid; pointer-events: none; }
+  #iv3 .iv3-intro i { background: var(--red); }
+  #iv3 .iv3-intro i:nth-child(3n) { background: var(--bg); }
+
+  @media (max-width: 1000px) {
+    #iv3 .iv3-proc-grid { grid-template-columns: 1fr; gap: 24px; }
+    #iv3 .iv3-proc-pin { padding: 84px 0 96px; align-items: flex-start; }
+    #iv3 .iv3-proc-copy .iv3-h2 { font-size: clamp(38px, 9vw, 64px); margin: 14px 0 0; }
+    #iv3 .iv3-proc-copy > p { display: none; }
+    #iv3 .iv3-steps { margin-top: 16px; }
+    #iv3 .iv3-step { padding: 4px 0; display: none; }
+    #iv3 .iv3-step.iv3-on { display: block; }
+    #iv3 .iv3-steps::before, #iv3 .iv3-steps::after { top: 4px; bottom: 4px; }
+    #iv3 .iv3-proj-in { grid-template-columns: 1fr; }
+    #iv3 .iv3-proj-art { min-height: 200px; order: -1; }
+    #iv3 .iv3-ba, #iv3 .iv3-contact-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 900px) {
+    #iv3 .iv3-hero-row { grid-template-columns: 1fr; }
+    #iv3 .iv3-serv { padding: 90px 0 40px; }
+    #iv3 .iv3-serv-pin { min-height: 0; }
+    #iv3 .iv3-serv-track { flex-direction: column; padding: 0 var(--edge); transform: none !important; }
+    #iv3 .iv3-serv-intro, #iv3 .iv3-card, #iv3 .iv3-card-end { width: 100%; }
+    #iv3 .iv3-card { min-height: 0; }
+    #iv3 .iv3-card h3 { margin-top: 34px; }
+    #iv3 .iv3-card-end { padding: 20px 0 0; }
+    #iv3 .iv3-serv-count { display: none; }
+    #iv3 .iv3-nums-grid { grid-template-columns: 1fr; }
+    #iv3 .iv3-num, #iv3 .iv3-num + .iv3-num { padding: 22px 0; border-right: 0; border-bottom: 1px solid var(--line); }
+    #iv3 .iv3-vs-grid { grid-template-columns: 1fr; }
+    #iv3 .iv3-fields { grid-template-columns: 1fr; }
+    #iv3 .iv3-mcta { display: block; }
+    #iv3 .iv3-proj { position: relative; top: auto !important; margin-bottom: 22px; }
+    #iv3 .iv3-bands { height: 200px; }
+  }
+  @media (max-width: 560px) {
+    #iv3 .iv3-h1 .iv3-ln2 { padding-left: 0; }
+    #iv3 .iv3-hero-ctas a { width: 100%; justify-content: center; }
+    #iv3 .iv3-scroll { display: none; }
+    #iv3 .iv3-bw { aspect-ratio: 4 / 3.6; }
+    #iv3 .iv3-graph { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #iv3 *, #iv3 *::before, #iv3 *::after { animation: none !important; transition-duration: .01ms !important; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Inter:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+
+<div id="iv3-main">
+
+<!-- ================= HERO ================= -->
+<section class="iv3-hero" id="inicio" aria-label="Inicio">
+  <canvas id="iv3Field" aria-hidden="true"></canvas>
+  <div class="iv3-noise" aria-hidden="true"></div>
+  <div class="iv3-wrap iv3-hero-in" id="iv3HeroIn">
+    <div class="iv3-hero-top">
+      <span class="iv3-label">Sin plantillas · Todo desde cero</span>
+      <span class="iv3-chip"><i></i>Agenda abierta para nuevos proyectos</span>
+    </div>
+    <h1 class="iv3-h1 iv3-disp">
+      <span class="iv3-h1-kw">Agencia de diseño web, apps y contenido en Cali</span>
+      <span class="iv3-ln iv3-ln1"><span data-split>Cada <span class="iv3-red">pixel</span></span></span>
+      <span class="iv3-ln iv3-ln2"><span data-split>cuenta.</span></span>
+    </h1>
+    <div class="iv3-hero-row">
+      <div>
+        <p class="iv3-hero-p">Diseñamos <b>sitios web, apps y contenido</b> que hacen que tu marca se vea, se recuerde y venda. Nada de plantillas: cada proyecto se arma desde cero.</p>
+        <div class="iv3-tags" aria-label="Lo que hacemos"><span>Sitios web</span><span>Apps</span><span>Redes</span><span>Branding</span><span>Video</span></div>
+      </div>
+      <div class="iv3-hero-ctas">
+        <a href="#contacto" class="iv3-btn" data-magnetic>Cuéntanos tu proyecto
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#proceso" class="iv3-ghost" data-magnetic><b></b>Cómo trabajamos</a>
+      </div>
+    </div>
+  </div>
+  <div class="iv3-scroll" aria-hidden="true">SCROLL<i></i></div>
+</section>
+
+<!-- ================= PROBLEMA ================= -->
+<section class="iv3-prob" id="iv3Prob" aria-label="El problema">
+  <div class="iv3-grid-bg" aria-hidden="true"></div>
+  <div class="iv3-wrap">
+    <span class="iv3-label">Seamos honestos</span>
+    <p class="iv3-prob-txt" id="iv3ProbTxt">Tu web se ve bien, pero <em>no vende.</em><span class="iv3-br"></span>Tus redes publican, pero <em>nadie las recuerda.</em><span class="iv3-br"></span>Tienes cinco proveedores y <em>ninguno habla con el otro.</em></p>
+    <p class="iv3-prob-end iv3-disp" id="iv3ProbEnd">Eso se acaba aquí.</p>
+  </div>
+</section>
+
+<!-- ================= SERVICIOS ================= -->
+<section class="iv3-serv" id="servicios" aria-label="Servicios">
+  <div class="iv3-serv-pin" id="iv3ServPin">
+    <div class="iv3-serv-track" id="iv3ServTrack">
+      <div class="iv3-serv-intro">
+        <span class="iv3-label">01 · Servicios</span>
+        <h2 class="iv3-h2 iv3-disp">Un solo equipo. <span class="iv3-red">Todo</span> lo que tu marca necesita.</h2>
+        <p>Web, contenido e imagen en el mismo lugar. Menos proveedores que coordinar y más coherencia en todo lo que publicas.</p>
+        <div class="iv3-serv-count" aria-hidden="true"><span><i id="iv3ServBar"></i></span>06 servicios</div>
+      </div>
+      <article class="iv3-card"><span class="iv3-card-n" aria-hidden="true">01</span><div class="iv3-px" data-icon="web" aria-hidden="true"></div><h3>Sitios web a la medida</h3><p>Rápidos, responsivos y construidos para convertir visitas en clientes, no solo para verse bien.</p><ul><li>Landing pages</li><li>Tiendas en línea</li><li>WordPress</li></ul></article>
+      <article class="iv3-card"><span class="iv3-card-n" aria-hidden="true">02</span><div class="iv3-px" data-icon="heart" aria-hidden="true"></div><h3>Gestión de redes sociales</h3><p>Estrategia, calendario y publicación constante para que tu marca hable todos los días con la misma voz.</p><ul><li>Estrategia</li><li>Calendario</li><li>Reportes</li></ul></article>
+      <article class="iv3-card"><span class="iv3-card-n" aria-hidden="true">03</span><div class="iv3-px" data-icon="camera" aria-hidden="true"></div><h3>Fotografía de producto y marca</h3><p>Imágenes profesionales que le dan a tu catálogo y a tus redes un acabado que vende.</p><ul><li>Producto</li><li>Retrato de marca</li><li>Catálogo</li></ul></article>
+      <article class="iv3-card"><span class="iv3-card-n" aria-hidden="true">04</span><div class="iv3-px" data-icon="play" aria-hidden="true"></div><h3>Video y producción audiovisual</h3><p>Del guion a la edición: piezas que cuentan tu historia y se quedan en la memoria.</p><ul><li>Reels</li><li>Video institucional</li><li>Edición</li></ul></article>
+      <article class="iv3-card"><span class="iv3-card-n" aria-hidden="true">05</span><div class="iv3-px" data-icon="phone" aria-hidden="true"></div><h3>Apps y software a medida</h3><p>Convertimos los procesos de tu negocio en aplicaciones simples de usar y fáciles de mantener.</p><ul><li>Apps móviles</li><li>Sistemas internos</li><li>Automatización</li></ul></article>
+      <article class="iv3-card"><span class="iv3-card-n" aria-hidden="true">06</span><div class="iv3-px" data-icon="brand" aria-hidden="true"></div><h3>Branding e identidad visual</h3><p>La base que sostiene todo lo demás: logo, paleta, tipografía y tono de marca.</p><ul><li>Logo</li><li>Manual de marca</li><li>Papelería</li></ul></article>
+      <div class="iv3-card-end"><p>¿No sabes cuál necesitas?</p><a href="#contacto" class="iv3-btn" data-magnetic>Te asesoramos
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROCESO ================= -->
+<section class="iv3-proc" id="proceso" aria-label="Cómo trabajamos">
+  <div class="iv3-proc-pin" id="iv3ProcPin">
+    <div class="iv3-wrap iv3-proc-grid">
+      <div class="iv3-proc-copy">
+        <span class="iv3-label">02 · Proceso</span>
+        <h2 class="iv3-h2 iv3-disp">De la idea <span class="iv3-red">al aire.</span></h2>
+        <p style="color:var(--muted);max-width:420px">Cuatro pasos, tiempos claros y avances que ves desde la primera semana. Sin cajas negras.</p>
+        <ol class="iv3-steps" id="iv3Steps">
+          <li class="iv3-step iv3-on"><div class="iv3-step-h"><b>01</b><strong>Nos cuentas tu idea</strong><span>Día 1</span></div><p>Una conversación sobre tu negocio, tu público y lo que necesitas. Sin formularios eternos.</p></li>
+          <li class="iv3-step"><div class="iv3-step-h"><b>02</b><strong>Propuesta clara</strong><span>Días 2 a 3</span></div><p>Alcance, tiempos y costo por escrito. Sin letra chica ni sorpresas después.</p></li>
+          <li class="iv3-step"><div class="iv3-step-h"><b>03</b><strong>Diseño y construcción</strong><span>Por etapas</span></div><p>Te mostramos avances reales en cada etapa para que opines a tiempo.</p></li>
+          <li class="iv3-step"><div class="iv3-step-h"><b>04</b><strong>Lanzamiento y soporte</strong><span>Continuo</span></div><p>Publicamos y seguimos cerca para ajustes, mejoras o cuando tu marca crezca.</p></li>
+        </ol>
+      </div>
+      <div class="iv3-bw" aria-hidden="true">
+        <div class="iv3-bw-top"><i></i><i></i><i></i><div class="iv3-bw-url"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>tumarca.co</div></div>
+        <div class="iv3-bw-body">
+          <div class="iv3-stage iv3-s1">
+            <div class="iv3-chat">
+              <div class="iv3-msg"><small>Tú</small>Quiero que mi web venda, no solo que se vea bonita.</div>
+              <div class="iv3-msg iv3-me"><small>InnovaSites</small>Cuéntanos de tu público y te armamos una propuesta.</div>
+              <div class="iv3-msg"><small>Tú</small>Vendo por Instagram y WhatsApp, quiero algo más pro.</div>
+              <div class="iv3-typing"><i></i><i></i><i></i></div>
+            </div>
+          </div>
+          <div class="iv3-stage iv3-s2">
+            <div class="iv3-doc">
+              <small>PROPUESTA · TU MARCA</small>
+              <div class="iv3-doc-h">Sitio web + redes</div>
+              <div class="iv3-doc-row">Alcance y páginas<b>✓</b></div>
+              <div class="iv3-doc-row">Tiempos por etapa<b>✓</b></div>
+              <div class="iv3-doc-row">Costo total, sin letra chica<b>✓</b></div>
+              <div class="iv3-doc-row">Soporte después del lanzamiento<b>✓</b></div>
+              <div class="iv3-stamp">Aprobada</div>
+            </div>
+          </div>
+          <div class="iv3-stage iv3-s3">
+            <div class="iv3-site iv3-wire" id="iv3Site">
+              <div class="iv3-site-nav"><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="iv3-site-hero">
+                <div class="iv3-site-h">Tu marca, <em>a otro nivel</em></div>
+                <i class="iv3-site-l"></i><i class="iv3-site-l iv3-short"></i>
+                <i class="iv3-site-b"></i>
+                <div class="iv3-site-art"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="iv3-site-cards"><i></i><i></i><i></i></div>
+            </div>
+            </div>
+          <div class="iv3-stage iv3-s4">
+            <div class="iv3-site">
+              <div class="iv3-site-nav"><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="iv3-site-hero">
+                <div class="iv3-site-h">Tu marca, <em>a otro nivel</em></div>
+                <i class="iv3-site-l"></i><i class="iv3-site-l iv3-short"></i>
+                <i class="iv3-site-b"></i>
+                <div class="iv3-site-art"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              </div>
+              <div class="iv3-site-cards"><i></i><i></i><i></i></div>
+            </div>
+            <div class="iv3-live-chips" id="iv3Chips"><span><b>✓</b>Sitio en línea</span><span><b>✓</b>Listo para móvil</span><span><b>✓</b>Formulario conectado</span></div>
+            <div class="iv3-graph" id="iv3Graph"><small>Visitas</small><svg viewBox="0 0 100 40" preserveAspectRatio="none"><path id="iv3GraphPath" d="M0 36 L12 33 L24 34 L36 27 L48 28 L60 19 L72 21 L84 10 L100 4"/></svg></div>
+          </div>
+        </div>
+        <div class="iv3-status" id="iv3Status"><i></i><span id="iv3StatusT">Sitio en línea</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NUMEROS ================= -->
+<section class="iv3-nums" aria-label="InnovaSites en números">
+  <div class="iv3-wrap">
+    <div class="iv3-nums-grid">
+      <div class="iv3-num"><b><span data-count="120">120</span><sup>+</sup></b><span>Proyectos entregados</span></div>
+      <div class="iv3-num"><b><span data-count="45">45</span><sup>+</sup></b><span>Marcas acompañadas</span></div>
+      <div class="iv3-num"><b><span data-count="8">8</span><sup>+</sup></b><span>Años creando</span></div>
+    </div>
+  </div>
+  <div class="iv3-bands" aria-hidden="true">
+    <div class="iv3-band iv3-band-b"><div class="iv3-band-in" data-dir="-1"></div></div>
+    <div class="iv3-band iv3-band-a"><div class="iv3-band-in" data-dir="1"></div></div>
+  </div>
+</section>
+
+<!-- ================= PORTAFOLIO ================= -->
+<section class="iv3-work" id="trabajo" aria-label="Portafolio">
+  <div class="iv3-wrap">
+    <div class="iv3-work-head">
+      <div><span class="iv3-label">03 · Portafolio</span><h2 class="iv3-h2 iv3-disp">Proyectos <span class="iv3-red">recientes</span></h2></div>
+      <p>Marcas distintas, mismo estándar: cada pieza pensada para que el cliente final confíe y compre.</p>
+    </div>
+    <div class="iv3-stack" id="iv3Stack">
+      <article class="iv3-proj" style="top:90px"><div class="iv3-proj-in">
+        <div class="iv3-proj-txt"><div class="iv3-proj-meta"><b>Sitio web</b><span>01 / 05</span></div>
+          <h3>Tienda de moda: landing y catálogo</h3><p>Rediseño completo de landing y catálogo para una tienda de ropa, pensado para convertir el tráfico que llega desde redes sociales.</p><ul><li>Diseño UX/UI</li><li>WordPress</li><li>Catálogo</li><li>SEO base</li></ul></div>
+        <div class="iv3-proj-art" aria-hidden="true"><canvas data-icon="web" data-alt="0"></canvas><span class="iv3-proj-big">01</span></div>
+        <i class="iv3-proj-shade" aria-hidden="true"></i>
+      </div></article>
+      <article class="iv3-proj" style="top:104px"><div class="iv3-proj-in">
+        <div class="iv3-proj-txt"><div class="iv3-proj-meta"><b>Branding</b><span>02 / 05</span></div>
+          <h3>Identidad visual para un café de especialidad</h3><p>Logo, paleta y sistema visual completo, aplicado a empaques, menú y redes sociales.</p><ul><li>Logo</li><li>Paleta</li><li>Empaques</li><li>Menú</li></ul></div>
+        <div class="iv3-proj-art" aria-hidden="true"><canvas data-icon="brand" data-alt="1"></canvas><span class="iv3-proj-big">02</span></div>
+        <i class="iv3-proj-shade" aria-hidden="true"></i>
+      </div></article>
+      <article class="iv3-proj" style="top:118px"><div class="iv3-proj-in">
+        <div class="iv3-proj-txt"><div class="iv3-proj-meta"><b>Apps</b><span>03 / 05</span></div>
+          <h3>App de reservas para un estudio de yoga</h3><p>Una app sencilla para reservar clases y gestionar cupos, que el equipo del estudio maneja sin ayuda técnica.</p><ul><li>App móvil</li><li>Reservas</li><li>Panel admin</li></ul></div>
+        <div class="iv3-proj-art" aria-hidden="true"><canvas data-icon="phone" data-alt="0"></canvas><span class="iv3-proj-big">03</span></div>
+        <i class="iv3-proj-shade" aria-hidden="true"></i>
+      </div></article>
+      <article class="iv3-proj" style="top:132px"><div class="iv3-proj-in">
+        <div class="iv3-proj-txt"><div class="iv3-proj-meta"><b>Redes sociales</b><span>04 / 05</span></div>
+          <h3>Lanzamiento para una clínica estética</h3><p>Estrategia y piezas para el lanzamiento de una nueva línea de servicios, con calendario de contenido a 60 días.</p><ul><li>Estrategia</li><li>Piezas</li><li>Calendario 60 días</li></ul></div>
+        <div class="iv3-proj-art" aria-hidden="true"><canvas data-icon="heart" data-alt="1"></canvas><span class="iv3-proj-big">04</span></div>
+        <i class="iv3-proj-shade" aria-hidden="true"></i>
+      </div></article>
+      <article class="iv3-proj" style="top:146px"><div class="iv3-proj-in">
+        <div class="iv3-proj-txt"><div class="iv3-proj-meta"><b>Audiovisual</b><span>05 / 05</span></div>
+          <h3>Video institucional para una constructora</h3><p>Guion, rodaje y edición de un video institucional usado en ferias y presentaciones comerciales.</p><ul><li>Guion</li><li>Rodaje</li><li>Edición</li></ul></div>
+        <div class="iv3-proj-art" aria-hidden="true"><canvas data-icon="play" data-alt="0"></canvas><span class="iv3-proj-big">05</span></div>
+        <i class="iv3-proj-shade" aria-hidden="true"></i>
+      </div></article>
+    </div>
+
+    <div class="iv3-ba">
+      <div>
+        <span class="iv3-label">Antes y después</span>
+        <h3 class="iv3-disp">Así se ve una <span class="iv3-red">transformación real</span></h3>
+        <p>El sitio de InnovaSites antes y después del rediseño. Arrastra la línea para comparar.</p>
+        <small><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>Arrastra o usa las flechas del teclado</small>
+      </div>
+      <div class="iv3-cmp" id="iv3Cmp">
+        <div class="iv3-cmp-img iv3-cmp-a" role="img" aria-label="Sitio anterior de InnovaSites"></div>
+        <div class="iv3-cmp-img iv3-cmp-b" role="img" aria-label="Sitio rediseñado de InnovaSites"></div>
+        <span class="iv3-cmp-tag iv3-l">Antes</span><span class="iv3-cmp-tag iv3-r">Después</span>
+        <div class="iv3-cmp-h"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg></span></div>
+        <input type="range" min="0" max="100" value="50" id="iv3CmpR" aria-label="Comparar antes y después">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPARACION ================= -->
+<section class="iv3-vs" aria-label="Por qué InnovaSites">
+  <div class="iv3-grid-bg" aria-hidden="true"></div>
+  <div class="iv3-wrap">
+    <div class="iv3-vs-head"><span class="iv3-label">Por qué nosotros</span><h2 class="iv3-h2 iv3-disp">La diferencia <span class="iv3-red">se nota</span></h2></div>
+    <div class="iv3-vs-grid" id="iv3Vs">
+      <div class="iv3-vs-col">
+        <h3>Lo de siempre</h3>
+        <ul>
+          <li><b>✕</b><s>Una plantilla que usan miles de negocios</s></li>
+          <li><b>✕</b><s>Un proveedor para cada cosa</s></li>
+          <li><b>✕</b><s>Ves el resultado hasta el final</s></li>
+          <li><b>✕</b><s>Costos que cambian a mitad de camino</s></li>
+          <li><b>✕</b><s>Entregan y desaparecen</s></li>
+        </ul>
+      </div>
+      <div class="iv3-vs-col">
+        <h3>InnovaSites</h3>
+        <ul>
+          <li><b>✓</b>Diseño desde cero, hecho para tu marca</li>
+          <li><b>✓</b>Web, redes y contenido en un solo equipo</li>
+          <li><b>✓</b>Avances reales en cada etapa</li>
+          <li><b>✓</b>Propuesta clara y por escrito</li>
+          <li><b>✓</b>Soporte continuo después del lanzamiento</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACTO ================= -->
+<section class="iv3-contact" id="contacto" aria-label="Contacto">
+  <div class="iv3-giant iv3-disp" id="iv3Giant" aria-hidden="true">Hablemos <span>Hablemos</span> Hablemos <span>Hablemos</span></div>
+  <div class="iv3-wrap iv3-contact-grid">
+    <div class="iv3-contact-info">
+      <span class="iv3-label">04 · Contacto</span>
+      <h2 class="iv3-h2 iv3-disp">Tu proyecto <span class="iv3-red">empieza aquí</span></h2>
+      <p>Cuéntanos qué tienes en mente. Te respondemos en menos de 24 horas con una idea clara de cómo podemos ayudarte.</p>
+      <div class="iv3-ways">
+        <a class="iv3-way" href="https://api.whatsapp.com/send/?phone=573024617516" target="_blank" rel="noopener noreferrer"><div><small>WhatsApp</small><strong>+57 302 461 7516</strong></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="iv3-way" href="mailto:info@innovasites.co"><div><small>Correo</small><strong>info@innovasites.co</strong></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="iv3-way" href="https://www.instagram.com/innova_sites/" target="_blank" rel="noopener noreferrer"><div><small>Instagram</small><strong>@innova_sites</strong></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <form class="iv3-form" id="iv3Form" novalidate aria-label="Formulario de contacto">
+      <p class="iv3-form-t">Escríbenos</p>
+      <fieldset class="iv3-picks">
+        <legend>¿Qué necesitas?</legend>
+        <label class="iv3-pick"><input type="checkbox" value="Sitio web"><span>Sitio web</span></label>
+        <label class="iv3-pick"><input type="checkbox" value="Redes sociales"><span>Redes sociales</span></label>
+        <label class="iv3-pick"><input type="checkbox" value="Fotografía"><span>Fotografía</span></label>
+        <label class="iv3-pick"><input type="checkbox" value="Video"><span>Video</span></label>
+        <label class="iv3-pick"><input type="checkbox" value="App o software"><span>App o software</span></label>
+        <label class="iv3-pick"><input type="checkbox" value="Branding"><span>Branding</span></label>
+      </fieldset>
+      <div class="iv3-fields">
+        <label class="iv3-field"><input name="your-name" type="text" placeholder=" " autocomplete="name" required><span>Tu nombre</span></label>
+        <label class="iv3-field"><input name="your-email" type="email" placeholder=" " autocomplete="email" required><span>Tu correo</span></label>
+        <label class="iv3-field iv3-full"><input name="your-business" type="text" placeholder=" " autocomplete="organization"><span>Tu negocio o marca</span></label>
+        <label class="iv3-field iv3-full"><textarea name="your-message" placeholder=" "></textarea><span>¿Qué tienes en mente?</span></label>
+      </div>
+      <input type="hidden" name="_wpcf7" value="1969">
+      <input type="hidden" name="_wpcf7_unit_tag" value="wpcf7-f1969-o1">
+      <input type="hidden" name="_wpcf7_container_post" value="0">
+      <input type="hidden" name="_wpcf7_posted_data_hash" value="">
+      <div class="iv3-form-foot">
+        <span class="iv3-trust"><b></b>Respondemos en menos de 24 horas</span>
+        <button type="submit" class="iv3-btn" id="iv3Send" data-magnetic><span id="iv3SendT">Enviar mensaje</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="iv3-status" id="iv3FormStatus" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+
+<a href="#contacto" class="iv3-mcta" id="iv3Mcta">Cuéntanos tu proyecto</a>
+</div>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","@id":"https://innovasites.co/#negocio","name":"InnovaSites","url":"https://innovasites.co/","logo":"https://innovasites.co/wp-content/uploads/2024/03/INNOVA-03-03.png","image":"https://innovasites.co/wp-content/uploads/2024/03/INNOVA-03-03.png","description":"Agencia de diseño web, apps y contenido en Cali, Colombia. Sitios web a la medida, gestión de redes sociales, fotografía, video, apps y branding para marcas de toda Latinoamérica.","email":"info@innovasites.co","telephone":"+57 302 461 7516","address":{"@type":"PostalAddress","addressLocality":"Cali","addressRegion":"Valle del Cauca","addressCountry":"CO"},"areaServed":[{"@type":"Country","name":"Colombia"},{"@type":"Place","name":"Latinoamérica"}],"sameAs":["https://www.instagram.com/innova_sites/","https://www.facebook.com/profile.php?id=61555191832402","https://www.tiktok.com/@innova.sites"],"hasOfferCatalog":{"@type":"OfferCatalog","name":"Servicios","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Diseño de sitios web a la medida"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Gestión de redes sociales"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Fotografía de producto y marca"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Video y producción audiovisual"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Apps y software a medida"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Branding e identidad visual"}}]}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
+<!--JS:page.js-->
+</div>
