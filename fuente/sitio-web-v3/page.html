@@ -280,6 +280,10 @@
   #iv3 .iv3-field.iv3-full { grid-column: 1 / -1; }
   #iv3 .iv3-field input, #iv3 .iv3-field textarea { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--line2); padding: 12px 0 10px; font-size: 16px; color: #fff; outline: none; border-radius: 0; transition: border-color .3s; }
   #iv3 .iv3-field textarea { min-height: 96px; resize: vertical; }
+  #iv3 .iv3-field input, #iv3 .iv3-field textarea, #iv3 .iv3-field input:focus, #iv3 .iv3-field textarea:focus { background: transparent !important; box-shadow: none !important; border-radius: 0 !important; color: #fff !important; }
+  #iv3 .iv3-field input:-webkit-autofill, #iv3 .iv3-field input:-webkit-autofill:hover, #iv3 .iv3-field input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px var(--bg2) inset !important; box-shadow: 0 0 0 1000px var(--bg2) inset !important; -webkit-text-fill-color: #fff !important; caret-color: #fff; transition: background-color 9999s ease 0s; }
+  #iv3 .iv3-field input:autofill { background: var(--bg2) !important; }
+  #iv3 .iv3-field input:-webkit-autofill + span { transform: translateY(-24px) scale(.8); color: var(--red2); }
   #iv3 .iv3-field span { position: absolute; left: 0; top: 30px; font-size: 15px; color: var(--muted2); pointer-events: none; transition: transform .3s var(--ease), color .3s, font-size .3s; transform-origin: left; }
   #iv3 .iv3-field input:focus, #iv3 .iv3-field textarea:focus { border-color: var(--red); }
   #iv3 .iv3-field input:focus + span, #iv3 .iv3-field input:not(:placeholder-shown) + span, #iv3 .iv3-field textarea:focus + span, #iv3 .iv3-field textarea:not(:placeholder-shown) + span { transform: translateY(-24px) scale(.8); color: var(--red2); }
