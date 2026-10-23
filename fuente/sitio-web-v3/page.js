@@ -451,7 +451,7 @@ function iv3main() {
     cards.forEach(function (card, i) {
       var inner = card.querySelector('.iv3-proj-in');
       G.from(inner, { y: 80, rotateX: -8, transformPerspective: 1200, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: card, start: 'top 92%' } });
-      G.from(card.querySelector('.iv3-proj-big'), { yPercent: 60, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'top top', scrub: true } });
+      if (window.innerWidth > 900) G.from(card.querySelector('.iv3-proj-big'), { yPercent: 60, ease: 'none', scrollTrigger: { trigger: card, start: 'top bottom', end: 'top top', scrub: true } });
       if (i < cards.length - 1 && window.innerWidth > 900) {
         var st = { trigger: cards[i + 1], start: 'top 75%', end: 'top ' + (90 + (i + 1) * 14) + 'px', scrub: true };
         G.to(inner, { scale: 0.92, ease: 'none', scrollTrigger: st });
@@ -472,7 +472,8 @@ function iv3main() {
 
   /* contact giant text */
   later(function () {
-    G.fromTo('#iv3Giant', { xPercent: 4 }, { xPercent: -38, ease: 'none', scrollTrigger: { trigger: '#contacto', start: 'top bottom', end: 'bottom top', scrub: true } });
+    var mob = window.innerWidth <= 900;
+    G.fromTo('#iv3Giant', { xPercent: mob ? 0 : 4 }, { xPercent: mob ? -18 : -38, ease: 'none', scrollTrigger: { trigger: '#contacto', start: 'top bottom', end: 'bottom top', scrub: true } });
   });
 
   /* generic reveals: CSS classes + one IntersectionObserver (no per-element tweens) */
