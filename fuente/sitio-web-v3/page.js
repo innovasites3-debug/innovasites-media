@@ -126,11 +126,14 @@ function iv3main() {
     for (var i = 0; i <= 20; i++) { REDS.push('rgba(229,52,42,' + (i / 20).toFixed(2) + ')'); WHITES.push('rgba(255,255,255,' + (i / 20).toFixed(2) + ')'); }
     function draw(now) {
       var t = (now - t0) / 1000;
-      if (!mouse.seen) { mouse.tx = W * (0.64 + 0.2 * Math.cos(t * 0.35)); mouse.ty = H * (0.5 + 0.22 * Math.sin(t * 0.5)); }
+      if (!mouse.seen) {
+        if (W < 700) { mouse.tx = W * (0.86 + 0.08 * Math.cos(t * 0.5)); mouse.ty = H * (0.62 + 0.12 * Math.sin(t * 0.4)); }
+        else { mouse.tx = W * (0.64 + 0.2 * Math.cos(t * 0.35)); mouse.ty = H * (0.5 + 0.22 * Math.sin(t * 0.5)); }
+      }
       if (mouse.x < -900) { mouse.x = mouse.tx; mouse.y = mouse.ty; }
       mouse.x += (mouse.tx - mouse.x) * 0.2; mouse.y += (mouse.ty - mouse.y) * 0.2;
       c.clearRect(0, 0, W, H);
-      var R = Math.max(150, W * 0.15), R2 = R * R;
+      var R = W < 700 ? 95 : Math.max(150, W * 0.15), R2 = R * R;
       var x0 = Math.max(0, Math.floor((mouse.x - R) / cell)), x1 = Math.min(cols, Math.ceil((mouse.x + R) / cell));
       var y0 = Math.max(0, Math.floor((mouse.y - R) / cell)), y1 = Math.min(rows, Math.ceil((mouse.y + R) / cell));
       for (var y = y0; y < y1; y++) {
@@ -385,7 +388,6 @@ function iv3main() {
     G.set(rows, { scale: 0 });
     G.set('.iv3-stamp', { scale: 2.4, autoAlpha: 0, rotate: 8 });
     G.set('.iv3-doc', { y: 60, autoAlpha: 0 });
-    G.set(qa('.iv3-s3 .iv3-site-nav, .iv3-s3 .iv3-site-hero > *, .iv3-s3 .iv3-site-cards i'), { autoAlpha: 0, y: 14 });
     G.set(qa('#iv3Chips span'), { x: -30, autoAlpha: 0 });
     G.set('#iv3Graph', { y: 30, autoAlpha: 0 });
     G.set(qa('.iv3-s4 .iv3-site-art i'), { scale: 0 });
@@ -403,7 +405,7 @@ function iv3main() {
       .addLabel('p3')
       .to(S[1], { autoAlpha: 0, duration: 0.4 })
       .to(S[2], { autoAlpha: 1, duration: 0.3 }, '<0.1')
-      .to(qa('.iv3-s3 .iv3-site-nav, .iv3-s3 .iv3-site-hero > *, .iv3-s3 .iv3-site-cards i'), { autoAlpha: 1, y: 0, stagger: 0.12, duration: 0.4 })
+      .from(qa('.iv3-s3 .iv3-site-nav, .iv3-s3 .iv3-site-hero > *, .iv3-s3 .iv3-site-cards i'), { y: 10, stagger: 0.08, duration: 0.3 }, '<')
       .to({}, { duration: 0.3 })
       .addLabel('p4')
       .to(S[3], { autoAlpha: 1, duration: 0.6 })

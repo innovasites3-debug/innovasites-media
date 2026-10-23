@@ -52,9 +52,14 @@
   body.admin-bar #iv3h .iv3h-bar { top: 32px; }
   @media (max-width: 782px) { body.admin-bar #iv3h .iv3h-bar { top: 46px; } }
   @media (max-width: 900px) {
-    #iv3h .iv3h-nav, #iv3h .iv3h-row > .iv3h-cta { display: none; }
-    #iv3h .iv3h-burger { display: block; }
-    #iv3h .iv3h-row { padding-top: 12px; padding-bottom: 12px; }
+    #iv3h .iv3h-nav { display: none; }
+    #iv3h .iv3h-row { gap: 10px; }
+    #iv3h .iv3h-row > .iv3h-cta { margin-left: auto; padding: 10px 12px; font-size: 13px; letter-spacing: .05em; gap: 6px; }
+    #iv3h .iv3h-row > .iv3h-cta svg { width: 13px; height: 13px; }
+    #iv3h .iv3h-burger { display: block; margin-left: 0; }
+    #iv3h .iv3h-row { padding-top: 10px; padding-bottom: 10px; }
+    #iv3h .iv3h-logo { font-size: 19px; gap: 8px; }
+    #iv3h .iv3h-logo img { width: 32px; height: 32px; }
   }
   @media (prefers-reduced-motion: reduce) { #iv3h *, #iv3h *::before, #iv3h *::after { transition-duration: .01ms !important; } }
 </style>

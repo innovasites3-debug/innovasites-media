@@ -186,7 +186,7 @@
   #iv3 .iv3-num:last-child { border-right: 0; }
   #iv3 .iv3-num b { display: block; font: italic 700 clamp(70px, 10vw, 170px)/.9 var(--disp); }
   #iv3 .iv3-num b sup { color: var(--red); font-size: .45em; vertical-align: top; position: relative; top: .1em; }
-  #iv3 .iv3-num > span { font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  #iv3 .iv3-num > span { display: block; margin-top: 10px; font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
   #iv3 .iv3-bands { position: relative; height: 260px; margin: 20px 0 60px; }
   #iv3 .iv3-band { position: absolute; left: -5%; width: 110%; top: 50%; padding: 22px 0; white-space: nowrap; overflow: hidden; }
   #iv3 .iv3-band-a { background: var(--red); transform: translateY(-50%) rotate(-4deg); z-index: 2; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
@@ -318,10 +318,13 @@
 
   @media (max-width: 1000px) {
     #iv3 .iv3-proc-grid { grid-template-columns: 1fr; gap: 24px; }
-    #iv3 .iv3-proc-pin { padding: 84px 0 96px; align-items: flex-start; }
+    #iv3 .iv3-proc-pin { padding: 84px 0 40px; align-items: flex-start; }
     #iv3 .iv3-proc-copy .iv3-h2 { font-size: clamp(38px, 9vw, 64px); margin: 14px 0 0; }
     #iv3 .iv3-proc-copy > p { display: none; }
-    #iv3 .iv3-steps { margin-top: 16px; }
+    #iv3 .iv3-steps { margin-top: 22px; }
+    #iv3 .iv3-proc-copy .iv3-h2 { line-height: 1; }
+    #iv3 .iv3-status { display: none; }
+    #iv3 .iv3-live-chips { bottom: 5%; }
     #iv3 .iv3-step { padding: 4px 0; display: none; }
     #iv3 .iv3-step.iv3-on { display: block; }
     #iv3 .iv3-steps::before, #iv3 .iv3-steps::after { top: 4px; bottom: 4px; }
@@ -336,6 +339,7 @@
     #iv3 .iv3-serv-track { flex-direction: column; padding: 0 var(--edge); transform: none !important; }
     #iv3 .iv3-serv-intro, #iv3 .iv3-card, #iv3 .iv3-card-end { width: 100%; }
     #iv3 .iv3-card { min-height: 0; }
+    #iv3 .iv3-card-n { font-size: 64px; top: 22px; }
     #iv3 .iv3-card h3 { margin-top: 34px; }
     #iv3 .iv3-card-end { padding: 20px 0 0; }
     #iv3 .iv3-serv-count { display: none; }
@@ -343,12 +347,15 @@
     #iv3 .iv3-num, #iv3 .iv3-num + .iv3-num { padding: 22px 0; border-right: 0; border-bottom: 1px solid var(--line); }
     #iv3 .iv3-vs-grid { grid-template-columns: 1fr; }
     #iv3 .iv3-fields { grid-template-columns: 1fr; }
-    #iv3 .iv3-mcta { display: block; right: 92px; }
     #iv3 .iv3-proj { position: relative; top: auto !important; margin-bottom: 22px; }
     #iv3 .iv3-bands { height: 200px; }
   }
   @media (max-width: 560px) {
     #iv3 .iv3-h1 .iv3-ln2 { padding-left: 0; }
+    #iv3 .iv3-hero-top .iv3-chip { display: none; }
+    #iv3 .iv3-hero-top .iv3-label { letter-spacing: .12em; font-size: 11px; }
+    #iv3 .iv3-chat { padding-top: 0; gap: 8px; }
+    #iv3 .iv3-msg { padding: 9px 12px; font-size: 12px; }
     #iv3 .iv3-hero-ctas a { width: 100%; justify-content: center; }
     #iv3 .iv3-scroll { display: none; }
     #iv3 .iv3-bw { aspect-ratio: 4 / 3.6; }
@@ -644,7 +651,6 @@
   </div>
 </section>
 
-<a href="#contacto" class="iv3-mcta" id="iv3Mcta">Cuéntanos tu proyecto</a>
 </div>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","@id":"https://innovasites.co/#negocio","name":"InnovaSites","url":"https://innovasites.co/","logo":"https://innovasites.co/wp-content/uploads/2024/03/INNOVA-03-03.png","image":"https://innovasites.co/wp-content/uploads/2024/03/INNOVA-03-03.png","description":"Agencia de diseño web, apps y contenido en Cali, Colombia. Sitios web a la medida, gestión de redes sociales, fotografía, video, apps y branding para marcas de toda Latinoamérica.","email":"info@innovasites.co","telephone":"+57 302 461 7516","address":{"@type":"PostalAddress","addressLocality":"Cali","addressRegion":"Valle del Cauca","addressCountry":"CO"},"areaServed":[{"@type":"Country","name":"Colombia"},{"@type":"Place","name":"Latinoamérica"}],"sameAs":["https://www.instagram.com/innova_sites/","https://www.facebook.com/profile.php?id=61555191832402","https://www.tiktok.com/@innova.sites"],"hasOfferCatalog":{"@type":"OfferCatalog","name":"Servicios","itemListElement":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Diseño de sitios web a la medida"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Gestión de redes sociales"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Fotografía de producto y marca"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Video y producción audiovisual"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Apps y software a medida"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Branding e identidad visual"}}]}}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>

@@ -46,8 +46,12 @@
     var max = document.documentElement.scrollHeight - window.innerHeight;
     prog.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
     bar.classList.toggle('iv3h-solid', y > 40);
-    if (!open) bar.classList.toggle('iv3h-hide', y > lastY + 4 && y > 400);
-    if (y < lastY - 4) bar.classList.remove('iv3h-hide');
+    var canHide = window.innerWidth > 900;
+    if (!canHide) bar.classList.remove('iv3h-hide');
+    else {
+      if (!open) bar.classList.toggle('iv3h-hide', y > lastY + 4 && y > 400);
+      if (y < lastY - 4) bar.classList.remove('iv3h-hide');
+    }
     lastY = y;
     var mid = window.innerHeight * 0.4, on = null;
     links.forEach(function (a) {
