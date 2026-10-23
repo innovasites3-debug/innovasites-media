@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Oswald;font-weight:700;src:url(file:///home/claude/video/fonts/oswald-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:500;src:url(file:///home/claude/video/fonts/inter-latin-500-normal.woff2)}
+@font-face{font-family:Mono;font-weight:400;src:url(file:///home/claude/video/fonts/space-mono-latin-400-normal.woff2)}
+html,body{margin:0;width:1200px;height:630px;overflow:hidden;background:#0A0C11}
+body{position:relative;font-family:Inter;color:#fff;background-image:radial-gradient(circle,rgba(255,255,255,.09) 1.2px,transparent 1.8px);background-size:30px 30px;background-position:-15px -15px}
+.px{position:absolute;right:64px;top:170px;display:grid;grid-template-columns:repeat(9,26px);gap:3px}
+.px i{width:26px;height:26px;display:block}.px i.r{background:#E5342A}.px i.w{background:#fff}.px i.d{background:#7A1712}
+.top{position:absolute;left:72px;top:60px;display:flex;align-items:center;gap:14px;font:italic 700 34px Oswald;letter-spacing:.5px}
+.top b{color:#E5342A}.logo{width:40px;height:26px;background:#E5342A;transform:skewX(-14deg)}
+.lab{position:absolute;left:72px;top:150px;font:400 18px Mono;letter-spacing:4px;color:#FF5A45;text-transform:uppercase}
+.lab:before{content:"";display:inline-block;width:40px;height:3px;background:#E5342A;vertical-align:middle;margin-right:14px}
+h1{position:absolute;left:66px;top:178px;margin:0;font:italic 700 150px/0.86 Oswald;text-transform:uppercase;transform:skewX(-6deg)}
+h1 span{color:#E5342A}
+.sub{position:absolute;left:72px;bottom:70px;font:500 28px Inter;color:#C9CDD6}
+.sub b{color:#fff}
+.bar{position:absolute;left:0;right:0;bottom:0;height:12px;background:#E5342A}
+.url{position:absolute;right:72px;bottom:72px;font:400 20px Mono;color:#A9AFBB;letter-spacing:2px}
+</style></head><body>
+<div class="top"><div class="logo"></div><span>INNOVA<b>SITES</b></span></div>
+<div class="lab">Agencia de diseño web · Cali</div>
+<h1>Cada <span>pixel</span><br>cuenta.</h1>
+<div class="px" id="px"></div>
+<div class="sub">Sitios web, apps y contenido <b>sin plantillas.</b></div>
+<div class="url">innovasites.co</div>
+<div class="bar"></div>
+<script>
+var m=['.........','...rrr...','..rr.rr..','.rrwwwrr.','rr.w.w.rr','.rrwwwrr.','..rr.rr..','...rrr...','....d....'];
+document.getElementById('px').innerHTML=m.join('').split('').map(function(c){return '<i class="'+(c==='r'?'r':c==='w'?'w':c==='d'?'d':'')+'"></i>'}).join('');
+</script></body></html>
