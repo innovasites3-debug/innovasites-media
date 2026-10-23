@@ -294,6 +294,9 @@
   #iv3 .iv3-trust b { width: 8px; height: 8px; background: #3DDC84; display: inline-block; }
   #iv3 .iv3-btn.iv3-busy { pointer-events: none; opacity: .7; }
   #iv3 .iv3-fstatus { margin-top: 18px; font: 500 15px/1.45 var(--body); letter-spacing: 0; display: none; align-items: flex-start; gap: 10px; padding: 14px 16px; }
+  #iv3 .iv3-rc { margin-top: 16px; font-size: 11px; line-height: 1.5; color: var(--muted2); }
+  #iv3 .iv3-rc a { color: var(--muted); text-decoration: underline; }
+  .grecaptcha-badge { visibility: hidden !important; }
   #iv3 .iv3-fstatus svg { flex: 0 0 20px; width: 20px; height: 20px; }
   #iv3 .iv3-fstatus.iv3-ok { display: flex; background: rgba(61,220,132,.12); color: #8EF0B8; }
   #iv3 .iv3-fstatus.iv3-err { display: flex; background: rgba(229,52,42,.14); color: #FF9A8F; }
@@ -665,6 +668,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
       <div class="iv3-fstatus" id="iv3FormStatus" role="status" aria-live="polite"></div>
+      <p class="iv3-rc">Protegido por reCAPTCHA. Aplican la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de privacidad</a> y las <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Condiciones del servicio</a> de Google.</p>
     </form>
   </div>
 </section>

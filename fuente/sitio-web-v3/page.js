@@ -184,6 +184,31 @@ function iv3main() {
     if (!form) return;
     var status = $('iv3FormStatus'), btn = $('iv3Send'), btnT = $('iv3SendT');
     var endpoint = window.location.origin + '/wp-json/contact-form-7/v1/contact-forms/1969/feedback';
+    /* reCAPTCHA v3 (invisible): loaded when the visitor starts using the form */
+    var RC_KEY = '6LcAU_wtAAAAAP3pNgcZGAHqm9Fp6tFIvIxCbOvS', rcLoading = null;
+    function loadRecaptcha() {
+      if (rcLoading) return rcLoading;
+      rcLoading = new Promise(function (resolve) {
+        if (window.grecaptcha && window.grecaptcha.execute) return resolve(true);
+        var s = document.createElement('script');
+        s.src = 'https://www.google.com/recaptcha/api.js?render=' + RC_KEY;
+        s.async = true; s.onload = function () { resolve(true); }; s.onerror = function () { resolve(false); };
+        document.head.appendChild(s);
+      });
+      return rcLoading;
+    }
+    function recaptchaToken() {
+      return loadRecaptcha().then(function (ok) {
+        if (!ok || !window.grecaptcha) return '';
+        return new Promise(function (resolve) {
+          var done = false, t = setTimeout(function () { if (!done) { done = true; resolve(''); } }, 6000);
+          window.grecaptcha.ready(function () {
+            window.grecaptcha.execute(RC_KEY, { action: 'contactform' }).then(function (tok) { if (!done) { done = true; clearTimeout(t); resolve(tok); } }, function () { if (!done) { done = true; clearTimeout(t); resolve(''); } });
+          });
+        });
+      });
+    }
+    form.addEventListener('focusin', function () { loadRecaptcha(); }, { once: true });
     var OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>';
     var BAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 7v6M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>';
     function show(kind, msg) {
@@ -208,7 +233,8 @@ function iv3main() {
       if (!fd.get('your-subject')) fd.set('your-subject', 'Nuevo mensaje desde innovasites.co');
       btn.classList.add('iv3-busy'); btn.setAttribute('aria-busy', 'true'); btnT.textContent = 'Enviando';
       status.className = 'iv3-fstatus'; status.innerHTML = '';
-      fetch(endpoint, { method: 'POST', body: fd, credentials: 'same-origin' })
+      recaptchaToken()
+        .then(function (tok) { if (tok) fd.set('_wpcf7_recaptcha_response', tok); return fetch(endpoint, { method: 'POST', body: fd, credentials: 'same-origin' }); })
         .then(function (r) { return r.json(); })
         .then(function (d) {
           if (d && (d.status === 'mail_sent' || d.status === 'sent')) { form.reset(); show('ok', '¡Mensaje enviado! Te respondemos en menos de 24 horas.'); }
