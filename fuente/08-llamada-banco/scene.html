@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Llamada del banco</title>
+<style>
+  @font-face { font-family: 'Oswald'; font-weight: 600; src: url('fonts/oswald-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Oswald'; font-weight: 700; src: url('fonts/oswald-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 400; src: url('fonts/inter-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 500; src: url('fonts/inter-latin-500-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 600; src: url('fonts/inter-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 700; src: url('fonts/inter-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 400; src: url('fonts/space-mono-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 700; src: url('fonts/space-mono-latin-700-normal.woff2') format('woff2'); }
+
+  :root {
+    --bg: #0A0C11; --bg2: #11141B; --bg3: #181C25;
+    --red: #E5342A; --red2: #FF5A45; --dark-red: #7A1712;
+    --white: #FFFFFF; --muted: #A9AFBB; --line: rgba(255,255,255,.1);
+    --disp: 'Oswald', sans-serif; --body: 'Inter', 'Noto Color Emoji', sans-serif; --mono: 'Space Mono', monospace;
+    --brown: #4A2C17; --cream: #F4EDE2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-variant-ligatures: none; font-feature-settings: 'liga' 0, 'clig' 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); font-family: var(--body); color: var(--white); }
+  #world { position: absolute; inset: 0; }
+  .abs { position: absolute; }
+  .disp { font-family: var(--disp); font-weight: 700; font-style: italic; text-transform: uppercase; line-height: 1.12; letter-spacing: -.005em; }
+  .mono { font-family: var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+  .red { color: var(--red); }
+  canvas { position: absolute; inset: 0; }
+  #flash { position: absolute; inset: 0; background: var(--red); opacity: 0; z-index: 70; }
+
+  #hud { left: 80px; right: 80px; top: 206px; z-index: 40; }
+  #hud .top { display: flex; justify-content: space-between; align-items: center; font-size: 21px; color: var(--muted); }
+  #hud .top b { display: inline-block; width: 13px; height: 13px; background: var(--red); margin-right: 12px; vertical-align: -1px; }
+  #hud .bars { margin-top: 14px; display: flex; gap: 8px; }
+  #hud .bars i { flex: 1; height: 6px; background: rgba(255,255,255,.14); position: relative; overflow: hidden; }
+  #hud .bars i u { position: absolute; inset: 0; background: var(--red); transform-origin: left; transform: scaleX(0); }
+
+  #lab { left: 80px; right: 80px; top: 300px; font-size: 26px; color: var(--red2); display: flex; align-items: center; gap: 16px; z-index: 41; }
+  #lab::before { content: ""; width: 44px; height: 4px; background: currentColor; }
+  #kt { left: 80px; right: 80px; top: 350px; z-index: 41; text-wrap: balance; }
+  #kt.big { font-size: 96px; }
+  #kt.low { top: 1490px; text-align: center; font-size: 66px; text-shadow: 0 6px 24px rgba(0,0,0,.8); }
+  #kt .w { display: inline-block; transform-origin: 50% 80%; white-space: pre; }
+  #kt .w.k { color: var(--red); }
+
+  /* gancho: teléfono pixel que suena */
+  #hookPh { left: 400px; top: 770px; width: 280px; z-index: 20; }
+  #hookCap { left: 80px; right: 80px; top: 690px; text-align: center; font-size: 26px; color: var(--muted); z-index: 20; }
+  #prize { left: 240px; right: 240px; top: 1120px; text-align: center; z-index: 20; }
+  #prize b { display: inline-block; padding: 14px 26px 10px; background: var(--red); font-family: var(--disp); font-style: italic; font-weight: 700; font-size: 54px; line-height: 1.2; text-transform: uppercase; clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); }
+
+  /* ---------- phone (3D) ---------- */
+  #rig { left: 250px; top: 690px; width: 580px; height: 1190px; perspective: 2600px; z-index: 10; }
+  #phone { position: absolute; inset: 0; border-radius: 70px; background: #050608; border: 12px solid #23272F; box-shadow: 0 0 0 2px #3a3f4a, 0 60px 120px rgba(0,0,0,.75), 0 0 120px rgba(229,52,42,.22); transform-origin: 50% 0%; }
+  #phone::before { content: ""; position: absolute; top: 18px; left: 50%; width: 150px; height: 38px; margin-left: -75px; border-radius: 30px; background: #000; z-index: 90; }
+  #glare { position: absolute; inset: 0; border-radius: 58px; z-index: 95; pointer-events: none; }
+  #scr { position: absolute; inset: 0; border-radius: 58px; overflow: hidden; background: #000; }
+  .layer { position: absolute; inset: 0; overflow: hidden; }
+  .sb { position: absolute; top: 0; left: 0; right: 0; height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 6px 44px 0 54px; font-size: 21px; font-weight: 600; z-index: 30; }
+  .sb .ic { display: flex; align-items: center; gap: 7px; }
+  .sb svg { display: block; }
+  .sb.dark { color: #000; }
+  .home { position: absolute; left: 50%; bottom: 9px; width: 180px; height: 6px; margin-left: -90px; border-radius: 3px; background: rgba(255,255,255,.85); z-index: 40; }
+  .home.dark { background: rgba(0,0,0,.85); }
+
+  .lockbg { background: radial-gradient(ellipse 130% 80% at 30% 15%, #3b2a46 0%, #181221 55%, #0a0b10 100%); }
+  .lockbg .date { position: absolute; top: 104px; left: 0; right: 0; text-align: center; font-size: 25px; font-weight: 500; color: rgba(255,255,255,.78); }
+  .lockbg .time { position: absolute; top: 124px; left: 0; right: 0; text-align: center; font-weight: 600; font-size: 128px; letter-spacing: -.03em; color: rgba(255,255,255,.95); line-height: 1.1; }
+  .notif { position: absolute; left: 16px; right: 16px; padding: 16px 20px 18px; border-radius: 30px; background: rgba(48,52,58,.97); box-shadow: 0 16px 36px rgba(0,0,0,.4); }
+  .notif .h { display: flex; align-items: center; gap: 12px; font-size: 19px; color: rgba(255,255,255,.62); font-weight: 600; letter-spacing: .02em; }
+  .ap { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; flex: none; color: #fff; font-weight: 800; font-size: 19px; }
+  .notif .h span:last-child { margin-left: auto; font-weight: 500; }
+  .notif .t { margin-top: 8px; font-size: 23px; font-weight: 700; white-space: nowrap; }
+  .notif .b { margin-top: 3px; font-size: 21px; line-height: 1.3; color: rgba(255,255,255,.9); }
+  .notif.bad { background: rgba(122,23,18,.97); }
+
+  /* llamada */
+  .callbg { background: radial-gradient(ellipse 120% 70% at 50% 20%, #2c3446 0%, #141821 60%, #07080b 100%); }
+  .cname { position: absolute; left: 0; right: 0; top: 150px; text-align: center; }
+  .cname small { display: block; font-size: 22px; color: rgba(255,255,255,.6); font-weight: 500; }
+  .cname b { display: block; margin-top: 8px; font-size: 46px; font-weight: 600; letter-spacing: -.01em; }
+  .cname span { display: block; margin-top: 6px; font-size: 23px; color: rgba(255,255,255,.75); }
+  .cbtns { position: absolute; left: 70px; right: 70px; bottom: 110px; display: flex; justify-content: space-between; }
+  .cbtn { width: 128px; text-align: center; font-size: 19px; color: rgba(255,255,255,.85); }
+  .cbtn i { display: grid; place-items: center; width: 128px; height: 128px; border-radius: 50%; margin-bottom: 12px; }
+  .cbtn.no i { background: #ff3b30; } .cbtn.yes i { background: #34c759; }
+  .cmini { position: absolute; left: 90px; right: 90px; bottom: 330px; display: flex; justify-content: space-between; font-size: 18px; color: rgba(255,255,255,.75); text-align: center; }
+  .cmini div i { display: grid; place-items: center; width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,.14); margin: 0 auto 8px; }
+  #incall .cname { top: 110px; }
+  #incall .cname span { font-variant-numeric: tabular-nums; }
+  #capt { position: absolute; left: 22px; right: 22px; top: 300px; display: flex; flex-direction: column; gap: 12px; }
+  .cb { align-self: flex-start; max-width: 430px; padding: 14px 18px; border-radius: 22px; background: rgba(255,255,255,.14); font-size: 22px; line-height: 1.35; transform-origin: left top; }
+  .cb small { display: block; font-size: 15px; color: rgba(255,255,255,.55); font-weight: 600; letter-spacing: .04em; margin-bottom: 3px; }
+  .cb.me { align-self: flex-end; background: #0a84ff; transform-origin: right top; }
+  .cb.urg { background: rgba(122,23,18,.9); }
+  .kgrid { position: absolute; left: 60px; right: 60px; bottom: 250px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 0; }
+  .kgrid div { text-align: center; font-size: 17px; color: rgba(255,255,255,.8); }
+  .kgrid div i { display: grid; place-items: center; width: 92px; height: 92px; border-radius: 50%; background: rgba(255,255,255,.14); margin: 0 auto 8px; }
+  .endb { position: absolute; left: 50%; bottom: 90px; width: 110px; height: 110px; margin-left: -55px; border-radius: 50%; background: #ff3b30; display: grid; place-items: center; }
+  .ring { position: absolute; border: 5px solid var(--red); border-radius: 14px; box-shadow: 0 0 26px rgba(229,52,42,.65); opacity: 0; z-index: 60; pointer-events: none; }
+  .touch { position: absolute; width: 62px; height: 62px; margin: -31px 0 0 -31px; border-radius: 50%; background: rgba(200,204,212,.42); border: 2px solid rgba(255,255,255,.7); box-shadow: 0 2px 10px rgba(0,0,0,.3); z-index: 85; opacity: 0; }
+  #arrows { position: absolute; inset: 0; z-index: 30; overflow: visible; pointer-events: none; }
+  .sticker { position: absolute; z-index: 31; }
+
+  /* quiz */
+  #qHead { left: 80px; right: 80px; top: 300px; z-index: 41; }
+  #qHead .lab { font-size: 26px; color: var(--red2); margin-bottom: 18px; display: flex; align-items: center; gap: 16px; }
+  #qHead .lab::before { content: ""; width: 44px; height: 4px; background: currentColor; }
+  #qHead .t { font-size: 104px; }
+  .opt { position: absolute; top: 660px; width: 292px; height: 470px; background: var(--bg2); border: 3px solid var(--line); clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px); z-index: 20; padding: 20px 18px 0; }
+  #o1 { left: 80px; } #o2 { left: 394px; } #o3 { left: 708px; }
+  .opt .num { font-family: var(--disp); font-style: italic; font-weight: 700; font-size: 64px; line-height: 1.1; color: var(--red); }
+  .opt .tent { left: 34px; top: 100px; width: 218px; padding: 14px 14px 12px; transform: none; }
+  .opt .tent .nm { font-size: 21px; }
+  .opt .tent .sub { font-size: 13px; margin: 0 0 14px; }
+  .opt .tent .qw { width: 160px; height: 160px; }
+  .opt .tent .foot { margin-top: 8px; font-size: 13px; font-weight: 700; }
+  .opt .cm { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-family: var(--mono); font-size: 21px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .opt.win { background: var(--red); border-color: var(--red); }
+  .opt.win .num, .opt.win .cm { color: #fff; }
+  .opt.lose { opacity: .28; }
+  #qCall { left: 80px; right: 80px; top: 520px; padding: 22px 28px; background: #121212; border: 2px solid #2a2a2a; border-radius: 28px; z-index: 20; display: flex; gap: 22px; align-items: center; }
+  #qCall .av { width: 78px; height: 78px; border-radius: 50%; background: #2c3446; display: grid; place-items: center; flex: none; font-weight: 800; font-size: 30px; }
+  #qCall b { display: block; font-size: 26px; }
+  #qCall p { margin-top: 4px; font-size: 27px; line-height: 1.35; color: rgba(255,255,255,.9); }
+  .ab { position: absolute; left: 80px; right: 80px; height: 118px; display: flex; align-items: center; gap: 26px; padding: 0 30px; background: var(--bg2); border: 3px solid var(--line); clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px); z-index: 20; }
+  .ab .l { font-family: var(--disp); font-style: italic; font-weight: 700; font-size: 72px; line-height: 1.12; color: var(--red); width: 54px; flex: none; }
+  .ab .tx { font-size: 33px; font-weight: 600; line-height: 1.25; }
+  .ab.win { background: var(--red); border-color: var(--red); } .ab.win .l { color: #fff; }
+  .ab.lose { opacity: .28; }
+  #oA { top: 760px; } #oB { top: 896px; } #oC { top: 1032px; }
+  #timer { left: 80px; right: 80px; top: 1200px; height: 180px; display: flex; align-items: center; gap: 36px; z-index: 20; }
+  #timer svg { width: 180px; height: 180px; flex: none; }
+  #timer .num { position: absolute; left: 0; top: 0; width: 180px; height: 180px; display: grid; place-items: center; font-family: var(--disp); font-style: italic; font-weight: 700; font-size: 104px; line-height: 1.2; }
+  #timer .txt { font-family: var(--mono); font-size: 30px; letter-spacing: .14em; text-transform: uppercase; line-height: 1.5; }
+  #timer .txt b { display: block; color: var(--red2); font-weight: 700; }
+  #qNote { left: 80px; right: 80px; top: 1200px; font-size: 40px; line-height: 1.4; color: var(--muted); font-weight: 500; z-index: 20; }
+  #qNote b { color: #fff; }
+
+  /* tips */
+  #tipsHead { left: 80px; right: 80px; top: 300px; z-index: 41; }
+  #tipsHead .lab { font-size: 26px; color: var(--red2); display: flex; align-items: center; gap: 16px; }
+  #tipsHead .lab::before { content: ""; width: 44px; height: 4px; background: currentColor; }
+  #tipsHead .t { margin-top: 14px; font-size: 120px; }
+  #tipsDots { left: 80px; top: 560px; display: flex; gap: 12px; z-index: 41; }
+  #tipsDots i { width: 64px; height: 10px; background: rgba(255,255,255,.14); }
+  #tipsDots i.on { background: var(--red); }
+  .tipw { left: 80px; right: 80px; top: 630px; perspective: 2200px; z-index: 20; }
+  .tip { position: relative; padding: 48px 52px 56px; background: linear-gradient(160deg, #161a23 0%, #0f1218 100%); border: 2px solid var(--line); clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px); transform-origin: 0% 50%; }
+  .tip::after { content: ""; position: absolute; left: 0; top: 0; width: 8px; height: 100%; background: var(--red); }
+  .tip .n { font-family: var(--disp); font-style: italic; font-weight: 700; font-size: 200px; line-height: .95; color: transparent; -webkit-text-stroke: 4px var(--red); }
+  .tip .n.fill { color: var(--red); }
+  .tip .ico { position: absolute; right: 52px; top: 56px; width: 170px; }
+  .tip h4 { margin-top: 34px; font-size: 88px; }
+  .tip p { margin-top: 22px; font-size: 38px; line-height: 1.4; color: var(--muted); font-weight: 500; }
+  .tip .ex { margin-top: 24px; font-family: var(--mono); font-size: 24px; display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--bg); border: 2px solid var(--line); }
+  .tip .ex b { width: 40px; height: 40px; display: grid; place-items: center; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 26px; color: #fff; flex: none; background: #2E9D5B; }
+
+  #endc { inset: 0; z-index: 60; }
+  #endc .wm { position: absolute; left: 0; right: 0; top: 480px; text-align: center; font-size: 168px; }
+  #endc .wm span { display: inline-block; }
+  #endc .pxrow { position: absolute; left: 50%; top: 340px; width: 300px; margin-left: -150px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+  #endc .pxrow b { aspect-ratio: 1; background: var(--red); }
+  #endc .tl1 { position: absolute; left: 80px; right: 80px; top: 716px; text-align: center; font-size: 64px; color: var(--muted); }
+  #endc .tl2 { position: absolute; left: 80px; right: 80px; top: 800px; text-align: center; font-size: 80px; }
+  #endc .svc { position: absolute; left: 80px; right: 80px; top: 960px; display: flex; justify-content: center; gap: 22px; font-size: 24px; color: var(--muted); }
+  #endc .svc i { width: 10px; height: 10px; background: var(--red); align-self: center; }
+  #endc .cta { position: absolute; left: 110px; right: 110px; top: 1080px; padding: 36px 40px; background: var(--red); clip-path: polygon(26px 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%, 0 26px); text-align: center; }
+  #endc .cta .a { font-size: 64px; display: flex; align-items: center; justify-content: center; gap: 22px; }
+  #endc .cta .a svg { width: 54px; height: 54px; flex: none; }
+  #endc .cta .b { margin-top: 10px; font-size: 34px; font-weight: 600; }
+  #endc .hdl { position: absolute; left: 0; right: 0; top: 1360px; text-align: center; font-size: 36px; color: #fff; letter-spacing: .1em; }
+</style>
+<script src="timing.js"></script>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <div id="world">
+    <div id="hud" class="abs mono"><div class="top"><span><b></b>InnovaSites</span><span>Seguridad digital</span></div><div class="bars" id="bars"></div></div>
+
+    <div id="hookCap" class="abs mono">Llamada entrante · Banco</div>
+    <div id="hookPh" class="abs"></div>
+    <div id="prize" class="abs"><b>¿Es tu banco?</b></div>
+
+    <div id="rig" class="abs"><div id="phone">
+      <div id="scr">
+        <!-- llamada entrante -->
+        <div id="incoming" class="layer callbg">
+          <div class="sb" data-time="10:14"></div>
+          <div class="cname"><small>Llamada de celular</small><b>Banco · Seguridad</b><span>+57 601 508 4419</span></div>
+          <div class="cmini"><div><i data-ic="alarm"></i>Recordar</div><div><i data-ic="msg"></i>Mensaje</div></div>
+          <div class="cbtns"><div class="cbtn no"><i data-ic="hang"></i>Rechazar</div><div class="cbtn yes" id="btnYes"><i data-ic="pick"></i>Aceptar</div></div>
+          <div class="home"></div>
+        </div>
+
+        <!-- llamada en curso -->
+        <div id="incall" class="layer callbg">
+          <div class="sb" data-time="10:14"></div>
+          <div class="cname"><b>Banco · Seguridad</b><span id="ctimer">00:00</span></div>
+          <div id="capt">
+            <div class="cb" id="c1"><small>BANCO</small>Le hablamos del área de seguridad de Mi Banco.</div>
+            <div class="cb" id="c2"><small>BANCO</small>Detectamos una compra por $2.390.000 en Medellín.</div>
+            <div class="cb" id="c3"><small>BANCO</small>Para bloquearla, díganos el código que le llegó por mensaje.</div>
+            <div class="cb urg" id="c4"><small>BANCO</small>Es urgente, no cuelgue o la compra se aprueba.</div>
+            <div class="cb me" id="c5"><small>TÚ</small><span id="dictTx"></span></div>
+          </div>
+          <div class="endb" data-ic="hang"></div>
+          <div class="notif" id="nSMS" style="top:70px"><div class="h"><span class="ap" style="background:#34c759" data-ic="bubble"></span><span>MENSAJES</span><span>ahora</span></div><div class="t">890123</div><div class="b">Mi Banco: tu código de verificación es 482913. <span id="noShare">No compartas este código con nadie.</span></div></div>
+          <div class="home"></div>
+        </div>
+
+        <!-- cargos en la tarjeta -->
+        <div id="bank" class="layer lockbg">
+          <div class="sb" data-time=""></div>
+          <div class="date">Miércoles 18 de noviembre</div>
+          <div class="time">10:16</div>
+          <div id="bankList"></div>
+          <div class="home"></div>
+        </div>
+
+        <div class="ring" id="ringA"></div>
+        <div class="ring" id="ringB"></div>
+        <div class="ring" id="ringC"></div>
+        <div class="touch" id="touch"></div>
+      </div>
+      <div id="glare"></div>
+    </div></div>
+
+    <svg id="arrows" viewBox="0 0 1080 1920"><path id="arr" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path id="arrH" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="sticker" id="stFlag"></div>
+    <div class="sticker" id="stWarn"></div>
+
+    <!-- quiz -->
+    <div id="qHead" class="abs"><div class="lab mono">Pausa · Tú decides</div><div class="t disp">¿Qué <span class="red">harías tú?</span></div></div>
+    <div id="qCall" class="abs"><div class="av">B</div><div><b>Banco · Seguridad</b><p>“Díganos el código que le llegó para bloquear la compra.”</p></div></div>
+    <div class="ab" id="oA"><span class="l">A</span><span class="tx">Le doy el código</span></div>
+    <div class="ab" id="oB"><span class="l">B</span><span class="tx">Cuelgo y llamo al número de mi tarjeta</span></div>
+    <div class="ab" id="oC"><span class="l">C</span><span class="tx">Le pido que me lo confirme por mensaje</span></div>
+    <div id="timer" class="abs"><div style="position:relative;width:180px;height:180px"><svg viewBox="0 0 180 180"><circle cx="90" cy="90" r="78" fill="none" stroke="#181C25" stroke-width="14"/><circle id="tmRing" cx="90" cy="90" r="78" fill="none" stroke="#E5342A" stroke-width="14" transform="rotate(-90 90 90)" stroke-dasharray="490.1" stroke-dashoffset="0"/></svg><div class="num" id="qnum">5</div></div><div class="txt">Comenta<b>A, B o C</b></div></div>
+    <div id="qNote" class="abs">Tu banco <b>nunca</b> te pide códigos. <b>Cuelga y llama tú al número oficial.</b></div>
+
+    <!-- reglas -->
+    <div id="tipsHead" class="abs"><div class="lab mono">Cómo protegerte</div><div class="t disp">3 <span class="red">reglas</span></div></div>
+    <div id="tipsDots" class="abs"><i></i><i></i><i></i></div>
+    <div class="tipw abs" id="tw1"><div class="tip" id="tip1"><div class="n" id="n1">01</div><div class="ico" id="ico1"></div>
+      <h4 class="disp">Nunca pide <span class="red">códigos</span></h4>
+      <p>Tu banco no te pide claves, códigos ni el CVV. Ni por llamada, ni por chat.</p></div></div>
+    <div class="tipw abs" id="tw2"><div class="tip" id="tip2"><div class="n" id="n2">02</div><div class="ico" id="ico2"></div>
+      <h4 class="disp">Cuelga y <span class="red">llama tú</span></h4>
+      <p>Usa el número que está detrás de tu tarjeta o el de la app oficial.</p>
+      <div class="ex"><b>✓</b>Número detrás de tu tarjeta</div></div></div>
+    <div class="tipw abs" id="tw3"><div class="tip" id="tip3"><div class="n" id="n3">03</div><div class="ico" id="ico3"></div>
+      <h4 class="disp">El afán es <span class="red">la alerta</span></h4>
+      <p>Si te presionan para actuar ya, es para que no pienses.</p></div></div>
+
+    <div id="lab" class="abs mono"></div>
+    <div id="kt" class="abs disp big"></div>
+
+    <div id="endc" class="abs">
+      <div class="pxrow" id="endPx"></div>
+      <div class="wm disp" id="wm"></div>
+      <div class="tl1 disp" id="tl1">Cada pixel cuenta…</div>
+      <div class="tl2 disp" id="tl2">y tu seguridad <span class="red">también</span></div>
+      <div class="svc mono" id="svc"><span>Sitios web seguros</span><i></i><span>Contenido</span><i></i><span>Branding</span></div>
+      <div class="cta" id="cta"><div class="a disp"><span data-ic="bookmark"></span>Guárdalo y compártelo</div><div class="b">con tus papás antes de que les llamen</div></div>
+      <div class="hdl mono" id="hdl">@innova_sites</div>
+    </div>
+  </div>
+  <canvas id="fx" width="1080" height="1920" style="z-index:65"></canvas>
+  <div id="flash"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const cl = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => cl((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+const eo = p => 1 - Math.pow(1 - p, 3);
+const eo5 = p => 1 - Math.pow(1 - p, 5);
+const eio = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const back = p => { const c = 1.9; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+const spring = p => p <= 0 ? 0 : 1 - Math.exp(-6 * p) * Math.cos(9 * p);
+const win = (t, a, b) => t >= a && t < b;
+function hash(n) { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+function S(el, o, tr) { el.style.opacity = o; el.style.transform = tr || ''; el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'; }
+function rel(el) { let x = 0, y = 0, e = el; while (e && e.id !== 'scr') { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; } return { x, y, w: el.offsetWidth, h: el.offsetHeight }; }
+const box = el => el.getBoundingClientRect();
+
+/* ---------- íconos ---------- */
+const W = '#fff';
+const ICO = {
+  wifi: (c = W) => `<svg width="26" height="19" viewBox="0 0 25 18" fill="none" stroke-linecap="round"><path d="M2.2 6.4a14.5 14.5 0 0 1 20.6 0" stroke="${c}" stroke-width="2.6"/><path d="M6 10.2a9.1 9.1 0 0 1 13 0" stroke="${c}" stroke-width="2.6"/><circle cx="12.5" cy="14.8" r="2.3" fill="${c}"/></svg>`,
+  cell: (c = W) => `<svg width="27" height="18" viewBox="0 0 27 18" fill="${c}"><rect x="0" y="12" width="5" height="6" rx="1.2"/><rect x="7" y="8.5" width="5" height="9.5" rx="1.2"/><rect x="14" y="4.5" width="5" height="13.5" rx="1.2"/><rect x="21" y="0" width="5" height="18" rx="1.2"/></svg>`,
+  batt: (c = W) => `<svg width="38" height="18" viewBox="0 0 38 18"><rect x="1" y="1" width="32" height="16" rx="5" fill="none" stroke="${c}" stroke-opacity=".5" stroke-width="1.8"/><rect x="3.4" y="3.4" width="22" height="11.2" rx="3" fill="${c}"/><rect x="34.6" y="6" width="2.4" height="6" rx="1" fill="${c}" fill-opacity=".5"/></svg>`,
+  camtop: () => `<svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></svg><svg width="34" height="20" viewBox="0 0 34 20" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M9 13l8-7 8 7"/></svg><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>`,
+  compass: () => `<svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#1e88ff"/><path d="M15.5 8.5l-2.2 4.8-4.8 2.2 2.2-4.8z" fill="#fff"/><path d="M8.5 15.5l2.2-4.8 2.6 2.6z" fill="#e5342a"/></svg>`,
+  lockg: () => `<svg width="16" height="18" viewBox="0 0 16 18" style="vertical-align:-2px"><rect x="2" y="8" width="12" height="9" rx="2" fill="#555"/><path d="M4.5 8V5.5a3.5 3.5 0 0 1 7 0V8" fill="none" stroke="#555" stroke-width="2"/></svg>`,
+  reload: () => `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round"><path d="M19 12a7 7 0 1 1-2.2-5.1"/><path d="M19 4.5V9h-4.5"/></svg>`,
+  safbar: () => ['M15 5l-7 7 7 7', 'M9 5l7 7-7 7', 'M12 3v12M7 8l5-5 5 5M5 13v7h14v-7', 'M4 6h16M4 12h16M4 18h16', 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z'].map((d, i) => `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="${i === 1 ? '#bbb' : '#007AFF'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`).join(''),
+  alarm: () => `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5M5 4L2.5 6.5M19 4l2.5 2.5" stroke-linecap="round"/></svg>`,
+  msg: () => `<svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><path d="M12 3.5c5 0 9 3.2 9 7.3s-4 7.3-9 7.3c-1 0-2-.1-2.9-.4L5 19.5l1.1-3.6C4.2 14.6 3 12.8 3 10.8 3 6.7 7 3.5 12 3.5z"/></svg>`,
+  hang: () => `<svg width="56" height="56" viewBox="0 0 24 24" fill="#fff"><path d="M12 9c-3.2 0-6.1.9-8.3 2.4-.6.4-.8 1.2-.5 1.9l1 2c.3.6 1 .9 1.7.7l2.6-.9c.6-.2 1-.8.9-1.4l-.2-1.6c1.8-.6 3.8-.6 5.6 0l-.2 1.6c-.1.6.3 1.2.9 1.4l2.6.9c.7.2 1.4-.1 1.7-.7l1-2c.3-.7.1-1.5-.5-1.9C18.1 9.9 15.2 9 12 9z"/></svg>`,
+  pick: () => `<svg width="56" height="56" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 3.2l2.6-.4c.6-.1 1.2.3 1.4.9l1 2.9c.2.6 0 1.2-.5 1.6L9.4 9.4a11.6 11.6 0 0 0 5.2 5.2l1.2-1.7c.4-.5 1-.7 1.6-.5l2.9 1c.6.2 1 .8.9 1.4l-.4 2.6c-.1.7-.7 1.2-1.4 1.2C10.6 18.6 5.4 13.4 5.4 4.6c0-.7.5-1.3 1.2-1.4z"/></svg>`,
+  bubble: () => `<svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 3.5c5 0 9 3.2 9 7.3s-4 7.3-9 7.3c-1 0-2-.1-2.9-.4L5 19.5l1.1-3.6C4.2 14.6 3 12.8 3 10.8 3 6.7 7 3.5 12 3.5z"/></svg>`,
+  bookmark: () => `<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 2.5h12a1 1 0 0 1 1 1v18l-7-4.6-7 4.6v-18a1 1 0 0 1 1-1z"/></svg>`
+};
+document.querySelectorAll('.sb').forEach(sb => { const c = sb.classList.contains('dark') ? '#000' : '#fff'; sb.innerHTML = `<span>${sb.dataset.time}</span><span class="ic">${ICO.cell(c)}${ICO.wifi(c)}${ICO.batt(c)}</span>`; });
+document.querySelectorAll('[data-ic]').forEach(e => e.innerHTML = ICO[e.dataset.ic]());
+
+/* ---------- QR (patrón de apariencia realista, no escaneable) ---------- */
+function qrSVG(seed, dark = '#111', light = 'transparent', finder = null) {
+  const N = 25; let r = '';
+  const inF = (x, y) => (x < 8 && y < 8) || (x > N - 9 && y < 8) || (x < 8 && y > N - 9);
+  const fin = (ox, oy) => {
+    const c = finder || dark;
+    return `<rect x="${ox}" y="${oy}" width="7" height="7" fill="${c}"/><rect x="${ox + 1}" y="${oy + 1}" width="5" height="5" fill="${light === 'transparent' ? '#fff' : light}"/><rect x="${ox + 2}" y="${oy + 2}" width="3" height="3" fill="${c}"/>`;
+  };
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    if (inF(x, y)) continue;
+    if (x > 15 && x < 21 && y > 15 && y < 21) { const d = Math.max(Math.abs(x - 18), Math.abs(y - 18)); if (d !== 1) r += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${dark}"/>`; continue; }
+    if ((x === 6 || y === 6)) { if ((x + y) % 2 === 0) r += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${dark}"/>`; continue; }
+    if (hash(seed * 97 + x * 31 + y * 7) < .5) r += `<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${dark}"/>`;
+  }
+  r += fin(0, 0) + fin(N - 7, 0) + fin(0, N - 7);
+  return `<svg viewBox="-1 -1 ${N + 2} ${N + 2}" style="width:100%;height:100%;display:block;background:${light === 'transparent' ? '#fff' : light}">${r}</svg>`;
+}
+document.querySelectorAll('[data-qr]').forEach(e => { e.style.width = '100%'; e.style.height = '100%'; e.innerHTML = qrSVG(+e.dataset.qr); });
+
+const PX = {
+  flag: ['##.......', '#*****...', '#******..', '#*****...', '#****....', '#........', '#........', '#........', '#........'],
+  phone: ['..######..', '.#......#.', '.#.****.#.', '.#.*..*.#.', '.#.****.#.', '.#......#.', '.#......#.', '.#..##..#.', '..######..', '..........'],
+  lock: ['..####..', '.#....#.', '.#....#.', '########', '#......#', '#..**..#', '#..**..#', '#......#', '########'],
+  clock: ['..####..', '.#....#.', '#...*..#', '#...*..#', '#...**.#', '#......#', '.#....#.', '..####..'],
+  warn: ['....#....', '...#*#...', '...#*#...', '..#.*.#..', '..#.*.#..', '.#.....#.', '.#..*..#.', '#########'],
+  lupa: ['..####....', '.#....#...', '#..**..#..', '#.*....#..', '#......#..', '.#....#...', '..####.#..', '.......#..', '........#.', '.........#'],
+  chat: ['#########.', '#.......#.', '#.*.*.*.#.', '#.......#.', '#########.', '..##......', '.#........', '..........', '..........', '..........'],
+  card: ['##########', '#........#', '##########', '#........#', '#.**.....#', '#........#', '##########', '..........', '..*....*..', '...****...']
+};
+function pxSVG(name, base, acc) {
+  const m = PX[name]; const w = m[0].length, h = m.length; let r = '';
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const c = m[y][x]; if (c === '.') continue; r += `<rect x="${x + .06}" y="${y + .06}" width=".88" height=".88" fill="${c === '*' ? acc : base}"/>`; }
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block">${r}</svg>`;
+}
+$('stFlag').innerHTML = pxSVG('flag', '#FFFFFF', '#E5342A');
+$('stWarn').innerHTML = pxSVG('warn', '#FFFFFF', '#E5342A');
+$('hookPh').innerHTML = pxSVG('phone', '#FFFFFF', '#E5342A');
+$('ico1').innerHTML = pxSVG('lock', '#FFFFFF', '#E5342A');
+$('ico2').innerHTML = pxSVG('phone', '#FFFFFF', '#E5342A');
+$('ico3').innerHTML = pxSVG('clock', '#FFFFFF', '#E5342A');
+$('endPx').innerHTML = '<b></b>'.repeat(10);
+$('wm').innerHTML = 'INNOVA'.split('').map(c => `<span>${c}</span>`).join('') + 'SITES'.split('').map(c => `<span class="red">${c}</span>`).join('');
+
+/* cargos */
+const CHG = [
+  ['n1', 'Compra aprobada $2.390.000', 'MEGATECNO · Tarjeta ****5072'],
+  ['n2', 'Compra aprobada $1.780.000', 'VIAJES-YA · Tarjeta ****5072'],
+  ['n3', 'Compra aprobada $940.000', 'APPSTORE-PAY · Tarjeta ****5072'],
+  ['n4', 'Cupo disponible: $0', 'Tu tarjeta de crédito ****5072 no tiene cupo.']
+];
+$('bankList').innerHTML = CHG.map((c, i) => `<div class="notif${i === 3 ? ' bad' : ''}" id="b${c[0]}"><div class="h"><span class="ap" style="background:#1f6feb">B</span><span>MI BANCO</span><span>ahora</span></div><div class="t">${c[1]}</div><div class="b">${c[2]}</div></div>`).join('');
+
+/* ---------- secciones ---------- */
+const SECS = [[0, T.ans], [T.ans, T.z1], [T.z1, T.dict], [T.dict, T.bankEnd], [T.q0, T.qe], [T.ts, T.end]];
+$('bars').innerHTML = SECS.map(() => '<i><u></u></i>').join('');
+
+/* ---------- textos animados (voz) ---------- */
+const TITLES = SUBS.map((s, i) => { const nxt = SUBS[i + 1]; let hold = nxt ? Math.min(nxt[0], s[1] + .9) : s[1] + .9; if (s[0] < T.bankEnd) hold = Math.min(hold, T.bankEnd - .02); return [s[0], hold, s[2]]; });
+const LABELS = [[0.15, T.ans - .05, 'Alerta'], [T.z1, T.z1e, 'Señal de alerta 01'], [T.z2, T.z2e + .3, 'Señal de alerta 02'], [T.bank, T.bankEnd - .1, 'Tu tarjeta de crédito']];
+let ktCur = -1;
+function kinetic(t) {
+  const el = $('kt');
+  const idx = TITLES.findIndex(it => t >= it[0] - .02 && t < it[1]);
+  if (idx < 0 || t > T.end + .2) { S(el, 0); ktCur = -1; return; }
+  const it = TITLES[idx];
+  if (ktCur !== idx) { ktCur = idx; el.innerHTML = it[2].map(w => `<span class="w${w[2] ? ' k' : ''}">${w[0]}</span>`).join(' '); el.style.fontSize = ''; el.classList.toggle('low', t >= T.bankEnd); el.classList.toggle('big', t < T.bankEnd); if (t < T.bankEnd) { let f = 96; while (el.offsetHeight > 230 && f > 70) { f -= 4; el.style.fontSize = f + 'px'; } } }
+  const low = t >= T.bankEnd;
+  el.classList.toggle('low', low); el.classList.toggle('big', !low);
+  const out = eio(seg(t, it[1] - .16, it[1]));
+  S(el, 1 - out, `translateY(${-out * 30}px)`);
+  el.querySelectorAll('.w').forEach((s, i) => {
+    const wt = it[2][i][1], p = seg(t, wt, wt + .26);
+    s.style.opacity = cl(seg(t, wt, wt + .07));
+    s.style.transform = `translateY(${(1 - eo5(p)) * 40}px) scale(${.72 + .28 * back(p)})`;
+    s.style.textShadow = it[2][i][2] && p < 1 ? `0 0 ${30 * (1 - p)}px rgba(229,52,42,${.9 * (1 - p)})` : '';
+  });
+}
+function label(t) {
+  const L = LABELS.find(l => t >= l[0] && t < l[1]); const el = $('lab');
+  if (!L) { S(el, 0); return; }
+  if (el.textContent !== L[2]) el.textContent = L[2];
+  const p = eo5(seg(t, L[0], L[0] + .35)), out = seg(t, L[1] - .15, L[1]);
+  S(el, cl(seg(t, L[0], L[0] + .1)) * (1 - out), `translateX(${(1 - p) * -60}px)`);
+}
+
+/* ---------- fondo ---------- */
+const bg = $('bg').getContext('2d');
+const grain = document.createElement('canvas'); grain.width = 360; grain.height = 640;
+{ const g = grain.getContext('2d'), d = g.createImageData(360, 640); for (let i = 0; i < d.data.length; i += 4) { const v = hash(i * .37) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); }
+function drawBg(t, heat) {
+  bg.globalAlpha = 1; bg.fillStyle = '#0A0C11'; bg.fillRect(0, 0, 1080, 1920);
+  const blobs = [[200 + Math.sin(t * .4) * 120, 520 + Math.cos(t * .3) * 140, 620], [880 + Math.cos(t * .35) * 120, 1250 + Math.sin(t * .5) * 160, 700], [540, 1900, 800]];
+  blobs.forEach(([x, y, r], i) => { const g = bg.createRadialGradient(x, y, 0, x, y, r); const a = (.10 + .05 * i % 2) * (1 + heat * 1.6); g.addColorStop(0, `rgba(229,52,42,${a})`); g.addColorStop(1, 'rgba(229,52,42,0)'); bg.fillStyle = g; bg.fillRect(0, 0, 1080, 1920); });
+  bg.strokeStyle = `rgba(229,52,42,${.10 + heat * .12})`; bg.lineWidth = 2;
+  const hz = 1260, vp = 540;
+  for (let i = -12; i <= 12; i++) { bg.beginPath(); bg.moveTo(vp + i * 30, hz); bg.lineTo(vp + i * 260, 1920); bg.stroke(); }
+  for (let k = 0; k < 14; k++) { const f = ((k + (t * .9) % 1) / 14); const y = hz + Math.pow(f, 2.2) * (1920 - hz); bg.globalAlpha = f; bg.beginPath(); bg.moveTo(0, y); bg.lineTo(1080, y); bg.stroke(); }
+  bg.globalAlpha = 1;
+  const fade = bg.createLinearGradient(0, hz - 40, 0, hz + 260); fade.addColorStop(0, 'rgba(10,12,17,1)'); fade.addColorStop(1, 'rgba(10,12,17,0)'); bg.fillStyle = fade; bg.fillRect(0, hz - 40, 1080, 300);
+  const s = 54;
+  for (let y = 0; y < 36; y++) for (let x = 0; x < 20; x++) {
+    const i = y * 20 + x, h = hash(i), tw = .5 + .5 * Math.sin(t * (0.6 + h * 1.6) + h * 40);
+    if (h < .07 + heat * .2) { bg.globalAlpha = (.05 + tw * .15) * (1 + heat * 2); bg.fillStyle = '#E5342A'; const z = 8 + tw * 20; bg.fillRect(x * s + (s - z) / 2, y * s + (s - z) / 2, z, z); }
+    else if (h > .9) { bg.globalAlpha = .08; bg.fillStyle = '#fff'; bg.fillRect(x * s + 26, y * s + 26, 3, 3); }
+  }
+  bg.globalAlpha = .035; bg.globalCompositeOperation = 'overlay';
+  const ox = Math.floor(hash(Math.floor(t * 30)) * 360), oy = Math.floor(hash(Math.floor(t * 30) + 3) * 640);
+  for (let y = -oy; y < 1920; y += 640) for (let x = -ox; x < 1080; x += 360) bg.drawImage(grain, x, y);
+  bg.globalCompositeOperation = 'source-over'; bg.globalAlpha = 1;
+  const v = bg.createRadialGradient(540, 900, 300, 540, 900, 1250); v.addColorStop(0, 'rgba(5,6,9,0)'); v.addColorStop(1, 'rgba(5,6,9,.75)'); bg.fillStyle = v; bg.fillRect(0, 0, 1080, 1920);
+}
+
+const fx = $('fx').getContext('2d');
+function burst(t, t0, x, y, n, seed, col, grav = 900, ctx = fx) {
+  if (t < t0 || t > t0 + 1) return;
+  const dt = t - t0;
+  for (let i = 0; i < n; i++) {
+    const a = (grav ? hash(seed + i) * Math.PI * 2 : (.15 + hash(seed + i) * .7) * Math.PI), v = (grav ? 380 : 160) + hash(seed + i * 3) * (grav ? 700 : 260), z = 8 + hash(seed + i * 7) * 16;
+    const px = x + Math.cos(a) * v * dt, py = y + Math.sin(a) * v * dt + grav * dt * dt;
+    ctx.globalAlpha = cl(1 - dt / .9); ctx.fillStyle = (col && i % 3 === 0) ? col : (i % 4 === 0 ? '#ffffff' : '#E5342A');
+    ctx.fillRect(px - z / 2, py - z / 2, z, z);
+  }
+  ctx.globalAlpha = 1;
+}
+function glitch(t, a, d) {
+  if (t < a || t > a + d) return 0;
+  const k = Math.sin(seg(t, a, a + d) * Math.PI), f = Math.floor(t * 30);
+  for (let i = 0; i < 9; i++) {
+    const y = hash(f * 13 + i) * 1920, h = 6 + hash(f * 7 + i) * 50, off = (hash(f * 3 + i) - .5) * 120 * k;
+    fx.globalAlpha = .9 * k; fx.fillStyle = i % 3 === 0 ? 'rgba(229,52,42,.85)' : (i % 3 === 1 ? 'rgba(10,12,17,.95)' : 'rgba(80,220,255,.35)');
+    fx.fillRect(off < 0 ? 0 : off, y, 1080, h);
+  }
+  fx.globalAlpha = 1;
+  return k;
+}
+function beatPulse(t) { let v = 0; for (const b of BEATS) { if (b > t) break; v = Math.max(v, Math.exp(-(t - b) * 9)); } return v; }
+function arrow(t, a, b, tx, ty, side) {
+  const A = $('arr'), H = $('arrH');
+  if (!(t >= a && t < b)) { A.style.opacity = H.style.opacity = 0; return; }
+  const sx = side < 0 ? 120 : 960, sy = ty + 230, cx = side < 0 ? 120 : 960, cy = ty + 40;
+  const ex = tx + (side < 0 ? -18 : 18), ey = ty + 6;
+  A.setAttribute('d', `M${sx},${sy} Q${cx},${cy} ${ex},${ey}`);
+  const L = 700, p = eo(seg(t, a, a + .45)), o = 1 - seg(t, b - .2, b);
+  A.style.strokeDasharray = L; A.style.strokeDashoffset = L * (1 - p); A.style.opacity = o;
+  const ang = Math.atan2(ey - cy, ex - cx), s = 34;
+  H.setAttribute('d', `M${ex - s * Math.cos(ang - .5)},${ey - s * Math.sin(ang - .5)} L${ex},${ey} L${ex - s * Math.cos(ang + .5)},${ey - s * Math.sin(ang + .5)}`);
+  H.style.opacity = p > .95 ? o : 0;
+}
+function ringOn(id, el, t, a, b, pad = 8) {
+  const r = $(id), q = rel(el);
+  Object.assign(r.style, { left: (q.x - pad) + 'px', top: (q.y - pad) + 'px', width: (q.w + pad * 2) + 'px', height: (q.h + pad * 2) + 'px' });
+  r.style.opacity = win(t, a, b) ? (Math.sin(t * 9) > 0 ? 1 : .6) * (1 - seg(t, b - .2, b)) : 0;
+}
+function ringBox(id, x, y, w, h, t, a, b) {
+  const r = $(id);
+  Object.assign(r.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });
+  r.style.opacity = win(t, a, b) ? (Math.sin(t * 9) > 0 ? 1 : .6) * (1 - seg(t, b - .2, b)) : 0;
+}
+
+const CODE = '482913';
+window.render = function (t) {
+  fx.clearRect(0, 0, 1080, 1920);
+  let heat = 0;
+  if (t > T.bank && t < T.bankEnd + .3) heat = seg(t, T.bank, T.bank + 1.2) * (1 - seg(t, T.bankEnd - .2, T.bankEnd + .3));
+  heat = Math.max(heat, (t > T.p1 && t < T.p1 + .6) ? .6 * (1 - seg(t, T.p1, T.p1 + .6)) : 0);
+  drawBg(t, heat);
+  const bp = beatPulse(t);
+  let touch = null;
+
+  S($('hud'), t < T.end + .4 ? 1 - seg(t, T.end, T.end + .4) : 0);
+  $('bars').querySelectorAll('u').forEach((u, i) => { u.style.transform = `scaleX(${seg(t, SECS[i][0], SECS[i][1])})`; });
+  kinetic(t); label(t);
+
+  /* ---- gancho: teléfono pixel sonando ---- */
+  { const out = eio(seg(t, T.phoneIn - .3, T.phoneIn + .05));
+    const pin = back(seg(t, T.ring, T.ring + .5));
+    const shake = Math.sin(t * 60) * 7 * (Math.sin(t * 6) > 0 ? 1 : .2);
+    S($('hookPh'), t < T.phoneIn + .05 ? cl(seg(t, T.ring, T.ring + .1)) * (1 - out) : 0, `translateY(${-out * 160}px) scale(${pin * (1 - out * .3)}) rotate(${shake}deg)`);
+    S($('hookCap'), t < T.phoneIn - .1 ? cl(seg(t, .2, .4)) * (1 - seg(t, T.phoneIn - .35, T.phoneIn - .15)) : 0);
+    S($('prize'), t < T.phoneIn - .1 ? cl(seg(t, .45, .6)) * (1 - seg(t, T.phoneIn - .35, T.phoneIn - .15)) : 0, `scale(${back(seg(t, .45, .85))}) rotate(-3deg)`);
+    burst(t, T.ring + .35, 540, 920, 26, 40, '#FFD54A', 0, bg); }
+
+  /* ---- teléfono ---- */
+  { const pin = t < T.phoneIn ? 0 : spring(seg(t, T.phoneIn, T.phoneIn + 1.1));
+    const exit = eio(seg(t, T.bankEnd - .45, T.bankEnd + .15));
+    const z1 = eio(seg(t, T.z1, T.z1 + .55)) * (1 - eio(seg(t, T.z1e - .45, T.z1e + .05)));
+    const z2 = eio(seg(t, T.z2, T.z2 + .55)) * (1 - eio(seg(t, T.z2e - .45, T.z2e + .05)));
+    const z = Math.max(z1, z2);
+    let ry = -14 + Math.sin(t * .7) * 4, rx = 7 + Math.cos(t * .5) * 2, rz = 1.5 + Math.sin(t * .45) * 1.2;
+    ry = lerp(ry, 0, z); rx = lerp(rx, 0, z); rz = lerp(rz, 0, z);
+    let sc = .82 + z1 * .2 + z2 * .24 + bp * .01, tx = 0, ty = (1 - pin) * 1300 + exit * 1500;
+    ry += (1 - pin) * 35; rz += exit * 10;
+    const vib = (a, b, amp) => { if (t > a && t < b) { tx += Math.sin(t * 95) * amp; rz += Math.sin(t * 83) * amp * .1; } };
+    if (t < T.ans) vib(T.phoneIn + .4, T.ans, 5);
+    vib(T.sms, T.sms + .4, 7); vib(T.n1, T.n1 + .4, 8); vib(T.n2, T.n2 + .35, 9); vib(T.n3, T.n3 + .35, 10); vib(T.n4, T.n4 + .5, 14);
+    $('phone').style.transform = `translate(${tx}px, ${ty}px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg) scale(${sc})`;
+    $('rig').style.visibility = (t >= T.phoneIn - .05 && t < T.bankEnd + .2) ? 'visible' : 'hidden';
+    $('glare').style.background = `linear-gradient(${105 + Math.sin(t * .6) * 18}deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 72%, rgba(255,255,255,.05) 100%)`; }
+
+  /* capas: entrante → en curso → banco */
+  { const vis = (id, on, tr) => S($(id), on ? 1 : 0, tr || '');
+    vis('incoming', t < T.ans + .25, `scale(${1 + .06 * eio(seg(t, T.ans, T.ans + .25))})`);
+    $('incoming').style.opacity = t < T.ans ? 1 : 1 - seg(t, T.ans, T.ans + .25);
+    vis('incall', t >= T.ans && t < T.bank);
+    vis('bank', t >= T.bank);
+    $('scr').style.filter = (t > T.bank - .12 && t < T.bank + .12) ? `brightness(${.15 + 6 * Math.abs(t - T.bank)})` : 'none';
+    if (win(t, T.ans - .45, T.ans + .05)) { const r = rel($('btnYes').querySelector('i')); touch = [r.x + r.w / 2, r.y + r.h / 2, seg(t, T.ans - .4, T.ans)]; }
+    $('btnYes').querySelector('i').style.transform = t < T.ans ? `scale(${1 + .06 * Math.max(0, Math.sin(t * 8))})` : '';
+    const el = Math.max(0, t - T.ans + 1); $('ctimer').textContent = '00:' + String(Math.floor(el)).padStart(2, '0'); }
+
+  /* subtítulos de la llamada */
+  { const n = Math.floor(seg(t, T.dict, T.dictE) * CODE.length + 1e-6);
+    $('dictTx').textContent = CODE.slice(0, Math.max(1, n)).split('').join(' ');
+    [['c1', T.c1], ['c2', T.c2], ['c3', T.c3], ['c4', T.c4], ['c5', T.dict]].forEach(([id, a]) => {
+      const e = $(id), on = t >= a; e.style.display = on ? '' : 'none'; if (!on) return;
+      const p = back(seg(t, a, a + .36)); e.style.opacity = cl(seg(t, a, a + .1)); e.style.transform = `scale(${.86 + .14 * p})`; });
+    const p = eo5(seg(t, T.sms, T.sms + .32));
+    S($('nSMS'), t > T.sms ? cl(seg(t, T.sms, T.sms + .1)) : 0, `translateY(${(1 - p) * -200}px) scale(${.92 + .08 * p})`); }
+
+  /* ---- señal 01: la urgencia ---- */
+  { ringOn('ringA', $('c4'), t, T.z1 + .45, T.z1e - .1, 10);
+    const RA = box($('ringA'));
+    const el = $('stFlag'); el.style.left = '905px'; el.style.top = (RA.top - 40) + 'px'; el.style.width = '120px';
+    S(el, win(t, T.z1 + .5, T.z1e - .1) ? 1 - seg(t, T.z1e - .35, T.z1e - .1) : 0, `scale(${back(seg(t, T.z1 + .5, T.z1 + .9))}) rotate(${8 + Math.sin(t * 5) * 4}deg)`);
+    $('ringB').style.opacity = 0; }
+
+  /* ---- señal 02: el mensaje dice que no lo compartas ---- */
+  { ringOn('ringC', $('noShare'), t, T.z2 + .45, T.z2e - .1, 6);
+    $('noShare').style.background = win(t, T.z2 + .45, T.z2e - .1) ? 'rgba(229,52,42,.35)' : 'transparent';
+    const RC = box($('ringC'));
+    const el = $('stWarn'); el.style.left = '900px'; el.style.top = (RC.top + RC.height + 30) + 'px'; el.style.width = '110px';
+    S(el, win(t, T.z2 + .5, T.z2e - .1) ? 1 - seg(t, T.z2e - .35, T.z2e - .1) : 0, `scale(${back(seg(t, T.z2 + .5, T.z2 + .9))}) rotate(${-8 + Math.sin(t * 5) * 4}deg)`);
+    arrow(t, 0, 0, 0, 0, 1); }
+
+  /* ---- banco ---- */
+  { ['n1', 'n2', 'n3', 'n4'].forEach((k, i) => {
+      const el = $('b' + k), a = T[k];
+      let y = 300; ['n1', 'n2', 'n3', 'n4'].forEach((m, j) => { if (j > i && t > T[m]) y += 166 * eo5(seg(t, T[m], T[m] + .3)); });
+      el.style.top = y + 'px';
+      const q = eo5(seg(t, a + .15, a + .4)); S(el, t > a + .15 ? cl(seg(t, a + .15, a + .27)) : 0, `translateY(${(1 - q) * -24}px) scale(${.9 + .1 * q})`);
+    });
+    let fl = 0; ['n1', 'n2', 'n3', 'n4'].forEach((k, i) => { fl = Math.max(fl, t > T[k] ? (1 - seg(t, T[k], T[k] + .3)) * (i === 3 ? .4 : .18) : 0); });
+    fl = Math.max(fl, t > T.p1 ? (1 - seg(t, T.p1, T.p1 + .3)) * .25 : 0);
+    $('flash').style.opacity = fl;
+    const p = box($('phone')); burst(t, T.n4, p.left + p.width / 2, p.top + 400, 40, 500, null, 900, bg); }
+
+  { const tc = $('touch');
+    if (touch) { tc.style.left = touch[0] + 'px'; tc.style.top = touch[1] + 'px'; const p = touch[2]; S(tc, p < .7 ? 1 : 1 - (p - .7) / .3, `scale(${.8 + .2 * eo(cl(p * 4))})`); }
+    else S(tc, 0); }
+
+  /* ---- quiz: ¿qué harías tú? ---- */
+  { const Q0 = T.q0, P0 = T.p0, P1 = T.p1, QE = T.qe;
+    const hp = eo5(seg(t, Q0, Q0 + .5)), out = eio(seg(t, QE - .35, QE));
+    S($('qHead'), win(t, Q0, QE) ? cl(seg(t, Q0, Q0 + .15)) * (1 - out) : 0, `translateY(${(1 - hp) * 80}px) scale(${1 + bp * .012})`);
+    S($('qCall'), win(t, Q0 + .2, QE) ? cl(seg(t, Q0 + .2, Q0 + .35)) * (1 - out) : 0, `translateY(${(1 - eo5(seg(t, Q0 + .2, Q0 + .7))) * 120}px) scale(${.9 + .1 * back(seg(t, Q0 + .2, Q0 + .65))})`);
+    ['oA', 'oB', 'oC'].forEach((id, i) => {
+      const a = Q0 + .5 + i * .15, el = $(id), p = back(seg(t, a, a + .45));
+      const pulse = (i === 1 && t > P1 && t < P1 + .5) ? 1 + .05 * Math.sin(seg(t, P1, P1 + .5) * Math.PI) : 1;
+      S(el, win(t, a, QE) ? cl(seg(t, a, a + .12)) * (1 - out) : 0, `translateX(${(1 - eo5(seg(t, a, a + .45))) * 700 * (i % 2 ? 1 : -1)}px) scale(${(.9 + .1 * p) * pulse})`);
+      el.classList.toggle('win', i === 1 && t > P1); el.classList.toggle('lose', i !== 1 && t > P1 + .3);
+    });
+    const qp = seg(t, P0, P1);
+    S($('timer'), win(t, P0 - .25, P1 + .2) ? cl(seg(t, P0 - .25, P0)) * (1 - seg(t, P1, P1 + .2)) : 0, `scale(${.9 + .1 * eo5(seg(t, P0 - .25, P0))})`);
+    $('tmRing').setAttribute('stroke-dashoffset', 490.1 * qp);
+    $('qnum').textContent = Math.max(1, 5 - Math.floor(qp * 5));
+    $('qnum').style.transform = `scale(${1 + .3 * Math.pow(1 - ((qp * 5) % 1), 3)})`;
+    S($('qNote'), win(t, P1 + .5, QE) ? cl(seg(t, P1 + .5, P1 + .8)) * (1 - out) : 0, `translateY(${(1 - eo5(seg(t, P1 + .5, P1 + 1))) * 40}px)`);
+    const c = box($('oB')); burst(t, P1, c.left + c.width / 2, c.top + c.height / 2, 34, 700, null, 900, bg); }
+
+  /* ---- reglas ---- */
+  { const TS = T.ts, TE = T.end, on = t > TS && t < TE + .1;
+    const hp = eo5(seg(t, TS, TS + .5));
+    S($('tipsHead'), on ? cl(seg(t, TS, TS + .2)) * (1 - seg(t, TE - .4, TE)) : 0, `translateY(${(1 - hp) * 80}px)`);
+    S($('tipsDots'), on ? cl(seg(t, TS + .2, TS + .4)) * (1 - seg(t, TE - .4, TE)) : 0);
+    const WW = [T.t1, T.t2, T.t3];
+    $('tipsDots').querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', t >= WW[i][0]));
+    WW.forEach((w, i) => {
+      const el = $('tw' + (i + 1)), tip = $('tip' + (i + 1));
+      const pin = spring(seg(t, w[0], w[0] + .9)), pout = eio(seg(t, w[1] - .35, w[1]));
+      S(el, (t > w[0] && t < w[1]) ? 1 : 0);
+      tip.style.transform = `rotateY(${(1 - pin) * 75 - pout * 80}deg) translateX(${pout * -200}px)`;
+      const st0 = i ? Math.max(w[0], WW[i - 1][1]) : w[0];
+      tip.style.opacity = cl(seg(t, st0, st0 + .12)) * (1 - pout);
+      $('n' + (i + 1)).classList.toggle('fill', t > w[0] + .5);
+      tip.querySelector('.ico').style.transform = `scale(${back(seg(t, w[0] + .35, w[0] + .75))}) rotate(${Math.sin(t * 3) * 4}deg)`;
+    }); }
+
+  /* ---- transiciones ---- */
+  let gk = Math.max(glitch(t, T.ans - .14, .28), glitch(t, T.bank - .05, .32), glitch(t, T.q0 - .2, .3), glitch(t, T.ts - .15, .26));
+  $('world').style.filter = gk > .05 ? `drop-shadow(${8 * gk}px 0 0 rgba(255,40,60,.75)) drop-shadow(${-8 * gk}px 0 0 rgba(60,220,255,.55))` : 'none';
+
+  /* ---- cierre ---- */
+  { const E = T.end, on = t > E + .45;
+    if (t > E - .1 && t < E + 1.1) {
+      const s = 90;
+      for (let y = 0; y < 22; y++) for (let x = 0; x < 12; x++) {
+        const d = hash(x * 31 + y * 7) * .35 + (x + y) * .012;
+        const p = seg(t, E - .1 + d, E + .25 + d), q = seg(t, E + .45 + d, E + .75 + d);
+        const z = s * eo(p) * (1 - eo(q));
+        if (z > .5) { fx.fillStyle = (x + y) % 5 === 0 ? '#FF5A45' : '#E5342A'; fx.fillRect(x * s + (s - z) / 2, y * s + (s - z) / 2, z, z); }
+      }
+    }
+    S($('endc'), on ? 1 : 0);
+    $('endPx').querySelectorAll('b').forEach((b, i) => { const p = back(seg(t, E + .7 + i * .05, E + 1 + i * .05)); b.style.transform = `scale(${p})`; b.style.background = i === 9 ? '#fff' : '#E5342A'; });
+    $('wm').querySelectorAll('span').forEach((s, i) => { const p = eo5(seg(t, E + .8 + i * .045, E + 1.35 + i * .045)); s.style.transform = `translateY(${(1 - p) * 120}px) skewX(${(1 - p) * -14}deg)`; s.style.opacity = cl(seg(t, E + .8 + i * .045, E + 1 + i * .045)); });
+    const f = (id, a) => S($(id), cl(seg(t, a, a + .3)), `translateY(${(1 - eo5(seg(t, a, a + .5))) * 50}px)`);
+    f('tl1', E + 1.3); f('tl2', E + 1.7); f('svc', E + 2.2); f('hdl', E + 2.6);
+    const cp = back(seg(t, E + 2.35, E + 2.75)); S($('cta'), cl(seg(t, E + 2.35, E + 2.5)), `scale(${cp * (1 + .025 * Math.max(0, Math.sin((t - E) * 5)))})`); }
+};
+window.render(0);
+</script>
+</body>
+</html>
