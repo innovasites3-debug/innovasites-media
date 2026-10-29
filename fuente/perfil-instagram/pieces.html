@@ -1,0 +1,137 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:'Oswald';font-weight:600;src:url('fonts/oswald-latin-600-normal.woff2')}
+@font-face{font-family:'Oswald';font-weight:700;src:url('fonts/oswald-latin-700-normal.woff2')}
+@font-face{font-family:'Inter';font-weight:400;src:url('fonts/inter-latin-400-normal.woff2')}
+@font-face{font-family:'Inter';font-weight:500;src:url('fonts/inter-latin-500-normal.woff2')}
+@font-face{font-family:'Inter';font-weight:600;src:url('fonts/inter-latin-600-normal.woff2')}
+@font-face{font-family:'Space Mono';font-weight:400;src:url('fonts/space-mono-latin-400-normal.woff2')}
+@font-face{font-family:'Space Mono';font-weight:700;src:url('fonts/space-mono-latin-700-normal.woff2')}
+:root{--bg:#0A0C11;--bg2:#11141B;--red:#E5342A;--red2:#FF5A45;--muted:#A9AFBB;--muted2:#6B7180;--line:rgba(255,255,255,.1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:#fff;font-family:Inter,sans-serif}
+.pc{position:relative;overflow:hidden;background:var(--bg)}
+.disp{font-family:Oswald;font-weight:700;font-style:italic;text-transform:uppercase;line-height:.92}
+.mono{font-family:'Space Mono';letter-spacing:.14em;text-transform:uppercase}
+.osw{font-family:Oswald;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.red{color:var(--red)}
+.chip{display:flex;align-items:center;gap:16px;font-size:26px;color:var(--red2)}
+.chip b{width:15px;height:15px;background:var(--red)}
+.px{position:absolute;width:26px;height:26px;background:var(--red)}
+.grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:60px 60px;opacity:.35}
+.glow{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(229,52,42,.28),rgba(229,52,42,0) 65%)}
+.ghost{position:absolute;font-family:Oswald;font-weight:700;font-style:italic;color:#1d0f10;line-height:.8}
+.lab{display:flex;align-items:center;gap:18px;font-size:30px;color:var(--red2)}
+.lab::before{content:"";width:50px;height:5px;background:currentColor}
+svg.ic{fill:none;stroke:currentColor;stroke-linecap:square;stroke-linejoin:miter}
+</style></head><body><div id="root"></div>
+<script>
+const LOGO=(arm)=>`<svg viewBox="258 30 338 252" xmlns="http://www.w3.org/2000/svg"><defs>
+<linearGradient id="gR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EE4A3E"/><stop offset=".55" stop-color="#E5342A"/><stop offset="1" stop-color="#D9473F"/></linearGradient>
+<linearGradient id="gB" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9302A"/><stop offset=".6" stop-color="#9E2520"/><stop offset="1" stop-color="#6B1611"/></linearGradient>
+<linearGradient id="gK" x1="0" y1="0" x2="0" y2="1">${arm==='white'?'<stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#D5D8DF"/><stop offset="1" stop-color="#FFFFFF"/>':'<stop offset="0" stop-color="#050608"/><stop offset=".55" stop-color="#2B2E38"/><stop offset="1" stop-color="#050608"/>'}</linearGradient></defs>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="50">
+<polyline points="476,66 537,156 476,246" stroke="url(#gK)"/><line x1="322" y1="232" x2="497" y2="82" stroke="url(#gB)"/><polyline points="359,66 298,156 359,246" stroke="url(#gR)"/></g></svg>`;
+const IC={
+ servicios:'<rect x="3" y="3" width="7.5" height="7.5"/><rect x="13.5" y="3" width="7.5" height="7.5" fill="currentColor"/><rect x="3" y="13.5" width="7.5" height="7.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5"/>',
+ portafolio:'<rect x="2.5" y="4" width="19" height="16"/><path d="M2.5 8.5h19"/><path d="M5.5 6.2h.01M7.8 6.2h.01M10.1 6.2h.01" stroke-width="2.2"/><path d="M6 12h6M6 15.5h9"/>',
+ clientes:'<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/>',
+ proceso:'<rect x="2" y="9.5" width="5" height="5"/><rect x="9.5" y="9.5" width="5" height="5"/><rect x="17" y="9.5" width="5" height="5" fill="currentColor"/><path d="M7 12h2.5M14.5 12H17"/>',
+ video:'<rect x="2.5" y="5" width="19" height="14"/><path d="M10 9l5 3-5 3z" fill="currentColor"/>',
+ camara:'<path d="M2.5 7.5h5l2-3h5l2 3h5v12h-19z"/><circle cx="12" cy="13" r="3.6"/>',
+ tips:'<path d="M12 2.5l8 3v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10v-6z"/><path d="M8.3 12l2.6 2.6 5-5"/>',
+ contacto:'<path d="M3 4h18v12H9l-5 4v-4H3z"/><path d="M7.5 10h.01M12 10h.01M16.5 10h.01" stroke-width="2.4"/>',
+ paquete:'<path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5l9 4.5 9-4.5M12 12v9"/><path d="M7.5 5.2l9 4.6"/>',
+ candado:'<rect x="4" y="10.5" width="16" height="10.5"/><path d="M7.5 10.5V7a4.5 4.5 0 019 0v3.5"/><path d="M12 14.5v3"/>',
+ wifi:'<path d="M2.5 9a14 14 0 0119 0"/><path d="M5.8 12.5a9.2 9.2 0 0112.4 0"/><path d="M9 16a4.4 4.4 0 016 0"/><path d="M12 19.5h.01" stroke-width="2.8"/>',
+ chat:'<rect x="6" y="2.5" width="12" height="19" rx="0"/><path d="M10 18.5h4"/><path d="M9 7h6M9 10.5h4"/>'
+};
+const icon=(k,s,w)=>`<svg class="ic" viewBox="0 0 24 24" width="${s}" height="${s}" stroke-width="${w||2}">${IC[k]}</svg>`;
+const W='<span class="osw" style="font-size:28px;color:var(--muted)">@innova_sites</span>';
+
+const P={};
+// ---------- Foto de perfil
+P.perfil=()=>({w:1080,h:1080,html:`<div class="glow" style="left:90px;top:90px;width:900px;height:900px"></div>
+<div style="position:absolute;left:215px;top:305px;width:650px;height:484px">${LOGO('white')}</div>`});
+
+// ---------- Destacadas
+const HL=[['servicios','Servicios'],['portafolio','Portafolio'],['clientes','Clientes'],['proceso','Proceso'],['tips','Tips anti-estafa'],['contacto','Contacto']];
+HL.forEach(([k])=>{P['destacada-'+k]=()=>({w:1080,h:1920,html:`
+<div class="glow" style="left:140px;top:560px;width:800px;height:800px"></div>
+<div style="position:absolute;left:290px;top:710px;color:var(--red)">${icon(k,500,1.9)}</div>
+<div class="px" style="left:760px;top:690px"></div><div class="px" style="left:812px;top:690px;opacity:.55"></div><div class="px" style="left:786px;top:716px;opacity:.8"></div>`})});
+
+// ---------- Portadas reels
+const RC={
+ 'portada-paquete':{n:'01',ic:'paquete',t:['Si te llega','este SMS,','<span class="red">no toques</span>','el link'],s:'El paquete que nunca pediste.'},
+ 'portada-contrasena':{n:'02',ic:'candado',t:['¿Tu contraseña','es <span class="red">123456</span>?'],s:'Mira cuánto tarda un hacker en adivinarla.'},
+ 'portada-wifi':{n:'03',ic:'wifi',t:['Este wifi','<span class="red">gratis</span> te','vació la cuenta'],s:'¿Sabrías elegir la red real del café?'},
+ 'portada-hola-mama':{n:'04',ic:'chat',t:['“Hola mamá,','<span class="red">cambié de</span>','<span class="red">número</span>”'],s:'La estafa de WhatsApp más común.'}
+};
+Object.entries(RC).forEach(([k,c])=>{P[k]=()=>({w:1080,h:1920,html:`
+<div class="grid"></div>
+<div class="ghost" style="right:-40px;top:250px;font-size:700px">${c.n}</div>
+<div class="glow" style="left:-300px;top:900px;width:1100px;height:1100px;opacity:.7"></div>
+<div style="position:absolute;left:84px;top:300px" class="chip osw"><b></b>InnovaSites</div>
+<div style="position:absolute;right:84px;top:286px" class="osw"><span style="font-size:26px;color:var(--muted)">Seguridad digital · ${c.n}</span></div>
+<div style="position:absolute;left:84px;top:520px;color:var(--red);"><div style="width:150px;height:150px;border:4px solid var(--red);display:grid;place-items:center">${icon(c.ic,92,2)}</div></div>
+<div style="position:absolute;left:84px;right:70px;top:740px">
+ <div class="disp" style="font-size:${c.t.length>3?132:150}px">${c.t.map(x=>`<div>${x}</div>`).join('')}</div>
+ <div style="margin-top:40px;font:italic 600 44px/1.2 Oswald;color:#D3D6DD">${c.s}</div></div>
+<div style="position:absolute;left:84px;right:84px;top:1540px;display:flex;justify-content:space-between;align-items:center">${W}
+<span class="osw" style="font-size:30px;color:var(--red2);display:flex;align-items:center;gap:14px"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M5 3l16 9-16 9z" fill="currentColor"/></svg>Mira el video</span></div>
+<div class="px" style="left:950px;top:420px;width:22px;height:22px"></div><div class="px" style="left:994px;top:442px;width:22px;height:22px;opacity:.6"></div>`})});
+
+// ---------- Carrusel quienes somos (1080x1350)
+const frame=(n,body,last)=>`<div class="grid" style="opacity:.2"></div>
+<div style="position:absolute;left:88px;top:92px" class="chip osw"><b></b>InnovaSites</div>
+<div style="position:absolute;right:88px;top:90px" class="osw"><span style="font-size:26px;color:var(--muted)">Quiénes somos · ${n} / 6</span></div>
+${body}
+<div style="position:absolute;left:88px;right:88px;bottom:86px;display:flex;justify-content:space-between;align-items:center">${W}
+${last?'<span class="osw" style="font-size:30px;color:var(--red2)">Link en la bio ↑</span>':'<span class="osw" style="font-size:30px;color:var(--red2)">Desliza →</span>'}</div>`;
+const CS=[];
+CS.push(frame(1,`<div class="glow" style="left:380px;top:80px;width:800px;height:800px"></div>
+<div style="position:absolute;right:70px;top:200px;width:470px;height:350px">${LOGO('white')}</div>
+<div style="position:absolute;left:88px;right:88px;top:640px">
+<div class="lab osw" style="margin-bottom:30px">Quiénes somos</div>
+<div class="disp" style="font-size:140px">Somos<br><span class="red">InnovaSites</span></div>
+<div style="margin-top:34px;font:italic 600 46px/1.2 Oswald;color:#D3D6DD">Agencia de diseño web en Cali.<br>Cada pixel cuenta.</div></div>`));
+CS.push(frame(2,`<div class="ghost" style="right:-30px;top:120px;font-size:520px">?</div>
+<div style="position:absolute;left:88px;right:88px;top:330px">
+<div class="lab osw" style="margin-bottom:34px">Qué hacemos</div>
+<div class="disp" style="font-size:96px;line-height:1">Diseñamos sitios web, apps y contenido para que tu marca <span class="red">se vea, se recuerde y venda.</span></div>
+<div style="margin-top:56px;display:flex;gap:18px;flex-wrap:wrap">${['Todo desde cero','Sin plantillas','Un solo equipo'].map(x=>`<span class="osw" style="font-size:28px;padding:16px 24px;border:2px solid rgba(255,255,255,.22)">${x}</span>`).join('')}</div></div>`));
+const SV=[['portafolio','Sitios web','Landing, tiendas y WordPress'],['contacto','Redes sociales','Estrategia y calendario'],['camara','Fotografía','Producto y marca'],['video','Video','Reels e institucional'],['chat','Apps y software','A la medida de tu negocio'],['clientes','Branding','Logo, paleta y manual']];
+CS.push(frame(3,`<div style="position:absolute;left:88px;right:88px;top:200px">
+<div class="lab osw" style="margin-bottom:22px">Servicios</div>
+<div class="disp" style="font-size:88px;margin-bottom:40px">Todo en <span class="red">un solo lugar</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">${SV.map(([i,t,s],n)=>`<div style="background:var(--bg2);border:1px solid var(--line);padding:26px 28px 28px;min-height:176px">
+<div style="display:flex;justify-content:space-between;color:var(--red)">${icon(i,48,2)}<span class="mono" style="font-size:20px;color:var(--muted2)">0${n+1}</span></div>
+<div class="disp" style="font-size:46px;margin-top:22px">${t}</div><div style="font-size:24px;color:var(--muted);margin-top:8px">${s}</div></div>`).join('')}</div></div>`));
+const ST=[['Nos cuentas tu idea','Día 1'],['Propuesta clara y por escrito','Días 2 a 3'],['Diseño y construcción','Avances por etapa'],['Lanzamiento y soporte','Continuo']];
+CS.push(frame(4,`<div style="position:absolute;left:88px;right:88px;top:230px">
+<div class="lab osw" style="margin-bottom:26px">Cómo trabajamos</div>
+<div class="disp" style="font-size:104px;margin-bottom:56px">De la idea<br><span class="red">al aire</span></div>
+${ST.map(([t,d],n)=>`<div style="display:flex;align-items:center;gap:34px;padding:26px 0;border-top:1px solid rgba(255,255,255,.14)">
+<div style="width:92px;height:92px;flex:none;background:${n==0?'var(--red)':'transparent'};border:3px solid var(--red);display:grid;place-items:center" class="disp"><span style="font-size:50px;color:${n==0?'#0A0C11':'var(--red)'}">${n+1}</span></div>
+<div style="flex:1"><div class="disp" style="font-size:50px">${t}</div><div class="mono" style="font-size:21px;color:var(--muted);margin-top:8px">${d}</div></div></div>`).join('')}</div>`));
+const WHY=[['Una plantilla que usan miles','Diseño desde cero, para tu marca'],['Un proveedor para cada cosa','Web, redes y contenido en un equipo'],['Ves el resultado hasta el final','Avances reales en cada etapa'],['Entregan y desaparecen','Soporte después del lanzamiento']];
+CS.push(frame(5,`<div style="position:absolute;left:88px;right:88px;top:230px">
+<div class="lab osw" style="margin-bottom:26px">Por qué nosotros</div>
+<div class="disp" style="font-size:104px;margin-bottom:50px">La diferencia<br><span class="red">se nota</span></div>
+${WHY.map(([a,b])=>`<div style="padding:24px 0;border-top:1px solid rgba(255,255,255,.14)">
+<div style="font-size:28px;color:#8C92A1;text-decoration:line-through;display:flex;gap:14px"><span style="text-decoration:none">✕</span>${a}</div>
+<div class="disp" style="font-size:46px;margin-top:10px;display:flex;gap:18px;align-items:center"><span class="red" style="font-style:normal">✓</span>${b}</div></div>`).join('')}</div>`));
+CS.push(frame(6,`<div style="position:absolute;inset:0;background:var(--red)"></div>
+<div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);background-size:60px 60px"></div>
+<div style="position:absolute;left:88px;top:92px" class="osw"><span style="font-size:26px;display:flex;gap:16px;align-items:center"><b style="width:15px;height:15px;background:#0A0C11;display:inline-block"></b>InnovaSites</span></div>
+<div style="position:absolute;left:88px;right:88px;top:330px">
+<div class="disp" style="font-size:150px">¿Tienes<br>una idea?<br><span style="color:#0A0C11">Hagámosla<br>realidad.</span></div>
+<div style="margin-top:60px;display:flex;flex-direction:column;gap:16px">
+<div style="background:#0A0C11;padding:26px 32px;display:flex;justify-content:space-between;align-items:center"><span class="osw" style="font-size:28px;color:var(--red2)">WhatsApp</span><span class="disp" style="font-size:46px">+57 302 461 7516</span></div>
+<div style="background:#0A0C11;padding:26px 32px;display:flex;justify-content:space-between;align-items:center"><span class="osw" style="font-size:28px;color:var(--red2)">Web</span><span class="disp" style="font-size:46px">innovasites.co</span></div></div></div>`,true).replace('<span class="osw" style="font-size:30px;color:var(--red2)">Link en la bio ↑</span>','<span class="osw" style="font-size:30px;color:#0A0C11">Link en la bio ↑</span>').replace(W,'<span class="osw" style="font-size:28px;color:#0A0C11">@innova_sites</span>').replace('<div style="position:absolute;left:88px;top:92px" class="chip osw"><b></b>InnovaSites</div>','').replace('<span style="font-size:26px;color:var(--muted)">Quiénes','<span style="font-size:26px;color:#0A0C11">Quiénes'));
+CS.forEach((h,i)=>{P['quienes-somos-slide'+(i+1)]=()=>({w:1080,h:1350,html:h})});
+
+window.PIECES=Object.keys(P);
+window.show=(k)=>{const p=P[k]();const r=document.getElementById('root');r.innerHTML=`<div class="pc" style="width:${p.w}px;height:${p.h}px">${p.html}</div>`;return [p.w,p.h];};
+</script></body></html>

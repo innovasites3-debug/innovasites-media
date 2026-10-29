@@ -1,0 +1,102 @@
+<div id="iv3f">
+<style>
+  #iv3f {
+    --bg: #0A0C11; --bg2: #11141B; --red: #E5342A; --red2: #FF5A45; --muted: #A9AFBB; --muted2: #8C92A1; --line: rgba(255,255,255,.1); --line2: rgba(255,255,255,.2);
+    --disp: 'Oswald', sans-serif; --mono: 'Space Mono', monospace; --body: 'Inter', sans-serif; --edge: clamp(16px, 4vw, 48px);
+    --ease: cubic-bezier(.2,.8,.2,1);
+    all: initial; display: block; position: relative; overflow: hidden; background: var(--bg); color: #fff; font: 400 15px/1.6 var(--body); -webkit-font-smoothing: antialiased;
+  }
+  #iv3f *, #iv3f *::before, #iv3f *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  #iv3f h1, #iv3f h2, #iv3f h3, #iv3f h4, #iv3f p, #iv3f span, #iv3f li, #iv3f strong, #iv3f b, #iv3f em, #iv3f small, #iv3f label, #iv3f legend, #iv3f blockquote { color: inherit; font-family: inherit; background: none; border: 0; text-shadow: none; }
+  #iv3f a { color: inherit; text-decoration: none; }
+  #iv3f button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  #iv3f .iv3f-wrap { max-width: 1360px; margin: 0 auto; padding: 0 var(--edge); position: relative; }
+  #iv3f .iv3f-cta { position: relative; background: var(--red); overflow: hidden; }
+  #iv3f .iv3f-cta::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px); background-size: 40px 40px; }
+  #iv3f .iv3f-cta-in { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding-top: clamp(48px, 7vw, 90px); padding-bottom: clamp(48px, 7vw, 90px); }
+  #iv3f .iv3f-cta h2 { font: italic 700 clamp(40px, 6.4vw, 104px)/.98 var(--disp); text-transform: uppercase; max-width: 900px; }
+  #iv3f .iv3f-cta h2 span { color: var(--bg); }
+  #iv3f .iv3f-cta-btn { display: inline-flex; align-items: center; gap: 12px; padding: 20px 30px; background: var(--bg); font: italic 600 18px/1 var(--disp); letter-spacing: .07em; text-transform: uppercase; clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px); transition: background .3s, color .3s; }
+  #iv3f .iv3f-cta-btn:hover { background: #fff; color: var(--bg); }
+  #iv3f .iv3f-cta-btn svg { width: 18px; height: 18px; transition: transform .4s var(--ease); }
+  #iv3f .iv3f-cta-btn:hover svg { transform: translateX(5px); }
+  #iv3f .iv3f-main { padding: 80px 0 0; }
+  #iv3f .iv3f-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+  #iv3f .iv3f-logo { display: flex; align-items: center; gap: 10px; font: italic 700 24px/1 var(--disp); }
+  #iv3f .iv3f-logo img { width: 40px; height: 40px; }
+  #iv3f .iv3f-logo b { color: var(--red); font-weight: 700; }
+  #iv3f .iv3f-brand p { color: var(--muted); max-width: 340px; margin: 18px 0 24px; }
+  #iv3f .iv3f-soc { display: flex; gap: 8px; }
+  #iv3f .iv3f-soc a { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line2); transition: background .3s, border-color .3s; }
+  #iv3f .iv3f-soc a:hover { background: var(--red); border-color: var(--red); }
+  #iv3f .iv3f-soc svg { width: 18px; height: 18px; fill: none; stroke: currentColor; }
+  #iv3f .iv3f-t { display: block; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--red2); margin-bottom: 18px; }
+  #iv3f .iv3f-col a { display: block; width: fit-content; padding: 4px 0; color: var(--muted); position: relative; transition: color .3s; }
+  #iv3f .iv3f-col a::after { content: ""; position: absolute; left: 0; bottom: 2px; width: 100%; height: 1px; background: var(--red); transform: scaleX(0); transform-origin: right; transition: transform .4s var(--ease); }
+  #iv3f .iv3f-col a:hover { color: #fff; }
+  #iv3f .iv3f-col a:hover::after { transform: scaleX(1); transform-origin: left; }
+  #iv3f .iv3f-col small { display: block; font: 400 11px var(--mono); color: var(--muted2); text-transform: uppercase; letter-spacing: .1em; margin-top: 10px; }
+  #iv3f .iv3f-word { display: flex; justify-content: center; margin-top: 60px; font: italic 700 clamp(60px, 15.5vw, 270px)/.78 var(--disp); text-transform: uppercase; letter-spacing: -.01em; white-space: nowrap; user-select: none; padding-bottom: .07em; }
+  #iv3f .iv3f-word span { display: inline-block; }
+  #iv3f .iv3f-word span.r { color: var(--red); }
+  #iv3f.iv3f-js .iv3f-word span { transform: translateY(102%); transition: transform 1s var(--ease); }
+  #iv3f.iv3f-js .iv3f-word.iv3f-in span { transform: none; }
+  #iv3f .iv3f-wordbox { overflow: hidden; }
+  #iv3f .iv3f-bottom { border-top: 1px solid var(--line); }
+  #iv3f .iv3f-bottom-in { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 18px; padding-bottom: 18px; font: 400 12px var(--mono); color: var(--muted2); }
+  #iv3f .iv3f-legal { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+  #iv3f .iv3f-legal a:hover { color: #fff; }
+  #iv3f .iv3f-top { width: 46px; height: 46px; display: grid; place-items: center; background: var(--red); transition: background .3s; }
+  #iv3f .iv3f-top:hover { background: var(--red2); }
+  #iv3f .iv3f-top svg { width: 18px; height: 18px; }
+  @media (max-width: 900px) {
+    #iv3f .iv3f-grid { grid-template-columns: 1fr 1fr; }
+    #iv3f .iv3f-brand { grid-column: 1 / -1; }
+    #iv3f .iv3f-bottom-in { padding-bottom: 90px; }
+  }
+  @media (prefers-reduced-motion: reduce) { #iv3f *, #iv3f *::before, #iv3f *::after { transition-duration: .01ms !important; } }
+</style>
+<footer>
+  <div class="iv3f-cta">
+    <div class="iv3f-wrap iv3f-cta-in">
+      <h2>¿Tienes una idea? <span>Hagámosla realidad.</span></h2>
+      <a href="#contacto" class="iv3f-cta-btn" data-magnetic>Escríbenos
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+  <div class="iv3f-main">
+    <div class="iv3f-wrap iv3f-grid">
+      <div class="iv3f-brand">
+        <div class="iv3f-logo"><img src="https://innovasites.co/wp-content/uploads/2024/03/INNOVA-03-03.png" alt="" width="40" height="40"><span>INNOVA<b>SITES</b></span></div>
+        <p>Estudio digital que diseña sitios web, apps y contenido para marcas que van en serio. Desde Cali para toda Latinoamérica.</p>
+        <div class="iv3f-soc">
+          <a href="https://www.facebook.com/profile.php?id=61555191832402" target="_blank" rel="noopener noreferrer" aria-label="Facebook de InnovaSites"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+          <a href="https://www.instagram.com/innova_sites/" target="_blank" rel="noopener noreferrer" aria-label="Instagram de InnovaSites"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6"/></svg></a>
+          <a href="https://www.tiktok.com/@innova.sites" target="_blank" rel="noopener noreferrer" aria-label="TikTok de InnovaSites"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3v11.5a4 4 0 11-4-4"/><path d="M16 3a5 5 0 005 5"/></svg></a>
+        </div>
+      </div>
+      <nav class="iv3f-col" aria-label="Pie de página">
+        <span class="iv3f-t">Explorar</span>
+        <a href="#servicios">Servicios</a><a href="#proceso">Proceso</a><a href="#trabajo">Portafolio</a><a href="#contacto">Contacto</a>
+      </nav>
+      <div class="iv3f-col">
+        <span class="iv3f-t">Servicios</span>
+        <a href="#servicios">Sitios web</a><a href="#servicios">Redes sociales</a><a href="#servicios">Apps y software</a><a href="#servicios">Branding</a>
+      </div>
+      <div class="iv3f-col">
+        <span class="iv3f-t">Contacto</span>
+        <small>Correo</small><a href="mailto:info@innovasites.co">info@innovasites.co</a>
+        <small>WhatsApp</small><a href="https://api.whatsapp.com/send/?phone=573024617516" target="_blank" rel="noopener noreferrer">+57 302 461 7516</a>
+      </div>
+    </div>
+    <div class="iv3f-wordbox" aria-hidden="true"><div class="iv3f-word" id="iv3fWord">InnovaSites</div></div>
+  </div>
+  <div class="iv3f-bottom">
+    <div class="iv3f-wrap iv3f-bottom-in">
+      <div class="iv3f-legal"><span>© <span id="iv3fYear">2026</span> InnovaSites</span><a href="#">Aviso de privacidad</a></div>
+      <button class="iv3f-top" id="iv3fTop" type="button" aria-label="Volver arriba" data-magnetic><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+    </div>
+  </div>
+</footer>
+<script>/*iv3boot*/(function(){var b64="KGZ1bmN0aW9uICgpIHsKICB2YXIgcm9vdCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdpdjNmJyk7CiAgaWYgKCFyb290KSByZXR1cm47CiAgdmFyIFJNID0gd2luZG93Lm1hdGNoTWVkaWEoJyhwcmVmZXJzLXJlZHVjZWQtbW90aW9uOiByZWR1Y2UpJykubWF0Y2hlczsKICB2YXIgeSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdpdjNmWWVhcicpOwogIGlmICh5KSB5LnRleHRDb250ZW50ID0gbmV3IERhdGUoKS5nZXRGdWxsWWVhcigpOwoKICBmdW5jdGlvbiBnbyh0YXJnZXQpIHsKICAgIGlmICh3aW5kb3cuaXYzTGVuaXMpIHdpbmRvdy5pdjNMZW5pcy5zY3JvbGxUbyh0YXJnZXQsIHsgZHVyYXRpb246IDEuNiB9KTsKICAgIGVsc2UgaWYgKHR5cGVvZiB0YXJnZXQgPT09ICdudW1iZXInKSB3aW5kb3cuc2Nyb2xsVG8oeyB0b3A6IHRhcmdldCwgYmVoYXZpb3I6ICdzbW9vdGgnIH0pOwogICAgZWxzZSB0YXJnZXQuc2Nyb2xsSW50b1ZpZXcoeyBiZWhhdmlvcjogJ3Ntb290aCcgfSk7CiAgfQogIHZhciB0b3AgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnaXYzZlRvcCcpOwogIGlmICh0b3ApIHRvcC5hZGRFdmVudExpc3RlbmVyKCdjbGljaycsIGZ1bmN0aW9uICgpIHsgZ28oMCk7IH0pOwogIHJvb3QuYWRkRXZlbnRMaXN0ZW5lcignY2xpY2snLCBmdW5jdGlvbiAoZSkgewogICAgdmFyIGEgPSBlLnRhcmdldC5jbG9zZXN0KCdhW2hyZWZePSIjIl0nKTsKICAgIGlmICghYSkgcmV0dXJuOwogICAgdmFyIGggPSBhLmdldEF0dHJpYnV0ZSgnaHJlZicpOwogICAgaWYgKGgubGVuZ3RoIDwgMikgcmV0dXJuOwogICAgdmFyIGVsID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvcihoKTsKICAgIGlmICghZWwpIHJldHVybjsKICAgIGUucHJldmVudERlZmF1bHQoKTsgZ28oZWwpOwogICAgaWYgKGhpc3RvcnkucmVwbGFjZVN0YXRlKSBoaXN0b3J5LnJlcGxhY2VTdGF0ZShudWxsLCAnJywgaCk7CiAgfSk7CgogIHZhciB3b3JkID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2l2M2ZXb3JkJyk7CiAgaWYgKHdvcmQpIHsKICAgIHZhciB0eHQgPSB3b3JkLnRleHRDb250ZW50LCBodG1sID0gJyc7CiAgICBmb3IgKHZhciBpID0gMDsgaSA8IHR4dC5sZW5ndGg7IGkrKykgaHRtbCArPSAnPHNwYW4gY2xhc3M9IicgKyAoaSA+PSA2ID8gJ3InIDogJycpICsgJyIgc3R5bGU9InRyYW5zaXRpb24tZGVsYXk6JyArIChpICogMC4wNCkudG9GaXhlZCgyKSArICdzIj4nICsgdHh0LmNoYXJBdChpKSArICc8L3NwYW4+JzsKICAgIHdvcmQuaW5uZXJIVE1MID0gaHRtbDsKICAgIGlmICghUk0gJiYgJ0ludGVyc2VjdGlvbk9ic2VydmVyJyBpbiB3aW5kb3cpIHsKICAgICAgcm9vdC5jbGFzc0xpc3QuYWRkKCdpdjNmLWpzJyk7CiAgICAgIG5ldyBJbnRlcnNlY3Rpb25PYnNlcnZlcihmdW5jdGlvbiAoZXMpIHsgZXMuZm9yRWFjaChmdW5jdGlvbiAoZSkgeyB3b3JkLmNsYXNzTGlzdC50b2dnbGUoJ2l2M2YtaW4nLCBlLmlzSW50ZXJzZWN0aW5nKTsgfSk7IH0sIHsgdGhyZXNob2xkOiAwLjMgfSkub2JzZXJ2ZSh3b3JkKTsKICAgIH0KICB9Cn0pKCk7Cg==";var bytes=Uint8Array.from(atob(b64),function(c){return c.charCodeAt(0);});var code=new TextDecoder("utf-8").decode(bytes);var s=document.createElement("script");s.textContent=code;document.currentScript.parentNode.insertBefore(s,document.currentScript.nextSibling);})();</script>
+</div>
