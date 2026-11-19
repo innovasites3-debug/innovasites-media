@@ -32,6 +32,8 @@ SAY = {
     "L10": "La B. Mira bien la dirección: termina en punto shop.",
 }
 TEXT = dict(LINES)
+_pf = V / 'voz' / 'palabras.json'
+PAL = json.loads(_pf.read_text()) if _pf.exists() else {}
 clean = lambda s: s.replace('*', '').replace('\u00a0', ' ')
 
 
@@ -115,14 +117,14 @@ def build(dur):
     T['rw1'] = max(e('L2') + 0.1, T['rw0'] + 1.4)
     T['ab0'] = T['rw1']                           # tiendas A y B
     s['L3'] = T['ab0'] + 0.2
-    T['ab1'] = e('L3') + 1.4
+    T['ab1'] = e('L3') + 1.1
     T['ad'] = T['ab1']                            # anuncio en el teléfono
     s['L4'] = T['ad'] + 0.15
     s['L5'] = e('L4') + 0.2; T['z1'] = s['L5']
-    T['web'] = e('L5') + 0.45
-    s['L6'] = T['web'] + 0.35; T['z2'] = s['L6']
-    T['pay'] = e('L6') + 0.45
-    s['L7'] = T['pay'] + 0.35; T['z3'] = s['L7']
+    T['web'] = e('L5') + 0.35
+    s['L6'] = T['web'] + 0.3; T['z2'] = s['L6']
+    T['pay'] = e('L6') + 0.35
+    s['L7'] = T['pay'] + 0.3; T['z3'] = s['L7']
     T['paid'] = e('L7') + 0.35
     s['L8'] = T['paid'] + 0.3
     T['gone'] = s['L8'] + dur['L8'] * .5
@@ -147,6 +149,16 @@ def build(dur):
     # bloques de texto animado con tiempo por palabra
     subs = []
     for k, _ in LINES:
+        cs = chunks(TEXT[k]); txt = lambda c: ' '.join(w for w, _ in c); tot = sum(len(txt(c)) for c in cs)
+        if k in PAL:                       # horas reales por palabra (transcripción)
+            tw = PAL[k]; i0 = 0
+            for ci, c in enumerate(cs):
+                ts = tw[i0:i0 + len(c)]
+                a = s[k] + ts[0] - .05
+                b = s[k] + (tw[i0 + len(c)] - .05 if i0 + len(c) < len(tw) else dur[k])
+                out = [[w, round(s[k] + t - .04, 3), int(key)] for (w, key), t in zip(c, ts)]
+                subs.append([round(a, 3), round(b, 3), out, k]); i0 += len(c)
+            continue
         cs = chunks(TEXT[k]); txt = lambda c: ' '.join(w for w, _ in c); tot = sum(len(txt(c)) for c in cs)
         cuts = pauses(k); bounds, acc = [0.0], 0
         for c in cs[:-1]:
