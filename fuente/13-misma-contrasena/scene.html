@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>La misma contraseña en todo</title>
+<style>
+  @font-face { font-family: 'Oswald'; font-weight: 600; src: url('fonts/oswald-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Oswald'; font-weight: 700; src: url('fonts/oswald-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 400; src: url('fonts/inter-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 500; src: url('fonts/inter-latin-500-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 600; src: url('fonts/inter-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 700; src: url('fonts/inter-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 400; src: url('fonts/space-mono-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 700; src: url('fonts/space-mono-latin-700-normal.woff2') format('woff2'); }
+
+  :root {
+    --bg: #0A0C11; --bg2: #11141B; --bg3: #181C25;
+    --red: #E5342A; --red2: #FF5A45; --dark-red: #7A1712;
+    --white: #FFFFFF; --muted: #A9AFBB; --line: rgba(255,255,255,.1);
+    --disp: 'Oswald', sans-serif; --body: 'Inter', 'Noto Color Emoji', sans-serif; --mono: 'Space Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-variant-ligatures: none; font-feature-settings: 'liga' 0, 'clig' 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); font-family: var(--body); color: var(--white); }
+  #world { position: absolute; inset: 0; }
+  .abs { position: absolute; }
+  .disp { font-family: var(--disp); font-weight: 700; font-style: italic; text-transform: uppercase; line-height: 1.12; letter-spacing: -.005em; }
+  .mono { font-family: var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+  .red { color: var(--red); }
+  canvas { position: absolute; inset: 0; }
+  #flash { position: absolute; inset: 0; background: var(--red); opacity: 0; z-index: 70; }
+
+  #hud { left: 80px; right: 80px; top: 206px; z-index: 40; }
+  #hud .top { display: flex; justify-content: space-between; align-items: center; font-size: 21px; color: var(--muted); }
+  #hud .top b { display: inline-block; width: 13px; height: 13px; background: var(--red); margin-right: 12px; vertical-align: -1px; }
+  #hud .bars { margin-top: 14px; display: flex; gap: 8px; }
+  #hud .bars i { flex: 1; height: 6px; background: rgba(255,255,255,.14); position: relative; overflow: hidden; }
+  #hud .bars i u { position: absolute; inset: 0; background: var(--red); transform-origin: left; transform: scaleX(0); }
+
+  #lab { left: 80px; right: 80px; top: 300px; font-size: 26px; color: var(--red2); display: flex; align-items: center; gap: 16px; z-index: 41; }
+  #lab::before { content: ""; width: 44px; height: 4px; background: currentColor; }
+  #kt { left: 80px; right: 80px; top: 350px; z-index: 41; text-wrap: balance; }
+  #kt.big { font-size: 92px; }
+  #kt.low { top: 1490px; text-align: center; font-size: 66px; text-shadow: 0 6px 24px rgba(0,0,0,.8); }
+  #kt .w { display: inline-block; transform-origin: 50% 80%; white-space: pre; }
+  #kt .w.k { color: var(--red); }
+
+  /* tarjeta central (formulario de registro / filtración) */
+  #card1 { left: 100px; right: 100px; top: 700px; z-index: 20; padding: 40px 44px; background: linear-gradient(160deg, #161a23 0%, #0f1218 100%); border: 2px solid var(--line); clip-path: polygon(26px 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%, 0 26px); }
+  #card1 .hd { display: flex; align-items: center; gap: 16px; margin-bottom: 26px; }
+  #card1 .ap { width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; font-weight: 800; font-size: 26px; color: #fff; flex: none; }
+  #card1 .hd b { font-size: 30px; font-weight: 700; }
+  #card1 .fld { margin-top: 18px; }
+  #card1 .fld label { display: block; font-family: var(--mono); font-size: 18px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  #card1 .fld .val { padding: 16px 20px; background: var(--bg); border: 2px solid var(--line); font-size: 30px; font-weight: 600; min-height: 1.3em; }
+  #card1 .fld .val .cur { display: inline-block; width: 3px; height: 28px; background: var(--red); vertical-align: -5px; margin-left: 2px; }
+
+  /* fila de dominó */
+  #domino { left: 60px; right: 60px; top: 860px; height: 360px; z-index: 20; display: flex; align-items: flex-end; justify-content: space-between; }
+  .dm { width: 118px; height: 340px; position: relative; }
+  .dm .tile { position: absolute; inset: 0; background: linear-gradient(160deg, #1b2029 0%, #10131a 100%); border: 3px solid var(--line); clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px); transform-origin: 50% 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 36px; gap: 20px; }
+  .dm .tile .ic { width: 68px; height: 68px; border-radius: 16px; display: grid; place-items: center; font-weight: 800; font-size: 30px; color: #fff; }
+  .dm .tile .lb { font-family: var(--mono); font-size: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: center; padding: 0 6px; }
+  .dm.down .tile { background: linear-gradient(160deg, #3a1210 0%, #1b0908 100%); border-color: rgba(229,52,42,.5); }
+  .dm.down .tile .lb { color: var(--red2); }
+
+  #counter { left: 80px; right: 80px; top: 640px; text-align: center; z-index: 21; }
+  #counter .n { font-family: var(--disp); font-style: italic; font-weight: 700; font-size: 130px; line-height: 1; color: var(--red); }
+  #counter .l { margin-top: 8px; font-family: var(--mono); font-size: 24px; letter-spacing: .18em; color: var(--muted); }
+
+  #timer { left: 80px; right: 80px; top: 1250px; height: 180px; display: flex; flex-direction: column; align-items: center; gap: 20px; z-index: 20; }
+  #timer svg { width: 180px; height: 180px; flex: none; }
+  #timer .num { position: absolute; width: 180px; height: 180px; display: grid; place-items: center; font-family: var(--disp); font-style: italic; font-weight: 700; font-size: 104px; line-height: 1.2; }
+  #timer .txt { font-family: var(--mono); font-size: 30px; letter-spacing: .14em; text-transform: uppercase; text-align: center; }
+  #timer .txt b { display: block; color: var(--red2); font-weight: 700; }
+
+  /* reglas */
+  #tipsHead { left: 80px; right: 80px; top: 300px; z-index: 41; }
+  #tipsHead .lab { font-size: 26px; color: var(--red2); display: flex; align-items: center; gap: 16px; }
+  #tipsHead .lab::before { content: ""; width: 44px; height: 4px; background: currentColor; }
+  #tipsHead .t { margin-top: 14px; font-size: 120px; }
+  #tipsDots { left: 80px; top: 560px; display: flex; gap: 12px; z-index: 41; }
+  #tipsDots i { width: 64px; height: 10px; background: rgba(255,255,255,.14); }
+  #tipsDots i.on { background: var(--red); }
+  .tipw { left: 80px; right: 80px; top: 630px; perspective: 2200px; z-index: 20; }
+  .tip { position: relative; padding: 48px 52px 56px; background: linear-gradient(160deg, #161a23 0%, #0f1218 100%); border: 2px solid var(--line); clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px); transform-origin: 0% 50%; }
+  .tip::after { content: ""; position: absolute; left: 0; top: 0; width: 8px; height: 100%; background: var(--red); }
+  .tip .n { font-family: var(--disp); font-style: italic; font-weight: 700; font-size: 200px; line-height: .95; color: transparent; -webkit-text-stroke: 4px var(--red); }
+  .tip .n.fill { color: var(--red); }
+  .tip .ico { position: absolute; right: 52px; top: 56px; width: 170px; }
+  .tip h4 { margin-top: 34px; font-size: 84px; }
+  .tip p { margin-top: 22px; font-size: 38px; line-height: 1.4; color: var(--muted); font-weight: 500; }
+
+  #endc { inset: 0; z-index: 60; }
+  #endc .wm { position: absolute; left: 0; right: 0; top: 480px; text-align: center; font-size: 168px; }
+  #endc .wm span { display: inline-block; }
+  #endc .pxrow { position: absolute; left: 50%; top: 340px; width: 300px; margin-left: -150px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+  #endc .pxrow b { aspect-ratio: 1; background: var(--red); }
+  #endc .tl1 { position: absolute; left: 80px; right: 80px; top: 716px; text-align: center; font-size: 64px; color: var(--muted); }
+  #endc .tl2 { position: absolute; left: 80px; right: 80px; top: 800px; text-align: center; font-size: 80px; }
+  #endc .svc { position: absolute; left: 80px; right: 80px; top: 960px; display: flex; justify-content: center; gap: 22px; font-size: 24px; color: var(--muted); }
+  #endc .svc i { width: 10px; height: 10px; background: var(--red); align-self: center; }
+  #endc .cta { position: absolute; left: 110px; right: 110px; top: 1080px; padding: 36px 40px; background: var(--red); clip-path: polygon(26px 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%, 0 26px); text-align: center; }
+  #endc .cta .a { font-size: 58px; display: flex; align-items: center; justify-content: center; gap: 22px; }
+  #endc .cta .a svg { width: 54px; height: 54px; flex: none; }
+  #endc .cta .b { margin-top: 10px; font-size: 32px; font-weight: 600; }
+  #endc .hdl { position: absolute; left: 0; right: 0; top: 1360px; text-align: center; font-size: 36px; color: #fff; letter-spacing: .1em; }
+</style>
+<script src="timing.js"></script>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <div id="world">
+    <div id="hud" class="abs mono"><div class="top"><span><b></b>InnovaSites</span><span>Seguridad digital</span></div><div class="bars" id="bars"></div></div>
+
+    <div id="counter" class="abs"><div class="n" id="cnum">0</div><div class="l">cuentas caídas</div></div>
+
+    <div id="card1" class="abs">
+      <div class="hd"><span class="ap" style="background:#E8793C">R</span><b>Recetas Fácil</b></div>
+      <div class="fld"><label>Correo</label><div class="val">ana.gomez@correo.com</div></div>
+      <div class="fld"><label>Contraseña</label><div class="val" id="pwval"><span class="cur"></span></div></div>
+    </div>
+
+    <div id="domino" class="abs">
+      <div class="dm" data-k="1"><div class="tile"><span class="ic" style="background:#E8793C">R</span><span class="lb">Recetas</span></div></div>
+      <div class="dm" data-k="2"><div class="tile"><span class="ic" style="background:#1f6feb">C</span><span class="lb">Correo</span></div></div>
+      <div class="dm" data-k="3"><div class="tile"><span class="ic" style="background:#2E9D5B">F</span><span class="lb">Fotos</span></div></div>
+      <div class="dm" data-k="4"><div class="tile"><span class="ic" style="background:#9B5CF6">S</span><span class="lb">Red social</span></div></div>
+      <div class="dm" data-k="5"><div class="tile"><span class="ic" style="background:#D63AA0">P</span><span class="lb">Películas</span></div></div>
+      <div class="dm" data-k="6"><div class="tile"><span class="ic" style="background:#E0A800">T</span><span class="lb">Tienda</span></div></div>
+      <div class="dm" data-k="7"><div class="tile"><span class="ic" style="background:#1f6feb">B</span><span class="lb">Banco</span></div></div>
+    </div>
+
+    <div id="timer" class="abs">
+      <div style="position:relative;width:180px;height:180px"><svg viewBox="0 0 180 180"><circle cx="90" cy="90" r="78" fill="none" stroke="#181C25" stroke-width="14"/><circle id="tmRing" cx="90" cy="90" r="78" fill="none" stroke="#E5342A" stroke-width="14" transform="rotate(-90 90 90)" stroke-dasharray="490.1" stroke-dashoffset="0"/></svg><div class="num" id="qnum">5</div></div>
+      <div class="txt">Comenta<b>el número</b></div>
+    </div>
+
+    <div id="lab" class="abs mono"></div>
+    <div id="kt" class="abs disp big"></div>
+
+    <!-- reglas -->
+    <div id="tipsHead" class="abs"><div class="lab mono">Cómo protegerte</div><div class="t disp">3 <span class="red">reglas</span></div></div>
+    <div id="tipsDots" class="abs"><i></i><i></i><i></i></div>
+    <div class="tipw abs" id="tw1"><div class="tip" id="tip1"><div class="n" id="n1">01</div><div class="ico" id="ico1"></div>
+      <h4 class="disp">Clave <span class="red">distinta</span> por cuenta</h4>
+      <p>Usa un gestor de contraseñas para crear y recordar claves fuertes.</p></div></div>
+    <div class="tipw abs" id="tw2"><div class="tip" id="tip2"><div class="n" id="n2">02</div><div class="ico" id="ico2"></div>
+      <h4 class="disp">Protege tu <span class="red">correo</span></h4>
+      <p>Es la llave de todo lo demás: protégelo primero.</p></div></div>
+    <div class="tipw abs" id="tw3"><div class="tip" id="tip3"><div class="n" id="n3">03</div><div class="ico" id="ico3"></div>
+      <h4 class="disp">Verificación en <span class="red">dos pasos</span></h4>
+      <p>Actívala: aunque roben tu clave, no podrán entrar.</p></div></div>
+
+    <div id="endc" class="abs">
+      <div class="pxrow" id="endPx"></div>
+      <div class="wm disp" id="wm"></div>
+      <div class="tl1 disp" id="tl1">Cada pixel cuenta…</div>
+      <div class="tl2 disp" id="tl2">y tu seguridad <span class="red">también</span></div>
+      <div class="svc mono" id="svc"><span>Sitios web seguros</span><i></i><span>Contenido</span><i></i><span>Branding</span></div>
+      <div class="cta" id="cta"><div class="a disp"><span data-ic="bookmark"></span>Guárdalo y compártelo</div><div class="b">con quien usa la misma clave para todo</div></div>
+      <div class="hdl mono" id="hdl">@innova_sites</div>
+    </div>
+  </div>
+  <canvas id="fx" width="1080" height="1920" style="z-index:65"></canvas>
+  <div id="flash"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const cl = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => cl((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+const eo = p => 1 - Math.pow(1 - p, 3);
+const eo5 = p => 1 - Math.pow(1 - p, 5);
+const eio = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const back = p => { const c = 1.9; return 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); };
+const spring = p => p <= 0 ? 0 : 1 - Math.exp(-6 * p) * Math.cos(9 * p);
+const win = (t, a, b) => t >= a && t < b;
+function hash(n) { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+function S(el, o, tr) { el.style.opacity = o; el.style.transform = tr || ''; el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'; }
+const box = el => el.getBoundingClientRect();
+
+/* ---------- íconos pixel (reglas) ---------- */
+const PX = {
+  lock: ['..####..', '.#....#.', '.#....#.', '########', '#......#', '#..**..#', '#..**..#', '#......#', '########'],
+  chat: ['#########.', '#.......#.', '#.*.*.*.#.', '#.......#.', '#########.', '..##......', '.#........'],
+  clock: ['..####..', '.#....#.', '#...*..#', '#...*..#', '#...**.#', '#......#', '.#....#.', '..####..']
+};
+function pxSVG(name, base, acc) {
+  const m = PX[name]; const w = m[0].length, h = m.length; let r = '';
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const c = m[y][x]; if (c === '.') continue; r += `<rect x="${x + .06}" y="${y + .06}" width=".88" height=".88" fill="${c === '*' ? acc : base}"/>`; }
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block">${r}</svg>`;
+}
+$('ico1').innerHTML = pxSVG('lock', '#FFFFFF', '#E5342A');
+$('ico2').innerHTML = pxSVG('chat', '#FFFFFF', '#E5342A');
+$('ico3').innerHTML = pxSVG('clock', '#FFFFFF', '#E5342A');
+$('endPx').innerHTML = '<b></b>'.repeat(10);
+$('wm').innerHTML = 'INNOVA'.split('').map(c => `<span>${c}</span>`).join('') + 'SITES'.split('').map(c => `<span class="red">${c}</span>`).join('');
+const ICO = { bookmark: () => `<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 2.5h12a1 1 0 0 1 1 1v18l-7-4.6-7 4.6v-18a1 1 0 0 1 1-1z"/></svg>` };
+document.querySelectorAll('[data-ic]').forEach(e => e.innerHTML = ICO[e.dataset.ic]());
+
+/* ---------- textos animados (voz) ---------- */
+const TITLES = SUBS.map((s, i) => { const nxt = SUBS[i + 1]; let hold = nxt ? Math.min(nxt[0], s[1] + .9) : s[1] + .9; return [s[0], hold, s[2]]; });
+const LABELS = [[0.15, T.rewind - .05, 'Consecuencia'], [T.rewind, T.rewindEnd, 'Rebobinando'], [T.rowIn, T.rowEnd, 'Caída en dominó'], [T.q0, T.qe, 'Pausa · Tú decides'], [T.ts, T.end, 'Cómo protegerte']];
+let ktCur = -1;
+function kinetic(t) {
+  const el = $('kt');
+  const idx = TITLES.findIndex(it => t >= it[0] - .02 && t < it[1]);
+  if (idx < 0 || t > T.end + .2) { S(el, 0); ktCur = -1; return; }
+  const it = TITLES[idx];
+  if (ktCur !== idx) { ktCur = idx; el.innerHTML = it[2].map(w => `<span class="w${w[2] ? ' k' : ''}">${w[0]}</span>`).join(' '); el.style.fontSize = ''; el.classList.toggle('low', t >= T.ts); el.classList.toggle('big', t < T.ts); if (t < T.ts) { let f = 92; while (el.offsetHeight > 230 && f > 60) { f -= 4; el.style.fontSize = f + 'px'; } } }
+  const low = t >= T.ts;
+  el.classList.toggle('low', low); el.classList.toggle('big', !low);
+  const out = eio(seg(t, it[1] - .16, it[1]));
+  S(el, 1 - out, `translateY(${-out * 30}px)`);
+  el.querySelectorAll('.w').forEach((s, i) => {
+    const wt = it[2][i][1], p = seg(t, wt, wt + .26);
+    s.style.opacity = cl(seg(t, wt, wt + .07));
+    s.style.transform = `translateY(${(1 - eo5(p)) * 40}px) scale(${.72 + .28 * back(p)})`;
+    s.style.textShadow = it[2][i][2] && p < 1 ? `0 0 ${30 * (1 - p)}px rgba(229,52,42,${.9 * (1 - p)})` : '';
+  });
+}
+function label(t) {
+  const L = LABELS.find(l => t >= l[0] && t < l[1]); const el = $('lab');
+  if (!L) { S(el, 0); return; }
+  if (el.textContent !== L[2]) el.textContent = L[2];
+  const p = eo5(seg(t, L[0], L[0] + .35)), out = seg(t, L[1] - .15, L[1]);
+  S(el, cl(seg(t, L[0], L[0] + .1)) * (1 - out), `translateX(${(1 - p) * -60}px)`);
+}
+
+/* ---------- fondo ---------- */
+const bg = $('bg').getContext('2d');
+const grain = document.createElement('canvas'); grain.width = 360; grain.height = 640;
+{ const g = grain.getContext('2d'), d = g.createImageData(360, 640); for (let i = 0; i < d.data.length; i += 4) { const v = hash(i * .37) * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); }
+function drawBg(t, heat) {
+  bg.globalAlpha = 1; bg.fillStyle = '#0A0C11'; bg.fillRect(0, 0, 1080, 1920);
+  const blobs = [[200 + Math.sin(t * .4) * 120, 520 + Math.cos(t * .3) * 140, 620], [880 + Math.cos(t * .35) * 120, 1250 + Math.sin(t * .5) * 160, 700], [540, 1900, 800]];
+  blobs.forEach(([x, y, r], i) => { const g = bg.createRadialGradient(x, y, 0, x, y, r); const a = (.10 + .05 * i % 2) * (1 + heat * 1.6); g.addColorStop(0, `rgba(229,52,42,${a})`); g.addColorStop(1, 'rgba(229,52,42,0)'); bg.fillStyle = g; bg.fillRect(0, 0, 1080, 1920); });
+  bg.strokeStyle = `rgba(229,52,42,${.10 + heat * .12})`; bg.lineWidth = 2;
+  const hz = 1260, vp = 540;
+  for (let i = -12; i <= 12; i++) { bg.beginPath(); bg.moveTo(vp + i * 30, hz); bg.lineTo(vp + i * 260, 1920); bg.stroke(); }
+  for (let k = 0; k < 14; k++) { const f = ((k + (t * .9) % 1) / 14); const y = hz + Math.pow(f, 2.2) * (1920 - hz); bg.globalAlpha = f; bg.beginPath(); bg.moveTo(0, y); bg.lineTo(1080, y); bg.stroke(); }
+  bg.globalAlpha = 1;
+  const fade = bg.createLinearGradient(0, hz - 40, 0, hz + 260); fade.addColorStop(0, 'rgba(10,12,17,1)'); fade.addColorStop(1, 'rgba(10,12,17,0)'); bg.fillStyle = fade; bg.fillRect(0, hz - 40, 1080, 300);
+  const s = 54;
+  for (let y = 0; y < 36; y++) for (let x = 0; x < 20; x++) {
+    const i = y * 20 + x, h = hash(i), tw = .5 + .5 * Math.sin(t * (0.6 + h * 1.6) + h * 40);
+    if (h < .07 + heat * .2) { bg.globalAlpha = (.05 + tw * .15) * (1 + heat * 2); bg.fillStyle = '#E5342A'; const z = 8 + tw * 20; bg.fillRect(x * s + (s - z) / 2, y * s + (s - z) / 2, z, z); }
+    else if (h > .9) { bg.globalAlpha = .08; bg.fillStyle = '#fff'; bg.fillRect(x * s + 26, y * s + 26, 3, 3); }
+  }
+  bg.globalAlpha = .035; bg.globalCompositeOperation = 'overlay';
+  const ox = Math.floor(hash(Math.floor(t * 30)) * 360), oy = Math.floor(hash(Math.floor(t * 30) + 3) * 640);
+  for (let y = -oy; y < 1920; y += 640) for (let x = -ox; x < 1080; x += 360) bg.drawImage(grain, x, y);
+  bg.globalCompositeOperation = 'source-over'; bg.globalAlpha = 1;
+  const v = bg.createRadialGradient(540, 900, 300, 540, 900, 1250); v.addColorStop(0, 'rgba(5,6,9,0)'); v.addColorStop(1, 'rgba(5,6,9,.75)'); bg.fillStyle = v; bg.fillRect(0, 0, 1080, 1920);
+}
+
+const fx = $('fx').getContext('2d');
+function burst(t, t0, x, y, n, seed, col, grav = 900, ctx = fx) {
+  if (t < t0 || t > t0 + 1) return;
+  const dt = t - t0;
+  for (let i = 0; i < n; i++) {
+    const a = (grav ? hash(seed + i) * Math.PI * 2 : (.15 + hash(seed + i) * .7) * Math.PI), v = (grav ? 380 : 160) + hash(seed + i * 3) * (grav ? 700 : 260), z = 8 + hash(seed + i * 7) * 16;
+    const px = x + Math.cos(a) * v * dt, py = y + Math.sin(a) * v * dt + grav * dt * dt;
+    ctx.globalAlpha = cl(1 - dt / .9); ctx.fillStyle = (col && i % 3 === 0) ? col : (i % 4 === 0 ? '#ffffff' : '#E5342A');
+    ctx.fillRect(px - z / 2, py - z / 2, z, z);
+  }
+  ctx.globalAlpha = 1;
+}
+function glitch(t, a, d) {
+  if (t < a || t > a + d) return 0;
+  const k = Math.sin(seg(t, a, a + d) * Math.PI), f = Math.floor(t * 30);
+  for (let i = 0; i < 9; i++) {
+    const y = hash(f * 13 + i) * 1920, h = 6 + hash(f * 7 + i) * 50, off = (hash(f * 3 + i) - .5) * 120 * k;
+    fx.globalAlpha = .9 * k; fx.fillStyle = i % 3 === 0 ? 'rgba(229,52,42,.85)' : (i % 3 === 1 ? 'rgba(10,12,17,.95)' : 'rgba(80,220,255,.35)');
+    fx.fillRect(off < 0 ? 0 : off, y, 1080, h);
+  }
+  fx.globalAlpha = 1;
+  return k;
+}
+function beatPulse(t) { let v = 0; for (const b of BEATS) { if (b > t) break; v = Math.max(v, Math.exp(-(t - b) * 9)); } return v; }
+
+const PASS = 'Mateo2015*';
+const FALLS = [T.fall1, T.fall2, T.fall3, T.fall4, T.fall5, T.fall6, T.fall7];
+
+window.render = function (t) {
+  fx.clearRect(0, 0, 1080, 1920);
+  let heat = (t > T.rowIn && t < T.rowEnd + .3) ? .22 : 0;
+  heat = Math.max(heat, (t > T.p1 && t < T.p1 + .6) ? .6 * (1 - seg(t, T.p1, T.p1 + .6)) : 0);
+  drawBg(t, heat);
+  const bp = beatPulse(t);
+
+  S($('hud'), t < T.end + .4 ? 1 - seg(t, T.end, T.end + .4) : 0);
+  const SECS = [[0, T.rewindEnd], [T.rewindEnd, T.rowEnd], [T.q0, T.qe], [T.ts, T.end]];
+  if (!$('bars').children.length) $('bars').innerHTML = SECS.map(() => '<i><u></u></i>').join('');
+  $('bars').querySelectorAll('u').forEach((u, i) => { u.style.transform = `scaleX(${seg(t, SECS[i][0], SECS[i][1])})`; });
+  kinetic(t); label(t);
+
+  /* ---- card1: formulario de registro (rebobinando) ---- */
+  { const on = win(t, T.rewind, T.rewindEnd);
+    const p = back(seg(t, T.rewind + .1, T.rewind + .6));
+    S($('card1'), on ? cl(seg(t, T.rewind, T.rewind + .15)) * (1 - seg(t, T.rewindEnd - .25, T.rewindEnd)) : 0, `scale(${.9 + .1 * p}) translateY(${(1 - p) * 40}px)`);
+    const n = Math.round(cl(seg(t, T.formIn, T.rewindEnd - .3)) * PASS.length);
+    $('pwval').innerHTML = PASS.slice(0, n) + '<span class="cur"></span>'; }
+
+  /* ---- fila de dominó + contador ---- */
+  { const hook = t < T.rewind;
+    const rowOn = win(t, 0, T.rewind) || win(t, T.rowIn - .3, T.rowEnd + .3);
+    const a0 = hook ? 0.15 : T.rowIn - .3;
+    const hookOut = hook ? eio(seg(t, T.rewind - .3, T.rewind)) : 0;
+    S($('domino'), rowOn ? 1 - hookOut : 0, '');
+    document.querySelectorAll('.dm').forEach((el, i) => {
+      const tile = el.querySelector('.tile');
+      const fallT = FALLS[i];
+      const inP = cl(seg(t, a0 + i * .03, a0 + .6 + i * .03));
+      const fallP = (!hook && t >= fallT) ? eo5(seg(t, fallT, fallT + .32)) : 0;
+      el.classList.toggle('down', !hook && t >= fallT + .28);
+      const entry = (1 - back(inP)) * 60;
+      tile.style.transform = `translateY(${entry}px) rotateZ(${fallP * -82}deg)`;
+      tile.style.opacity = cl(seg(t, a0 + i * .03, a0 + .4 + i * .03));
+      const bankGlow = hook && i === 6 && t > 1.2 ? .5 + .5 * Math.sin(t * 9) : 0;
+      tile.style.borderColor = bankGlow ? `rgba(229,52,42,${.4 + .6 * bankGlow})` : '';
+      tile.style.boxShadow = bankGlow ? `0 0 ${30 * bankGlow}px rgba(229,52,42,.7)` : '';
+      if (t >= fallT && t < fallT + .08) { const r = box(tile); burst(t, fallT, r.left + r.width / 2, r.bottom - 20, 16, 200 + i * 11, null, 700, bg); }
+    });
+    const fallen = FALLS.filter(f => t >= f + .3).length;
+    const revealEnd = Math.min(T.explode + 2.4, T.qe - .3);
+    const showCounter = win(t, T.rowIn, T.q0 - .05) || win(t, T.explode, revealEnd);
+    const val = t >= T.explode ? 7 : fallen;
+    const fadeOut = t >= T.explode ? seg(t, revealEnd - .3, revealEnd) : 0;
+    S($('counter'), showCounter ? 1 - fadeOut : 0, `scale(${t >= T.explode ? 1 + .25 * (1 - eo(seg(t, T.explode, T.explode + .4))) : 1})`);
+    $('cnum').textContent = val;
+    $('cnum').style.textShadow = (t >= T.explode && t < T.explode + .6) ? `0 0 ${50 * (1 - seg(t, T.explode, T.explode + .6))}px rgba(229,52,42,.9)` : 'none';
+    if (t >= T.explode && t < T.explode + .05) burst(t, T.explode, 540, 660, 50, 900, '#FFD54A', 950, bg); }
+
+  /* ---- pausa interactiva: cuenta regresiva ---- */
+  { const P0 = T.p0, P1 = T.p1;
+    const qp = seg(t, P0, P1);
+    S($('timer'), win(t, P0 - .25, P1 + .15) ? cl(seg(t, P0 - .25, P0)) * (1 - seg(t, P1, P1 + .15)) : 0, `scale(${.9 + .1 * eo5(seg(t, P0 - .25, P0))})`);
+    $('tmRing').setAttribute('stroke-dashoffset', 490.1 * qp);
+    $('qnum').textContent = Math.max(1, 5 - Math.floor(qp * 5));
+    $('qnum').style.transform = `scale(${1 + .3 * Math.pow(1 - ((qp * 5) % 1), 3)})`; }
+
+  /* ---- transiciones ---- */
+  let gk = Math.max(glitch(t, T.rewind - .1, .22), glitch(t, T.rowIn - .15, .26), glitch(t, T.q0 - .2, .3), glitch(t, T.ts - .15, .26));
+  $('world').style.filter = gk > .05 ? `drop-shadow(${8 * gk}px 0 0 rgba(255,40,60,.75)) drop-shadow(${-8 * gk}px 0 0 rgba(60,220,255,.55))` : 'none';
+
+  /* ---- reglas ---- */
+  { const TS = T.ts, TE = T.end, on = t > TS && t < TE + .1;
+    const hp = eo5(seg(t, TS, TS + .5));
+    S($('tipsHead'), on ? cl(seg(t, TS, TS + .2)) * (1 - seg(t, TE - .4, TE)) : 0, `translateY(${(1 - hp) * 80}px)`);
+    S($('tipsDots'), on ? cl(seg(t, TS + .2, TS + .4)) * (1 - seg(t, TE - .4, TE)) : 0);
+    const WW = [T.t1, T.t2, T.t3];
+    $('tipsDots').querySelectorAll('i').forEach((d, i) => d.classList.toggle('on', t >= WW[i][0]));
+    WW.forEach((w, i) => {
+      const el = $('tw' + (i + 1)), tip = $('tip' + (i + 1));
+      const pin = spring(seg(t, w[0], w[0] + .9)), pout = eio(seg(t, w[1] - .35, w[1]));
+      S(el, (t > w[0] && t < w[1]) ? 1 : 0);
+      tip.style.transform = `rotateY(${(1 - pin) * 75 - pout * 80}deg) translateX(${pout * -200}px)`;
+      const st0 = i ? Math.max(w[0], WW[i - 1][1]) : w[0];
+      tip.style.opacity = cl(seg(t, st0, st0 + .12)) * (1 - pout);
+      $('n' + (i + 1)).classList.toggle('fill', t > w[0] + .5);
+      tip.querySelector('.ico').style.transform = `scale(${back(seg(t, w[0] + .35, w[0] + .75))}) rotate(${Math.sin(t * 3) * 4}deg)`;
+    }); }
+
+  /* ---- cierre ---- */
+  { const E = T.end;
+    if (t > E - .1 && t < E + 1.1) {
+      const s = 90;
+      for (let y = 0; y < 22; y++) for (let x = 0; x < 12; x++) {
+        const d = hash(x * 31 + y * 7) * .35 + (x + y) * .012;
+        const p = seg(t, E - .1 + d, E + .25 + d), q = seg(t, E + .45 + d, E + .75 + d);
+        const z = 90 * eo(p) * (1 - eo(q));
+        if (z > .5) { fx.fillStyle = (x + y) % 5 === 0 ? '#FF5A45' : '#E5342A'; fx.fillRect(x * s + (s - z) / 2, y * s + (s - z) / 2, z, z); }
+      }
+    }
+    S($('endc'), t > E + .45 ? 1 : 0);
+    $('endPx').querySelectorAll('b').forEach((b, i) => { const p = back(seg(t, E + .7 + i * .05, E + 1 + i * .05)); b.style.transform = `scale(${p})`; b.style.background = i === 9 ? '#fff' : '#E5342A'; });
+    $('wm').querySelectorAll('span').forEach((s, i) => { const p = eo5(seg(t, E + .8 + i * .045, E + 1.35 + i * .045)); s.style.transform = `translateY(${(1 - p) * 120}px) skewX(${(1 - p) * -14}deg)`; s.style.opacity = cl(seg(t, E + .8 + i * .045, E + 1 + i * .045)); });
+    const f = (id, a) => S($(id), cl(seg(t, a, a + .3)), `translateY(${(1 - eo5(seg(t, a, a + .5))) * 50}px)`);
+    f('tl1', E + 1.3); f('tl2', E + 1.7); f('svc', E + 2.2); f('hdl', E + 2.6);
+    const cp = back(seg(t, E + 2.35, E + 2.75)); S($('cta'), cl(seg(t, E + 2.35, E + 2.5)), `scale(${cp * (1 + .025 * Math.max(0, Math.sin((t - E) * 5)))})`); }
+};
+window.render(0);
+</script>
+</body>
+</html>
