@@ -1,0 +1,11 @@
+frames/
+voz/pruebas/
+*.wav
+!voz/*.wav
+part*.mp4
+*.log
+__pycache__/
+musica/
+audio_*.wav
+*.mp4
+render.log
