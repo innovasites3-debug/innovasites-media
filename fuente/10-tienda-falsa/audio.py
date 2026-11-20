@@ -130,7 +130,7 @@ add(sfx, T['web'] - .05, click(), .8); add(sfx, T['pay'] - .05, click(), .8); ad
 add(sfx, T['gone'], impact(1.0)); add(sfx, T['gone'] + .1, wah(), .45)
 add(sfx, T['phEnd'] - .45, whoosh(.5), .5)
 add(sfx, T['q0'] + .2, whoosh(.35), .3); add(sfx, T['q0'] + .5, whoosh(.3), .3); add(sfx, T['q0'] + .65, whoosh(.3), .3)
-for i in range(5): add(sfx, T['p0'] + i, tick(), 1.0)
+for i in range(4): add(sfx, T['p0'] + i, tick(), 1.0)
 add(sfx, T['p1'], impact(.9)); add(sfx, T['p1'] + .05, sparkle(), .55)
 for w in [T['t1'][0], T['t2'][0], T['t3'][0]]:
     add(sfx, w - .05, whoosh(.45), .5); add(sfx, w + .35, ding(1568, .28))
