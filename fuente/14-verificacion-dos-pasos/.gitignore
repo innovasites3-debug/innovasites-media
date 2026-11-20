@@ -1,0 +1,6 @@
+frames/
+voz/pruebas/
+*.wav
+!voz/*.wav
+part*.mp4
+*.log
