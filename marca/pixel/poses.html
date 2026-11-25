@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;background:transparent}#f{position:absolute;left:60px;top:60px}</style>
+<script src="pixel.js"></script><script src="pixel-figura.js"></script></head><body><div id="f"></div>
+<script>
+// Abre con ?pose=nombre. Usado por exportar_png.py para sacar PNG transparentes.
+const POSES = {
+  normal:   [{}, {}],
+  saludo:   [{ eyes: 'happy', mouth: 'grin' }, { brazoD: -160, cabeza: -4 }],
+  hablando: [{ mouth: 'talk' }, { brazoI: 20, brazoD: -40 }],
+  sorpresa: [{ eyes: 'wide', mouth: 'o' }, { brazoI: 60, brazoD: -60 }],
+  peligro:  [{ eyes: 'x', mouth: 'zig' }, { brazoI: 40, brazoD: -40, cabeza: 6 }],
+  pensando: [{ eyes: 'think', mouth: 'flat' }, { brazoD: -130, cabeza: 5 }],
+  candado:  [{ icon: 'lock' }, { brazoD: -150 }],
+  alerta:   [{ icon: 'warn' }, { brazoI: 50, brazoD: -50 }],
+  correcto: [{ icon: 'check' }, { brazoD: -165 }],
+  me_gusta: [{ eyes: 'heart', mouth: 'smile' }, { brazoI: 30, brazoD: -30 }],
+  genial:   [{ eyes: 'star', mouth: 'grin' }, { brazoI: 150, brazoD: -150 }],
+  guino:    [{ eyes: 'wink', mouth: 'smirk' }, { brazoD: -100 }],
+};
+const p = POSES[new URLSearchParams(location.search).get('pose') || 'normal'];
+const fig = pixelFigura(document.getElementById('f'), 12.5); fig.cara(p[0]); fig.pose(p[1]);
+window.POSES = Object.keys(POSES);
+</script></body></html>
