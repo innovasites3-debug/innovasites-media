@@ -1,5 +1,5 @@
 // Pixel, la mascota voxel de InnovaSites. sprite(o) -> matriz; svg(o, px) -> SVG voxel.
-const PW=27,PH=32,PAL={O:'#1d0503',R:'#E5342A',r:'#a8211a',H:'#ff7468',K:'#0a0b10',k:'#15171f',W:'#ffffff',E:'#ff4a3d',G:'#c9ced8',Y:'#ffd34d',S:'#5a120d'};
+const PW=27,PH=32,PAL={O:'#1d0503',R:'#E5342A',r:'#a8211a',H:'#ff7468',K:'#0a0b10',k:'#15171f',W:'#ffffff',E:'#ff4a3d',G:'#c9ced8',Y:'#ffd34d',S:'#5a120d',V:'#34c759'};
 function sprite(o){
   const g=[...Array(PH)].map(()=>Array(PW).fill('.'));
   const P=(x,y,c)=>{if(x>=0&&x<PW&&y>=0&&y<PH)g[y][x]=c};
@@ -15,20 +15,46 @@ function sprite(o){
   // pantalla de la cara
   rect(5+ox,7,18+ox,17,'O'); rect(6+ox,8,17+ox,16,'K');
   for(let x=6;x<=17;x++)for(let y=8;y<=16;y++)if((x*3+y*5)%7==0)P(x+ox,y,'k');
-  // ojos = < >  del logo
-  const lt=[[9,8],[8,9],[7,10],[8,11],[9,12]], gt=[[14,8],[15,9],[16,10],[15,11],[14,12]];
-  if(o.eyes==='blink'){ rect(7+ox,10,10+ox,10,'E'); rect(13+ox,10,16+ox,10,'W'); }
-  else if(o.eyes==='wide'){ rect(7+ox,8,10+ox,11,'W'); rect(8+ox,9,9+ox,10,'K'); rect(13+ox,8,16+ox,11,'W'); rect(14+ox,9,15+ox,10,'K'); }
+  // ---------- cara (pantalla LED) ----------
+  const pat=(rows,x0,y0,c,flip)=>rows.forEach((r,j)=>[...r].forEach((ch,i)=>{ if(ch!=='.'){ const xx=flip? x0+r.length-1-i : x0+i; P(xx+ox,y0+j, ch==='#'?c:ch);} }));
+  const dx=o.dx||0, dy=o.dy||0;
+  const ICON={
+    lock:['....WWWW....','...W....W...','...W....W...','..RRRRRRRR..','..RRRKKRRR..','..RRRKKRRR..','..RRRRRRRR..'],
+    warn:['.....YY.....','....YKKY....','....YKKY....','...YYKKYY...','...YYYYYY...','..YYYKKYYY..','..YYYYYYYY..'],
+    check:['..........VV','.........VV.','VV......VV..','.VV....VV...','..VV..VV....','...VVVV.....','....VV......'],
+    q:['....WWWW....','...W....W...','........W...','......WW....','.....W......','............','.....W......'],
+  };
+  if(o.icon && ICON[o.icon]) { pat(ICON[o.icon],6,9,'W'); }
   else {
-    lt.forEach(([x,y])=>{P(x+ox,y,'E');P(x+1+ox,y,'E')});
-    if(o.eyes==='wink') [[13,11],[14,10],[15,10],[16,11]].forEach(([x,y])=>P(x+ox,y,'W'));
-    else gt.forEach(([x,y])=>{P(x+ox,y,'W');P(x-1+ox,y,'W')});
+    const L=(rows,c)=>pat(rows,6+dx,8+dy,c,false), R=(rows,c)=>pat(rows,13+dx,8+dy,c,false);
+    const E=o.eyes||'open';
+    if(E==='open'){ const lt=[[9,8],[8,9],[7,10],[8,11],[9,12]], gt=[[14,8],[15,9],[16,10],[15,11],[14,12]];
+      lt.forEach(([x,y])=>{P(x+ox+dx,y+dy,'E');P(x+1+ox+dx,y+dy,'E')}); gt.forEach(([x,y])=>{P(x+ox+dx,y+dy,'W');P(x-1+ox+dx,y+dy,'W')}); }
+    else if(E==='blink'){ rect(7+ox,10,10+ox,10,'E'); rect(13+ox,10,16+ox,10,'W'); }
+    else if(E==='wide'){ rect(7+ox+dx,8+dy,10+ox+dx,11+dy,'W'); rect(8+ox+dx,9+dy,9+ox+dx,10+dy,'K'); rect(13+ox+dx,8+dy,16+ox+dx,11+dy,'W'); rect(14+ox+dx,9+dy,15+ox+dx,10+dy,'K'); }
+    else if(E==='wink'){ const lt=[[9,8],[8,9],[7,10],[8,11],[9,12]]; lt.forEach(([x,y])=>{P(x+ox,y,'E');P(x+1+ox,y,'E')}); [[13,11],[14,10],[15,10],[16,11]].forEach(([x,y])=>P(x+ox,y,'W')); }
+    else if(E==='happy'){ L(['.....','.##..','#..#.','.....'],'E'); R(['.....','.##..','#..#.','.....'],'W'); }
+    else if(E==='angry'){ L(['#....','.##..','..##.','.###.','.....'],'E'); R(['....#','..##.','.##..','.###.','.....'],'W'); }
+    else if(E==='sad'){ L(['...#.','..#..','.##..','.##..'],'E'); R(['#....','.#...','.##..','.##..'],'W'); }
+    else if(E==='sus'){ L(['.....','.....','####.','.##..'],'E'); R(['.....','.....','####.','.##..'],'W'); }
+    else if(E==='heart'){ L(['.#.#.','#####','#####','.###.','..#..'],'E'); R(['.#.#.','#####','#####','.###.','..#..'],'E'); }
+    else if(E==='x'){ L(['#..#.','.##..','.##..','#..#.'],'E'); R(['#..#.','.##..','.##..','#..#.'],'E'); }
+    else if(E==='star'){ L(['.#...','###..','.#...'],'Y'); R(['.#...','###..','.#...'],'Y'); }
+    else if(E==='think'){ pat(['..##','..##','....'],7,8,'E'); pat(['..##','..##','....'],13,8,'W'); P(17+ox,13,'W'); P(16+ox,13,'W'); }
+    // boca
+    const Mo=o.mouth||'smile', m=(rows,c,y=14)=>pat(rows,9,y,c);
+    if(Mo==='mid'){ rect(10+ox,14,13+ox,14,'E'); rect(11+ox,15,12+ox,15,'E'); }
+    else if(Mo==='talk'){ rect(10+ox,14,13+ox,15,'E'); rect(11+ox,15,12+ox,15,'H'); }
+    else if(Mo==='o'){ rect(11+ox,14,12+ox,15,'W'); }
+    else if(Mo==='wide'){ m(['.####.','#HHHH#','.####.'],'E',13); }
+    else if(Mo==='flat'){ m(['......','.####.'],'W'); }
+    else if(Mo==='frown'){ m(['.####.','#....#'],'W'); }
+    else if(Mo==='smirk'){ m(['....#.','.###..'],'W'); }
+    else if(Mo==='grin'){ m(['######','#EEEE#'],'W'); }
+    else if(Mo==='zig'){ m(['.#..#.','#.##.#'],'W'); }
+    else if(Mo==='ee'){ m(['######','.EEEE.'],'E'); }
+    else { [[9,14],[14,14],[10,15],[11,15],[12,15],[13,15]].forEach(([x,y])=>P(x+ox,y,'W')); }
   }
-  // boca
-  if(o.mouth==='mid'){ rect(10+ox,14,13+ox,14,'E'); rect(11+ox,15,12+ox,15,'E'); }
-  else if(o.mouth==='talk'){ rect(10+ox,14,13+ox,15,'E'); rect(11+ox,15,12+ox,15,'H'); }
-  else if(o.mouth==='o'){ rect(11+ox,14,12+ox,15,'W'); }
-  else { [[9,14],[14,14],[10,15],[11,15],[12,15],[13,15]].forEach(([x,y])=>P(x+ox,y,'W')); }
   // cuerpo
   rect(10+ox,21,13+ox,21,'S');
   rect(6+ox,22,17+ox,27,'O'); rect(7+ox,22,16+ox,26,'R'); rect(7+ox,26,16+ox,26,'r'); rect(7+ox,22,9+ox,22,'H');
@@ -51,7 +77,7 @@ function pixelSVG(o,px=11.5){
     if(!has(x,y-1)) sides+=`<path d="M${X} ${Y} L${X+D} ${Y-D} L${X+px+D} ${Y-D} L${X+px} ${Y} Z" fill="${shade(col,.28)}"/>`;
     if(!has(x+1,y)) sides+=`<path d="M${X+px} ${Y} L${X+px+D} ${Y-D} L${X+px+D} ${Y+px-D} L${X+px} ${Y+px} Z" fill="${shade(col,-.42)}"/>`;
     const lit = .10 - (y/PH)*.22 - (x/PW)*.08;
-    const emis = (c==='E'||c==='W'&&y>=8&&y<=16&&x>=6&&x<=19||c==='Y');
+    const emis = (c==='E'||c==='V'||c==='Y'||(c==='W'||c==='R'||c==='H')&&y>=8&&y<=16&&x>=8&&x<=19);
     fronts+=`<rect x="${X}" y="${Y}" width="${px+.4}" height="${px+.4}" fill="${emis?col:shade(col,lit)}"/>`;
     if(!emis && c!=='K' && c!=='k') fronts+=`<rect x="${X+1}" y="${Y+1}" width="${px*.38}" height="${px*.16}" fill="rgba(255,255,255,.10)"/>`;
     if(emis) glow+=`<rect x="${X-2}" y="${Y-2}" width="${px+4}" height="${px+4}" rx="3" fill="${col}" opacity=".9"/>`;
@@ -78,7 +104,7 @@ function voxPart(g, px, x0, y0, x1, y1, uid) {
     if (!has(x, y - 1)) sides += `<path d="M${X} ${Y} L${X + D} ${Y - D} L${X + px + D} ${Y - D} L${X + px} ${Y} Z" fill="${shade(col, .28)}"/>`;
     if (!has(x + 1, y)) sides += `<path d="M${X + px} ${Y} L${X + px + D} ${Y - D} L${X + px + D} ${Y + px - D} L${X + px} ${Y + px} Z" fill="${shade(col, -.42)}"/>`;
     const lit = .10 - (y / PH) * .22 - (x / PW) * .08;
-    const emis = (c === 'E' || c === 'W' && y >= 8 && y <= 16 && x >= 6 && x <= 19 || c === 'Y');
+    const emis = (c === 'E' || c === 'V' || c === 'Y' || (c === 'W' || c === 'R' || c === 'H') && y >= 8 && y <= 16 && x >= 8 && x <= 19);
     fronts += `<rect x="${X}" y="${Y}" width="${px + .4}" height="${px + .4}" fill="${emis ? col : shade(col, lit)}"/>`;
     if (!emis && c !== 'K' && c !== 'k') fronts += `<rect x="${X + 1}" y="${Y + 1}" width="${px * .38}" height="${px * .16}" fill="rgba(255,255,255,.10)"/>`;
     if (emis) glow += `<rect x="${X - 2}" y="${Y - 2}" width="${px + 4}" height="${px + 4}" rx="3" fill="${col}" opacity=".9"/>`;

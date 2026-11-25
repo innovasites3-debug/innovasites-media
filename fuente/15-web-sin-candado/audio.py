@@ -8,6 +8,7 @@ V = pathlib.Path(__file__).resolve().parent
 js = (V / 'timing.js').read_text(encoding='utf-8')
 T = json.loads(re.search(r'window\.T = (.*?);\n', js).group(1))
 VOICE = json.loads(re.search(r'window\.VOICE = (.*?);\n', js).group(1))
+SUBS = json.loads(re.search(r'window\.SUBS = (.*?);\n', js).group(1))
 SR = 44100
 DUR = T['dur']
 N = int(SR * DUR)
@@ -124,8 +125,19 @@ add(sfx, SC[3] + .6, smp('sfx_datos_b', 1.0)); add(sfx, SC[3] + 1.7, smp('sfx_al
 add(sfx, SC[4] + .05, smp('sfx_exito_b', .35)); add(sfx, SC[4] + .9, smp('sfx_impacto_b', .35))
 add(sfx, SC[5] + .7, smp('sfx_impacto_a', .55)); add(sfx, SC[5] + .72, smp('sfx_alerta_b', .3))
 add(sfx, SC[6] + .5, smp('sfx_exito_a', .45)); add(sfx, SC[6] + 1.1, smp('sfx_exito_b', .45))
-add(sfx, SC[7] + .3, smp('sfx_tecleo_b', .7))
-add(sfx, SC[8] - .02, smp('sfx_impacto_b', .45)); add(sfx, SC[8] + .1, smp('sfx_pixel_a', .7))
+add(sfx, SC[7] + .3, smp('sfx_tecleo_b', .7)); add(sfx, SC[7] + 1.15, smp('sfx_tecleo_a', .6))
+add(sfx, SC[8] - .02, smp('sfx_impacto_b', .45)); add(sfx, SC[8] + .1, smp('sfx_exito_b', .5))
+# teletransportes de Pixel (se deshace y se rearma)
+WV = [w for sb in SUBS for w in sb[2]]
+def wt(word, n=0):
+    c = 0
+    for w in WV:
+        if re.sub(r'[*.,:¿?…]', '', w[0]).lower() == word:
+            if c == n: return w[1]
+            c += 1
+    return None
+for t0 in [SC[1] - .1, SC[5] - .1, SC[7] - .1, wt('viste') + .1]:
+    add(sfx, t0, smp('sfx_pixel_a', .5))
 
 # ---------- voz ----------
 voice = np.zeros(N)
