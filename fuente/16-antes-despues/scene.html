@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Antes y después</title>
+<style>
+  @font-face { font-family: 'Oswald'; font-weight: 600; src: url('fonts/oswald-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Oswald'; font-weight: 700; src: url('fonts/oswald-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 400; src: url('fonts/inter-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 500; src: url('fonts/inter-latin-500-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 600; src: url('fonts/inter-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 700; src: url('fonts/inter-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 400; src: url('fonts/space-mono-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 700; src: url('fonts/space-mono-latin-700-normal.woff2') format('woff2'); }
+  :root { --red: #E5342A; --red2: #ff5a4f; --ok: #34c759; --ink: #F4F5F7; --mut: #8b93a3; --disp: 'Oswald', sans-serif; --ui: 'Inter', sans-serif; --mono: 'Space Mono', monospace; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #050506; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: var(--ui); color: var(--ink); }
+  .abs { position: absolute; }
+
+  /* ---------- cuarto: pared, lámpara, escritorio ---------- */
+  #room { position: absolute; inset: 0; transform-origin: 50% 48%; }
+  #wall { position: absolute; inset: 0; background:
+      radial-gradient(ellipse 520px 760px at 6% 40%, rgba(255,170,90,.20), rgba(255,170,90,0) 70%),
+      radial-gradient(ellipse 900px 620px at 50% 46%, rgba(229,52,42,.10), rgba(0,0,0,0) 70%),
+      linear-gradient(180deg, #0c0c0f 0%, #121217 55%, #0b0b0d 100%); }
+  #lamp { position: absolute; left: -40px; top: 520px; width: 120px; height: 760px; background: linear-gradient(180deg, rgba(255,214,160,.85), rgba(255,170,90,.35)); filter: blur(28px); opacity: .55; }
+  #desk { position: absolute; left: 0; right: 0; top: 1390px; bottom: 0; background:
+      linear-gradient(180deg, rgba(229,52,42,.10) 0%, rgba(0,0,0,0) 22%),
+      repeating-linear-gradient(92deg, rgba(255,255,255,.018) 0 3px, rgba(0,0,0,0) 3px 11px),
+      linear-gradient(180deg, #2a1d15 0%, #1a120d 45%, #0e0a08 100%); }
+  #deskEdge { position: absolute; left: 0; right: 0; top: 1386px; height: 8px; background: linear-gradient(180deg, rgba(255,200,150,.18), rgba(0,0,0,0)); }
+  #refl { position: absolute; left: 160px; right: 160px; top: 1400px; height: 260px; background: radial-gradient(ellipse at 50% 0%, rgba(229,52,42,.28), rgba(229,52,42,0) 70%); filter: blur(8px); }
+  #kbd { position: absolute; left: 230px; top: 1530px; width: 620px; height: 150px; border-radius: 16px; background: linear-gradient(180deg, #16161c, #0b0b0f); box-shadow: 0 0 0 2px rgba(255,59,47,.55), 0 0 30px rgba(229,52,42,.45), 0 24px 40px rgba(0,0,0,.8); transform: perspective(900px) rotateX(50deg); z-index: 20; }
+  #kbd i { position: absolute; inset: 14px; background: repeating-linear-gradient(90deg, rgba(255,90,79,.22) 0 2px, rgba(0,0,0,0) 2px 40px), repeating-linear-gradient(180deg, rgba(255,90,79,.22) 0 2px, rgba(0,0,0,0) 2px 30px); border-radius: 6px; }
+  #kbd canvas { position: absolute; inset: 14px; width: calc(100% - 28px); height: calc(100% - 28px); }
+  #mouse { position: absolute; left: 880px; top: 1500px; width: 70px; height: 100px; border-radius: 35px; background: linear-gradient(180deg, #1c1c20, #0e0e11); transform: perspective(700px) rotateX(55deg); box-shadow: 0 14px 30px rgba(0,0,0,.7); }
+
+  /* ---------- monitor ---------- */
+  #mon { position: absolute; left: 46px; top: 700px; transform: scale(.93); transform-origin: 50% 50%; width: 988px; height: 572px; border-radius: 18px; background: #050505; box-shadow: 0 0 0 2px #1d1d21, 0 40px 90px rgba(0,0,0,.8), 0 0 140px rgba(229,52,42,.18); }
+  #scr { position: absolute; left: 14px; top: 14px; width: 960px; height: 540px; border-radius: 6px; overflow: hidden; background: #07080b; }
+  #stand { position: absolute; left: 488px; top: 1240px; width: 104px; height: 140px; border-radius: 6px; background: linear-gradient(90deg, #1a1a1f 0%, #3a3a42 45%, #24242a 60%, #121215 100%); box-shadow: 0 0 0 1px rgba(255,255,255,.05); }
+  #base { position: absolute; left: 395px; top: 1372px; width: 290px; height: 26px; border-radius: 12px 12px 8px 8px; background: linear-gradient(180deg, #4a4a52, #26262c 40%, #101013); box-shadow: 0 10px 24px rgba(0,0,0,.7); }
+  #scrGlare { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 28%, rgba(255,255,255,0) 70%, rgba(255,255,255,.03) 100%); z-index: 50; }
+  #scrGrid { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1.4px); background-size: 24px 24px; opacity: .5; }
+  #line { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
+
+  /* escenas dentro del monitor (960 x 540) */
+  .sc { position: absolute; inset: 0; opacity: 0; }
+  .pop { opacity: 0; }
+  .browser { position: absolute; left: 150px; top: 60px; width: 660px; height: 420px; border-radius: 16px; background: #121419; box-shadow: 0 20px 50px rgba(0,0,0,.6); overflow: hidden; }
+  .bbar { height: 58px; background: #1b1e25; display: flex; align-items: center; gap: 12px; padding: 0 18px; }
+  .dots i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; background: #3a3f4b; }
+  .url { flex: 1; height: 36px; border-radius: 18px; background: #0d0f13; display: flex; align-items: center; gap: 10px; padding: 0 16px; font-size: 17px; color: #c9ced8; white-space: nowrap; }
+  .url .warn { color: var(--red2); font-weight: 700; font-size: 15px; }
+  .url .lk { color: var(--ok); }
+  .form { padding: 34px 40px; }
+  .form h5 { font-size: 26px; font-weight: 700; margin-bottom: 20px; }
+  .field { white-space: pre; height: 64px; border-radius: 12px; border: 2px solid #2b303b; display: flex; align-items: center; padding: 0 18px; font-family: var(--mono); font-size: 28px; letter-spacing: .04em; margin-bottom: 14px; }
+  .field small { font-family: var(--ui); font-size: 14px; color: var(--mut); position: absolute; margin-top: -58px; }
+  .field .c { color: var(--ink); } .field .c.hot { color: var(--red2); text-shadow: 0 0 14px rgba(229,52,42,.9); }
+  .row2 { display: flex; gap: 14px; } .row2 .field { flex: 1; }
+  .btn { height: 58px; border-radius: 12px; background: var(--red); display: grid; place-items: center; font-weight: 700; font-size: 21px; }
+  .eye { position: absolute; width: 150px; height: 150px; }
+  .big { font-family: var(--disp); font-weight: 700; text-transform: uppercase; letter-spacing: .01em; line-height: 1; }
+  .chip { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 30px; font-weight: 700; font-size: 22px; }
+  .stamp { position: absolute; padding: 10px 24px 4px; border: 7px solid var(--red); color: var(--red); font-family: var(--disp); font-weight: 700; font-size: 74px; line-height: 1.1; background: rgba(10,10,12,.85); }
+  .pkt { position: absolute; padding: 8px 14px; border-radius: 10px; background: #fff; color: #111; font-family: var(--mono); font-weight: 700; font-size: 22px; white-space: nowrap; box-shadow: 0 0 24px rgba(255,255,255,.35); }
+  .lbl { position: absolute; font-family: var(--mono); font-size: 18px; letter-spacing: .1em; text-transform: uppercase; color: var(--mut); }
+  .chk { position: absolute; left: 140px; width: 680px; height: 110px; border-radius: 18px; background: #12151b; border: 2px solid #252a35; display: flex; align-items: center; gap: 26px; padding: 0 30px; }
+  .chk .ic { width: 64px; height: 64px; flex: none; }
+  .chk b { display: block; font-size: 30px; } .chk span { display: block; font-size: 19px; color: var(--mut); margin-top: 4px; font-family: var(--mono); }
+  .chk .tick { margin-left: auto; width: 58px; height: 58px; }
+  .bubble { position: absolute; left: 170px; top: 120px; width: 620px; padding: 28px 34px; border-radius: 26px 26px 26px 6px; background: #f4f5f7; color: #111; font-size: 30px; font-weight: 600; line-height: 1.35; }
+  .bubble small { display: block; font-size: 18px; color: #6b7280; font-weight: 700; margin-bottom: 8px; }
+  .cur { display: inline-block; width: 3px; height: 32px; background: #111; vertical-align: -5px; margin-left: 2px; }
+
+
+  /* ---------- sitio de ejemplo: Panadería Trigal (marca genérica) ---------- */
+  .site { position: absolute; left: 110px; top: 24px; width: 740px; height: 492px; border-radius: 14px; overflow: hidden; background: #1b1e25; box-shadow: 0 20px 50px rgba(0,0,0,.6); }
+  .site .bbar { height: 50px; }
+  .site .url { font-size: 16px; }
+  .body { position: absolute; left: 0; top: 50px; width: 740px; height: 442px; overflow: hidden; background: #d4d4d4; }
+  .body > * { position: absolute; }
+  .oHead { left: 0; top: 0; width: 740px; height: 54px; background: #2b4a8b; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-family: Georgia, serif; }
+  .oHead b { color: #ffe14d; font-size: 17px; font-style: italic; }
+  .oHead span { color: #fff; font-size: 10.5px; text-decoration: underline; margin-left: 7px; }
+  .oMarq { left: 0; top: 54px; width: 740px; height: 30px; background: #ffe14d; overflow: hidden; white-space: nowrap; font-family: Georgia, serif; font-weight: 700; color: #d11; font-size: 15px; line-height: 30px; }
+  .oMarq i { position: absolute; font-style: normal; }
+  .oTitle { left: 0; width: 740px; top: 96px; text-align: center; font-family: Georgia, serif; color: #1d3c8f; font-size: 25px; text-decoration: underline; }
+  .oText { left: 70px; width: 600px; top: 138px; text-align: center; font-family: Arial, sans-serif; color: #8a8a8a; font-size: 11.5px; line-height: 1.35; }
+  .oBtns { left: 0; width: 740px; top: 212px; display: flex; justify-content: center; gap: 6px; }
+  .oBtns i { font-style: normal; font-family: Arial, sans-serif; font-size: 11px; padding: 5px 9px; border: 2px outset #bbb; color: #fff; }
+  .oLoad { left: 210px; top: 258px; width: 320px; height: 118px; background: #c4c4c4; border: 1px dashed #999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-family: Arial, sans-serif; font-size: 12px; color: #666; }
+  .spin { width: 34px; height: 34px; border-radius: 50%; border: 5px solid #aaa; border-top-color: #555; }
+  .oFoot { left: 0; width: 740px; bottom: 8px; text-align: center; font-family: Arial, sans-serif; font-size: 10.5px; color: #777; }
+  .nHead { left: 0; top: 0; width: 740px; height: 56px; background: #fffdf8; display: flex; align-items: center; padding: 0 30px; gap: 26px; box-shadow: 0 1px 0 #eadfce; }
+  .nHead b { font-family: var(--disp); font-size: 28px; color: #2a1a0e; letter-spacing: .02em; margin-right: auto; }
+  .nHead b em { font-style: normal; color: #e8902a; }
+  .nHead span { font-size: 14px; font-weight: 600; color: #5b4a3d; }
+  .nTitle { left: 36px; top: 82px; width: 400px; font-family: var(--disp); font-weight: 700; text-transform: uppercase; font-size: 50px; line-height: .98; color: #2a1a0e; }
+  .nTitle em { font-style: normal; color: #e8902a; }
+  .nText { left: 36px; top: 210px; width: 370px; font-size: 21px; line-height: 1.3; font-weight: 600; color: #4a3b30; }
+  .nBtn { left: 36px; top: 300px; height: 60px; padding: 0 34px; border-radius: 30px; background: #e8902a; color: #fff; font-weight: 800; font-size: 23px; display: flex; align-items: center; box-shadow: 0 10px 24px rgba(232,144,42,.45); }
+  .nImg { left: 450px; top: 86px; width: 260px; height: 260px; }
+  .nSpeed { left: 488px; top: 362px; padding: 8px 16px; border-radius: 22px; background: #e7f8ec; color: #1d8a45; font-weight: 800; font-size: 18px; }
+  .nWa { right: 22px; bottom: 20px; width: 66px; height: 66px; border-radius: 50%; background: #25D366; display: grid; place-items: center; box-shadow: 0 8px 22px rgba(37,211,102,.55); }
+  .steps { position: absolute; left: 26px; top: 110px; display: flex; flex-direction: column; gap: 14px; }
+  .steps i { width: 56px; height: 56px; border-radius: 50%; border: 3px solid #3a3f4b; display: grid; place-items: center; font-family: var(--disp); font-style: normal; font-size: 28px; color: #8b93a3; background: #0d0f13; }
+  .steps i.ok { border-color: #34c759; background: #34c759; color: #06210f; }
+  .tagAB { position: absolute; font-family: var(--disp); font-weight: 700; font-size: 64px; width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; }
+  .mini { position: absolute; top: 40px; transform-origin: 0 0; }
+
+  /* ---------- textos fuera del monitor ---------- */
+  #brand { left: 64px; right: 64px; top: 150px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 22px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  #brand b { color: #fff; } #brand i { display: inline-block; width: 12px; height: 12px; background: var(--red); margin-right: 12px; vertical-align: 1px; }
+  #kw { left: 40px; right: 40px; top: 205px; height: 290px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  #kw .k { font-family: var(--disp); font-weight: 700; text-transform: uppercase; font-size: 112px; line-height: 1.02; letter-spacing: .005em; text-shadow: 0 8px 40px rgba(0,0,0,.7); }
+  #kw .k .r { color: var(--red); }
+  #cap { left: 60px; right: 60px; top: 1712px; text-align: center; }
+  #cap span { display: inline-block; font-weight: 800; font-size: 50px; line-height: 1.25; margin: 0 7px; color: rgba(255,255,255,.95); text-shadow: 0 4px 18px rgba(0,0,0,.9); }
+  #cap span.on { color: var(--red2); }
+  #cap span.dim { color: rgba(255,255,255,.35); }
+  #pix { position: absolute; left: 0; top: 0; width: 263px; height: 388px; z-index: 30; transform-origin: 50% 100%; }
+  #pix .pp { position: absolute; }
+  #pix svg { display: block; }
+  #pshadow { position: absolute; top: 1648px; width: 190px; height: 26px; border-radius: 50%; background: rgba(0,0,0,.55); filter: blur(10px); z-index: 29; }
+
+  /* ---------- fondo B: espacio neón ---------- */
+  #wall { background: radial-gradient(ellipse 900px 520px at 50% 64%, rgba(229,52,42,.26), rgba(0,0,0,0) 70%), linear-gradient(180deg,#040407 0%,#0a0508 60%,#120607 100%) !important; }
+  #lamp, #desk, #deskEdge, #refl { display: none !important; }
+  #grid { position: absolute; left: -260px; right: -260px; top: 1392px; height: 620px; transform-origin: 50% 0; transform: perspective(420px) rotateX(62deg);
+    background-image: linear-gradient(var(--gc) 3px, transparent 3px), linear-gradient(90deg, var(--gc) 3px, transparent 3px); background-size: 120px 120px;
+    -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.15), #000 45%); filter: drop-shadow(0 0 8px var(--gc)); }
+  #horizon { position: absolute; left: 0; right: 0; top: 1350px; height: 80px; background: radial-gradient(ellipse at 50% 100%, var(--hc), rgba(0,0,0,0) 70%); filter: blur(6px); }
+  #led { position: absolute; left: 70px; top: 690px; width: 940px; height: 600px; border-radius: 40px; box-shadow: 0 0 140px 50px var(--lc); }
+  #bokeh { position: absolute; inset: 0; pointer-events: none; }
+  #cubes i { position: absolute; width: 26px; height: 26px; background: #E5342A; box-shadow: inset -6px -6px 0 rgba(0,0,0,.3), inset 6px 6px 0 rgba(255,255,255,.25), 0 0 20px rgba(229,52,42,.7); }
+  #cubes i.w { background: #fff; box-shadow: inset -6px -6px 0 rgba(0,0,0,.2), 0 0 16px rgba(255,255,255,.5); }
+  :root { --gc: rgba(255,59,47,.85); --hc: rgba(255,80,60,.9); --lc: rgba(229,52,42,.35); }
+  #kw .s { font-family: var(--disp); font-weight: 700; text-transform: uppercase; font-size: 92px; line-height: 1.06; text-align: center; text-shadow: 0 8px 40px rgba(0,0,0,.8); }
+  #kw .s span { display: inline-block; margin: 0 .12em; transition: none; }
+  #kw .s span.r { color: var(--red); }
+  #kw .s span.dim { opacity: .28; }
+  #cap { display: none !important; }
+  #fx { position: absolute; inset: 0; z-index: 90; pointer-events: none; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 95; pointer-events: none; }
+</style>
+<script src="timing.js"></script>
+<script src="pixel.js"></script>
+</head>
+<body>
+<div id="stage">
+  <div id="room">
+    <div id="wall"></div><canvas id="bokeh" width="1080" height="1920"></canvas><div id="horizon"></div><div id="grid"></div><div id="cubes"></div><div id="lamp"></div>
+    <div id="desk"></div><div id="deskEdge"></div><div id="refl"></div>
+    <div id="kbd"><i></i><canvas id="kfx" width="592" height="122"></canvas></div>
+    <div id="stand"></div><div id="base"></div>
+    <div id="led"></div>
+    <div id="mon"><div id="scr">
+      <div id="scrGrid"></div>
+
+      <div class="site" id="site"><div class="bbar"><span class="dots"><i></i><i></i><i></i></span><div class="url"><span class="lk" style="color:#34c759">🔒</span><span class="u">panaderiatrigal.co</span></div></div>
+<div class="body">
+ <div class="oHead old0"><b>Panadería y Pastelería Trigal Ltda.</b><div><span>Inicio</span><span>Quiénes somos</span><span>Misión</span><span>Visión</span><span>Productos</span><span>Galería</span><span>Contáctenos</span></div></div>
+ <div class="oMarq old0"><i>¡¡¡BIENVENIDOS A NUESTRA PÁGINA WEB OFICIAL!!! ★ OFERTAS ★ ¡¡¡BIENVENIDOS A NUESTRA PÁGINA WEB OFICIAL!!! ★ OFERTAS ★ ¡¡¡BIENVENIDOS A NUESTRA PÁGINA WEB OFICIAL!!!</i></div>
+ <div class="oTitle old0">Bienvenidos a nuestra página</div>
+ <div class="oText old2">Somos una empresa dedicada a la elaboración y comercialización de productos de panadería y pastelería con altos estándares de calidad, comprometidos con la satisfacción de nuestros clientes y el desarrollo de la comunidad desde hace muchos años. Para mayor información puede comunicarse con nosotros a través de nuestros canales de atención en horario de oficina.</div>
+ <div class="oBtns old1"><i style="background:#3a7d2c">Inicio</i><i style="background:#8b2fa0">Ver más</i><i style="background:#c0392b">Click aquí</i><i style="background:#2471a3">Galería</i><i style="background:#d68910">Contáctenos</i><i style="background:#555">Descargar PDF</i></div>
+ <div class="oLoad old3"><div class="spin"></div><span>Cargando imágenes… <b class="lt">8,4 s</b></span></div>
+ <div class="oFoot old4">Escríbanos al correo: panaderiatrigal@correo.com · Tel. (602) 000 0000 ext. 104 · Visitas: <b class="vis">012.480</b></div>
+ <div class="nHead new0"><b>Tri<em>gal</em></b><span>Panes</span><span>Tortas</span><span>Pedidos</span></div>
+ <div class="nTitle new0">Pan artesanal, <em>recién horneado</em></div>
+ <div class="nText new2">Todas las mañanas en Cali. Pídelo hoy y recógelo caliente.</div>
+ <div class="nBtn new1">Pide el tuyo →</div>
+ <svg class="nImg new3" viewBox="0 0 260 260"><circle cx="130" cy="140" r="112" fill="#f3d9b5"/><circle cx="130" cy="140" r="96" fill="#ecc795"/>
+  <g><ellipse cx="128" cy="118" rx="82" ry="38" fill="#b86a2a"/><ellipse cx="128" cy="110" rx="78" ry="31" fill="#d08a3e"/><path d="M78 104 q14 -16 26 0 M108 100 q14 -16 26 0 M138 100 q14 -16 26 0 M166 104 q12 -14 22 0" stroke="#f6d39a" stroke-width="6" fill="none" stroke-linecap="round"/></g>
+  <g><circle cx="88" cy="182" r="34" fill="#a95d22"/><circle cx="86" cy="176" r="30" fill="#c97f36"/><path d="M70 172 l30 0 M74 184 l24 0" stroke="#f1c98b" stroke-width="5" stroke-linecap="round"/></g>
+  <g><circle cx="170" cy="184" r="36" fill="#9c5320"/><circle cx="168" cy="178" r="32" fill="#bf742f"/><path d="M152 168 l30 18 M150 184 l26 12" stroke="#f1c98b" stroke-width="5" stroke-linecap="round"/></g></svg>
+ <div class="nSpeed new3">⚡ Carga en 1,2 s</div>
+ <div class="nWa new4"><svg width="38" height="38" viewBox="0 0 24 24"><path d="M12 2.2a9.7 9.7 0 0 0-8.4 14.6L2.3 21.8l5.1-1.3A9.7 9.7 0 1 0 12 2.2Z" fill="#fff"/><path d="M8.6 7.4c.2-.4.4-.4.7-.4h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6a6.6 6.6 0 0 0 3.1 2.7c.3.1.4.1.6-.1l.7-.9c.2-.2.4-.2.6-.1l1.9.9c.3.1.4.2.4.4 0 .3 0 1.1-.5 1.6s-1.4.9-2 .9c-.6 0-1.4-.1-3.6-1.2a10 10 0 0 1-3.6-3.6c-.6-1-.9-2-.9-2.8 0-.8.4-1.4.6-1.7Z" fill="#25D366"/></svg></div>
+</div></div>
+      <div class="steps pop" id="steps"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i></div>
+      <div class="abs pop" id="zero" style="left:560px;top:250px;padding:14px 26px;border-radius:16px;background:#E5342A;font-weight:800;font-size:34px;box-shadow:0 0 40px rgba(229,52,42,.8)">💬 0 mensajes</div>
+      <div class="sc" id="s1"></div><div class="sc" id="s2"></div><div class="sc" id="s3"></div><div class="sc" id="s4"></div><div class="sc" id="s5"></div><div class="sc" id="s6"></div><div class="sc" id="s7"></div>
+      <!-- 8: A o B -->
+      <div class="sc" id="s8">
+        <div class="mini site" id="mA" style="left:20px"></div><div class="mini site" id="mB" style="left:494px"></div>
+        <div class="tagAB pop" id="tA" style="left:180px;top:360px;background:#3a3f4b">A</div>
+        <div class="tagAB pop" id="tB" style="left:650px;top:360px;background:#E5342A">B</div>
+        <div class="abs pop big" id="vs8" style="left:440px;top:190px;width:80px;text-align:center;font-size:54px;color:#8b93a3">VS</div>
+      </div>
+      <!-- 9: cierre de marca -->
+      <!-- 9: cierre de marca -->
+      <div class="sc" id="s9">
+        <div class="abs pop big" id="wm9" style="left:0;right:0;top:150px;text-align:center;font-size:110px;letter-spacing:.02em">Innova<span style="color:#E5342A">Sites</span></div>
+        <div class="abs pop" id="tl9" style="left:0;right:0;top:290px;text-align:center;font-family:var(--disp);font-weight:600;font-size:46px;text-transform:uppercase">Cada pixel <span style="color:#E5342A">cuenta</span></div>
+        <div class="abs pop lbl" id="hd9" style="left:0;right:0;top:380px;text-align:center;color:#fff;font-size:24px">@innova_sites</div>
+      </div>
+
+      <canvas id="line" width="960" height="540"></canvas>
+      <div id="scrGlare"></div>
+    </div></div>
+    <div id="pshadow"></div><div id="pix"><div class="pp" id="pLegL"></div><div class="pp" id="pLegR"></div><div class="pp" id="pArmL"></div><div class="pp" id="pBody"></div><div class="pp" id="pHead"></div><div class="pp" id="pArmR"></div></div>
+  </div>
+
+  <div id="brand" class="abs"><span><i></i><b>InnovaSites</b></span><span>Diseño web</span></div>
+  <div id="kw" class="abs"></div>
+  <div id="cap" class="abs"></div>
+  <canvas id="fx" width="1080" height="1920"></canvas>
+  <div id="flash"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const cl = x => Math.max(0, Math.min(1, x));
+const seg = (t, a, b) => cl((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3), eo5 = x => 1 - Math.pow(1 - x, 5);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const lerp = (a, b, k) => a + (b - a) * k;
+const hash = n => { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); };
+const BEATS = window.BEATS || [];
+function beatPulse(t) { let v = 0; for (const b of BEATS) { if (b > t) break; v = Math.max(v, Math.exp(-(t - b) * 9)); } return v; }
+
+const N = 9, SC = [...Array(N)].map((_, i) => T['sc' + (i + 1)]).concat([T.dur + 1]);
+const SITE_TPL = document.getElementById('site').innerHTML;
+const KW = [
+  ['Esta web no', '<span class="r">vendía</span>'],
+  ['5', '<span class="r">ajustes</span>'], ['', ''], ['', ''], ['', ''], ['', ''], ['', ''], ['', ''],
+  ['InnovaSites', '<span class="r" style="font-size:.74em">cada pixel cuenta</span>']
+];
+// preparar trazos dibujables
+document.querySelectorAll('.draw').forEach(p => { const L = p.getTotalLength ? p.getTotalLength() : 600; p.dataset.len = L; p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
+const ln = $('line').getContext('2d'), fx = $('fx').getContext('2d');
+const CARD = 'panaderiatrigal.co';
+
+function sceneIdx(t) { let i = 0; while (i < N - 1 && t >= SC[i + 1]) i++; return i; }
+
+function drawLine(t) {
+  ln.clearRect(0, 0, 960, 540);
+  // barrido de la línea roja en cada cambio de escena
+  for (let i = 1; i < N; i++) {
+    const a = SC[i] - .22, b = SC[i] + .2;
+    if (t < a || t > b) continue;
+    const k = seg(t, a, b), x = lerp(-200, 1160, eio(k)), y = 270 + Math.sin(k * Math.PI * 2 + i) * 120;
+    ln.save(); ln.shadowColor = '#E5342A'; ln.shadowBlur = 30; ln.lineCap = 'round';
+    for (let j = 0; j < 14; j++) {
+      const x0 = x - j * 34, y0 = 270 + Math.sin((k - j * .025) * Math.PI * 2 + i) * 120;
+      ln.strokeStyle = `rgba(229,52,42,${(1 - j / 14) * .95})`; ln.lineWidth = 10 * (1 - j / 16);
+      ln.beginPath(); ln.moveTo(x0, y0); ln.lineTo(x0 - 36, 270 + Math.sin((k - (j + 1) * .025) * Math.PI * 2 + i) * 120); ln.stroke();
+    }
+    ln.fillStyle = '#fff'; ln.beginPath(); ln.arc(x, y, 9, 0, 7); ln.fill();
+    ln.restore();
+  }
+}
+
+function bez(p0, p1, p2, p3, u) { const v = 1 - u; return [v*v*v*p0[0] + 3*v*v*u*p1[0] + 3*v*u*u*p2[0] + u*u*u*p3[0], v*v*v*p0[1] + 3*v*v*u*p1[1] + 3*v*u*u*p2[1] + u*u*u*p3[1]]; }
+
+function burst(t, at, x, y, n, sp) {
+  if (t < at || t > at + .7) return; const k = seg(t, at, at + .7);
+  for (let j = 0; j < n; j++) { const a = hash(j) * 6.283, r = sp * eo(k) * (.4 + .6 * hash(j + 9)), s = 10 * (1 - k);
+    fx.fillStyle = j % 3 ? '#E5342A' : '#fff'; fx.globalAlpha = 1 - k; fx.fillRect(x + Math.cos(a) * r - s / 2, y + Math.sin(a) * r - s / 2, s, s); }
+  fx.globalAlpha = 1;
+}
+
+
+// ---------- Pixel: la mascota, por partes y libre ----------
+const PX = 12.5, PXC = {};
+function wt(word, n = 0) { let c = 0; for (const sb of (window.SUBS || [])) for (const w of sb[2]) { if (w[0].replace(/[*.,:¿?…]/g, '').toLowerCase() === word) { if (c === n) return w[1]; c++; } } return -99; }
+const WIDE = ['entera', 'candado', 'cualquiera', 'ojo', 'falsas'].map(w => wt(w));
+const WINK = [wt('dos'), wt('cuenta', 1) > 0 ? wt('cuenta', 1) : wt('cuenta', 0)];
+const OJO = wt('ojo');
+const lay = (id, x, y, ox, oy) => { const e = $(id); e.style.left = x * PX + 'px'; e.style.top = y * PX + 'px'; e.style.transformOrigin = `${ox * PX}px ${oy * PX}px`; return e; };
+let pixInit = false;
+function initPixel() {
+  $('pBody').innerHTML = pixelBody(PX); $('pArmL').innerHTML = pixelLimb('arm', PX); $('pArmR').innerHTML = pixelLimb('arm', PX);
+  $('pLegL').innerHTML = pixelLimb('leg', PX); $('pLegR').innerHTML = pixelLimb('leg', PX);
+  lay('pHead', 0, 0, 10.5, 20.5); lay('pBody', 4, 21, 6, 7);
+  lay('pArmL', 1.2, 21.6, 1.5, .5); lay('pArmR', 16.8, 21.6, 1.5, .5);
+  lay('pLegL', 5.6, 27.6, 1.5, 0); lay('pLegR', 11.4, 27.6, 1.5, 0);
+  pixInit = true;
+}
+const win2 = (t, a, b, r = .25) => cl(seg(t, a, a + r)) * (1 - cl(seg(t, b - r, b)));
+// ruido suave que no se repite (frecuencias inconmensurables)
+const nz = (t, k) => .5 * Math.sin(t * 1.37 + k * 2.1) + .3 * Math.sin(t * 2.71 + k * 4.3) + .2 * Math.sin(t * 4.93 + k * 1.7);
+const EDGE = 720, DESK = 1660, ON = .6;               // borde superior del monitor, piso del escritorio, escala sobre el monitor
+const W_ = (w, n = 0) => wt(w, n);
+// ---- coreografía: posiciones; 'tp' = teletransporte con pixeles, 'walk' = camina ----
+const KB = 1583;                                                      // pies detrás del teclado (las manos quedan sobre las teclas)
+const V1 = window.VOICE.L1[0];
+// momentos de cada ajuste (palabra clave de la voz)
+const CH = [W_('título'), W_('solo'), W_('grande'), W_('rápido'), W_('whatsapp')];
+const MOVES = [
+  [0, 0, 540, KB, .95, 'tp'],                                         // aparece en el teclado y escribe la dirección
+  [SC[1] - .1, .55, 885, EDGE + 44 * ON, ON, 'tp'],                   // se sienta en la esquina del monitor: "cinco ajustes"
+  [SC[2] - .1, .55, 190, DESK, 1, 'tp'],                              // baja al escritorio a la izquierda para lanzar píxeles
+  [SC[4] + .1, 1.5, 830, DESK, 1, 'walk'],                            // camina al otro lado mientras explica la letra
+  [SC[7] - .1, .55, 540, DESK + 10, 1.02, 'tp'],                      // al centro, frente a las dos versiones
+];
+function moveAt(t) {
+  let cx = MOVES[0][2], fy = MOVES[0][3], sc = MOVES[0][4], walking = 0, tpOut = 0, tpIn = 0, from = null, to = null, kind = '';
+  for (let j = 1; j < MOVES.length; j++) {
+    const [t0, d, x, y, s, k] = MOVES[j], [, , px0, py0, ps0] = MOVES[j - 1];
+    if (t < t0) break;
+    const q = cl((t - t0) / d); kind = k;
+    if (k === 'tp') {
+      if (q < .5) { cx = px0; fy = py0; sc = ps0; tpOut = q < 1 ? seg(q, 0, .5) : 0; }
+      else { cx = x; fy = y; sc = s; tpIn = q < 1 ? 1 - seg(q, .5, 1) : 0; }
+      if (q < 1) { from = [px0, py0, ps0, t0]; to = [x, y, s, t0 + d / 2]; }
+    } else { const e = eio(q); cx = lerp(px0, x, e); fy = lerp(py0, y, e); sc = lerp(ps0, s, e); if (k === 'walk' && q < 1) walking = 1; }
+  }
+  // aparición inicial
+  if (t < .5) tpIn = Math.max(tpIn, 1 - seg(t, .05, .5));
+  return { cx, fy, sc, walking, tpOut, tpIn, from, to };
+}
+// ---- caras por momento: [tiempo, duración, cara] ----
+const FACES = [
+  [0, V1 - .9, { eyes: 'happy', mouth: 'grin' }], [V1 - .9, 1.0, { eyes: 'open', dy: 1 }],
+  [W_('visitas'), .9, { eyes: 'open', dx: 1, dy: -1 }], [W_('nadie'), 1.3, { eyes: 'sad', mouth: 'frown' }],
+  [W_('cinco'), 1.1, { eyes: 'star', mouth: 'grin' }],
+  [CH[0] - .2, .9, { eyes: 'think' }], [W_('vendes'), .8, { icon: 'check' }],
+  [CH[1] - .1, .9, { eyes: 'wide', mouth: 'o' }], [W_('resalte'), .8, { icon: 'check' }],
+  [CH[2], .9, { eyes: 'open', dx: -1 }], [W_('celular'), .8, { icon: 'check' }],
+  [CH[3], .8, { eyes: 'star', mouth: 'grin' }],
+  [CH[4], .9, { eyes: 'heart', mouth: 'smile' }], [W_('toque'), .8, { icon: 'check' }],
+  [W_('gusta'), .8, { eyes: 'think' }], [W_('a', 1), .7, { eyes: 'open', dx: -2 }], [W_('b'), .7, { eyes: 'open', dx: 2 }], [W_('comenta'), 1.0, { icon: 'q' }],
+  [SC[8] + .1, 1.2, { eyes: 'star', mouth: 'grin' }], [W_('pixel'), .6, { eyes: 'heart' }], [W_('cuenta'), 2, { eyes: 'wink', mouth: 'smirk' }],
+];
+// ---- brazos: [tiempo, izquierdo, derecho] ----
+const ARMS = [
+  [0, 12, -12], [.3, 20, -160], [V1 - 1.0, 12, -12],
+  [W_('visitas'), 30, -150], [W_('nadie'), 70, -70],
+  [SC[1] + .3, 28, -24], [W_('cinco'), 160, -160], [W_('ajustes'), 30, -30],
+  ...CH.map(c => [c - .25, 20, -175]), ...CH.map(c => [c + .55, 28, -40]),
+  [W_('celular'), 110, -20],
+  [W_('gusta'), 30, -30], [W_('a', 1), 150, -20], [W_('b'), 20, -150], [W_('comenta'), 60, -60],
+  [SC[8] + .05, 170, -170], [W_('pixel'), 60, -160], [W_('cuenta'), 168, -168],
+].sort((a, b) => a[0] - b[0]);
+function armsAt(t) {
+  let L = ARMS[0][1], R = ARMS[0][2];
+  for (let j = 1; j < ARMS.length; j++) { const [t0, l, r] = ARMS[j]; if (t < t0) break; const k = back(cl((t - t0) / .28)); L = lerp(L, l, k); R = lerp(R, r, k); }
+  return [L, R];
+}
+const TYPE = [[window.VOICE.L1[0] - .9, window.VOICE.L1[0] + .2]];   // ventana de tecleo: escribe la dirección y carga la página
+// un golpe de tecla por letra, con ritmo humano (pausas entre grupos), alternando manos
+const STRIKES = [[CARD, TYPE[0]]].map(([txt, [a, b]], z) => { const ch = [...txt], out = []; let w = 0;
+  const ws = ch.map((c, k) => (c === ' ' ? 1.8 : 1) * (.7 + .6 * hash(k * 3.7 + z * 11))); const tot = ws.reduce((x, y) => x + y, 0);
+  ch.forEach((c, k) => { out.push([a + (b - a - .1) * w / tot, c === ' ' ? 'S' : (hash(k * 5.3 + z) < .5 ? 'L' : 'R'), c]); w += ws[k]; }); return out; });
+const typingW = t => Math.max(...TYPE.map(([a, b]) => win2(t, a, b, .15)));
+const kfx = () => document.getElementById('kfx').getContext('2d');
+let bgInit = false;
+function initBg() {
+  const g = $('bokeh').getContext('2d');
+  for (let i = 0; i < 70; i++) { const x = hash(i * 3.1) * 1080, y = hash(i * 7.7) * 1350, r = 3 + hash(i * 1.3) * 24, col = i % 3 ? 'rgba(255,120,90,' : 'rgba(255,255,255,';
+    const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, col + '.32)'); gr.addColorStop(1, col + '0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+  $('cubes').innerHTML = [[90, 560, 0], [960, 600, 1], [150, 1100, 0], [985, 1150, 0], [60, 820, 1], [1010, 880, 0], [470, 600, 1], [300, 1300, 1], [800, 1320, 0]]
+    .map(([x, y, w]) => `<i class="${w ? 'w' : ''}" data-x="${x}" data-y="${y}"></i>`).join('');
+  bgInit = true;
+}
+function drawBgB(t) {
+  if (!bgInit) initBg();
+  $('grid').style.backgroundPosition = `0 ${(t * 90) % 120}px`;      // el piso avanza
+  $('cubes').querySelectorAll('i').forEach((c, k) => { const x = +c.dataset.x + Math.sin(t * .6 + k) * 14, y = +c.dataset.y + Math.sin(t * .8 + k * 2) * 18;
+    c.style.left = x + 'px'; c.style.top = y + 'px'; c.style.transform = `rotate(${t * 25 * (k % 2 ? 1 : -1) + k * 30}deg)`; });
+  // color del ambiente: rojo = peligro, verde = seguro (regla y cierre)
+  const gr = win2(t, W_('toque') + .1, SC[8], .6);
+  const mix = (a, b, k) => a.map((v, i) => Math.round(lerp(v, b[i], k)));
+  const c = mix([255, 59, 47], [52, 199, 89], gr);
+  document.documentElement.style.setProperty('--gc', `rgba(${c},.85)`); document.documentElement.style.setProperty('--hc', `rgba(${c},.9)`);
+  document.documentElement.style.setProperty('--lc', `rgba(${c},${.3 + beatPulse(t) * .15})`);
+}
+function tpFx(t, x, fy, s, t0, out) {   // pixeles que se dispersan (out) o se juntan (in)
+  const k = out ? seg(t, t0, t0 + .3) : seg(t, t0, t0 + .3); if (k <= 0 || k >= 1) return;
+  const cy = fy - 190 * s;
+  fx.save(); fx.fillStyle = 'rgba(255,90,79,.25)'; fx.fillRect(x - 70 * s, cy - 260 * s, 140 * s, 460 * s * (out ? 1 - k : k)); fx.restore();
+  for (let j = 0; j < 34; j++) { const a = hash(j + t0) * 6.283, r0 = (40 + hash(j * 2.3) * 120) * s;
+    const r = out ? r0 + 220 * eo(k) * s : r0 * (1 - eo(k)) + 6, sz = (out ? 16 * (1 - k) : 16 * k) * s + 3;
+    fx.globalAlpha = out ? 1 - k : k; fx.fillStyle = j % 3 ? '#E5342A' : '#fff';
+    fx.fillRect(x + Math.cos(a) * r - sz / 2, cy + Math.sin(a) * r * 1.4 - sz / 2, sz, sz); }
+  fx.globalAlpha = 1;
+}
+function drawPixel(t, i, kick) {
+  if (!pixInit) initPixel();
+  drawBgB(t);
+  const f = Math.min((window.MOUTH || []).length - 1, Math.round(t * 30)), M = window.MOUTH || [0];
+  const m = M[Math.max(0, f)] || 0, ms = ((M[Math.max(0, f - 3)] || 0) + m + (M[Math.min(M.length - 1, f + 3)] || 0)) / 3;
+  // cara: la del momento, o la normal mirando a donde pasa algo; la boca sigue la voz
+  const fc = FACES.slice().reverse().find(([a, d]) => t >= a && t < a + d);
+  let face = fc ? Object.assign({}, fc[2]) : { eyes: 'open', dx: Math.round(nz(t * .5, 20)), dy: 0 };
+  if (!face.icon) {
+    const blink = (face.eyes || 'open') === 'open' && ((t * 1.13 + Math.sin(t * .37) * 1.5) % 3.1) > 2.98; if (blink) face.eyes = 'blink';
+    if (!face.mouth || m > .16) { const v = ['talk', 'mid', 'ee', 'wide', 'talk', 'mid']; const pick = v[Math.floor(hash(Math.floor(t * 7)) * v.length)];
+      face.mouth = m > .5 ? (pick === 'mid' ? 'talk' : pick) : m > .16 ? (hash(Math.floor(t * 9) + 3) > .5 ? 'mid' : 'ee') : (face.mouth || 'smile'); }
+  }
+  const key = JSON.stringify(face);
+  if (PXC.k !== key) { PXC.k = key; $('pHead').innerHTML = pixelHead(face, PX); }
+
+  const mv = moveAt(t);
+  const sitting = t >= MOVES[1][0] + MOVES[1][1] * .5 && t < MOVES[2][0];
+  const onMon = sitting;
+  const atKb = mv.fy === KB;
+  const tw = typingW(t);
+  const breathe = (sitting ? 2 : 5) * nz(t, 1) + beatPulse(t) * 4;
+  const wp = mv.walking ? (t - MOVES[3][0]) * 11 + Math.sin(t * 1.9) * .8 : 0;
+  const stepUp = mv.walking ? Math.abs(Math.sin(wp)) * 12 : 0;
+  const vis = 1 - Math.max(mv.tpOut, mv.tpIn);
+  const P = $('pix'), S = mv.sc;
+  const lean = (sitting ? 5 + 4 * nz(t, 2) : 0) + (mv.walking ? -6 : 0) + 2.5 * nz(t, 3) * (1 - .7 * tw);
+  const land = MOVES.slice(1).filter(mm => mm[5] === 'tp').map(mm => mm[0] + mm[1] * .5).reduce((acc, te) => t >= te && t < te + .3 ? Math.sin(seg(t, te, te + .3) * Math.PI) : acc, 0);
+  const sqY = (1 - .1 * land) * (1 + 1.4 * Math.max(mv.tpOut, mv.tpIn)), sqX = (1 + .08 * land) * (1 - .85 * Math.max(mv.tpOut, mv.tpIn));
+  P.style.left = (mv.cx - 131) + 'px';
+  P.style.top = (mv.fy - 388 - breathe - stepUp + tw * 4) + 'px';
+  P.style.transform = `rotate(${lean}deg) scale(${S * sqX}, ${S * sqY})`;
+  P.style.opacity = vis; P.style.filter = vis < 1 ? `brightness(${1 + 2 * (1 - vis)})` : 'none';
+  P.style.zIndex = atKb ? 25 : 30;
+  P.style.clipPath = atKb ? 'inset(-200px -200px 14px -200px)' : 'none';   // detrás del teclado: se le ocultan las piernas, las manos quedan sobre las teclas
+  const sh = $('pshadow'); sh.style.left = (mv.cx - 95) + 'px'; sh.style.opacity = (onMon || atKb) ? 0 : vis * .8; sh.style.transform = `scale(${mv.sc})`;
+  if (mv.from) { tpFx(t, mv.from[0], mv.from[1], mv.from[2], mv.from[3], true); tpFx(t, mv.to[0], mv.to[1], mv.to[2], mv.to[3], false); }
+  if (t < .45) tpFx(t, mv.cx, mv.fy, mv.sc, .05, false);
+
+  // brazos
+  let [aL, aR] = armsAt(t);
+  aL += ms * 16 * nz(t * 1.6, 5) + 3 * nz(t, 6); aR += ms * 18 * nz(t * 1.4, 7) + 3 * nz(t, 8);
+  if (mv.walking) { aL += 28 * Math.sin(wp); aR += 28 * Math.sin(wp); }
+  let pressL = 0, pressR = 0;
+  if (tw > 0) { STRIKES.forEach(st => st.forEach(([ts, h]) => { if (t >= ts && t < ts + .1) { const k = Math.sin(seg(t, ts, ts + .1) * Math.PI); if (h !== 'R') pressL = Math.max(pressL, k); if (h !== 'L') pressR = Math.max(pressR, k); } }));
+    aL = lerp(aL, -22 - 12 * pressL + 3 * nz(t * 3, 21), tw); aR = lerp(aR, 22 + 12 * pressR + 3 * nz(t * 3, 22), tw); }
+  const waveW = win2(t, .3, V1 - 1.0, .2) + win2(t, W_('pixel'), T.dur + 1, .2);
+  aR += waveW * 24 * Math.sin(t * 13 + Math.sin(t * 2));
+  { const th = aR * Math.PI / 180, px0 = mv.cx + ((16.8 + 1.5) * PX - 131.5) * S, py0 = mv.fy - (388 - (21.6 + .5) * PX) * S; window.HAND = [px0 - Math.sin(th) * 95 * S, py0 + Math.cos(th) * 95 * S]; }
+  $('pArmL').style.transform = `translateY(${8 * pressL}px) rotate(${aL}deg)`; $('pArmR').style.transform = `translateY(${8 * pressR}px) rotate(${aR}deg)`;
+  // teclas que se encienden al teclear
+  { const g = kfx(); g.clearRect(0, 0, 592, 122);
+    STRIKES.forEach(st => st.forEach(([ts, h], k) => { if (t < ts || t > ts + .22) return; const a = 1 - seg(t, ts, ts + .22);
+      g.fillStyle = `rgba(255,90,79,${.95 * a})`; g.shadowColor = '#ff3b2f'; g.shadowBlur = 16;
+      if (h === 'S') g.fillRect(4 * 40 + 4, 3 * 30 + 4, 6 * 40 - 6, 24);
+      else { const cx = (h === 'L' ? 3 : 7) + Math.floor(hash(k * 2.7) * 4), cy = Math.floor(hash(k * 4.1) * 2); g.fillRect(cx * 40 + 4, cy * 30 + 4, 34, 24); } })); }
+  // piernas
+  let lL = 0, lR = 0, yL = 0, yR = 0;
+  if (mv.walking) { lL = 20 * Math.sin(wp); lR = -20 * Math.sin(wp); yL = -Math.max(0, Math.sin(wp)) * 12; yR = -Math.max(0, -Math.sin(wp)) * 12; }
+  else if (sitting) { lL = 22 * Math.sin(t * 3.1) + 8 * nz(t, 9); lR = 22 * Math.sin(t * 2.4 + 1.2) + 8 * nz(t, 10); }
+  else { lL = 4 * nz(t, 11); lR = 4 * nz(t, 12); }
+  $('pLegL').style.transform = `translateY(${yL}px) rotate(${lL}deg)`; $('pLegR').style.transform = `translateY(${yR}px) rotate(${lR}deg)`;
+  // cabeza
+  const nod = Math.sin(t * 8.3 + nz(t, 13)) * 6 * ms + 4 * nz(t * .8, 14) + (sitting ? -6 : 0);
+  const nodT = nod * (1 - .75 * tw);
+  $('pHead').style.transform = `rotate(${nodT}deg) translateY(${-3 * ms + 5 * tw}px)`;
+  $('pBody').style.transform = `rotate(${2 * nz(t, 15)}deg)`;
+}
+let ZOOM = 1;
+window.render = function (t) {
+  fx.clearRect(0, 0, 1080, 1920);
+  const bp = beatPulse(t), i = sceneIdx(t), t0 = SC[i];
+  // cámara: empuje lento + golpe en cada cambio
+  let kick = 0; for (let j = 1; j < N; j++) if (t >= SC[j] && t < SC[j] + .4) kick = Math.max(kick, 1 - seg(t, SC[j], SC[j] + .4));
+  const zoom = 1 + .05 * seg(t, 0, T.dur) + .018 * eo(kick) + bp * .004; ZOOM = zoom;
+  const shake = kick > .6 ? (hash(Math.floor(t * 60)) - .5) * 6 : 0;
+  $('room').style.transform = `translate(${shake}px, ${shake * .6}px) scale(${zoom})`;
+  $('mon').style.boxShadow = `0 0 0 2px #1d1d21, 0 40px 90px rgba(0,0,0,.8), 0 0 ${140 + bp * 60}px rgba(229,52,42,${.16 + bp * .08})`;
+
+  // escenas
+  for (let j = 0; j < N; j++) {
+    const el = $('s' + (j + 1)), a = SC[j], b = SC[j + 1];
+    const on = t >= a - .02 && t < b + .12;
+    if (!on) { el.style.opacity = 0; continue; }
+    const pin = eo5(seg(t, a, a + .35)), pout = seg(t, b - .02, b + .12);
+    el.style.opacity = (j === 0 ? 1 : cl(seg(t, a, a + .12))) * (1 - pout);
+    el.style.transform = `scale(${(j === 0 ? 1 : 1.12 - .12 * pin) * (1 + .03 * seg(t, a, b))})`;
+    el.querySelectorAll('.draw').forEach(p => { const L = +p.dataset.len, k = eo(seg(t, a + +p.dataset.a, a + +p.dataset.a + +p.dataset.d)); p.style.strokeDashoffset = L * (1 - k); });
+  }
+  const P = (id, at, from = .6) => { const e = $(id), p = back(seg(t, at, at + .4)); e.style.opacity = cl(seg(t, at, at + .1)); e.style.transform = `scale(${from + (1 - from) * p})`; };
+
+  // ----- sitio: antes → después -----
+  const st = (root, ks, tt) => {
+    ks.forEach((k, c) => {
+      root.querySelectorAll('.old' + c).forEach(e => { e.style.opacity = 1 - k; e.style.transform = `scale(${1 - .25 * k})`; e.style.filter = k > 0 && k < 1 ? `blur(${5 * k}px)` : 'none'; });
+      root.querySelectorAll('.new' + c).forEach(e => { e.style.opacity = cl(k * 3); e.style.transform = `scale(${.5 + .5 * back(k)})`; });
+    });
+    { const k = eio(ks[0]), o = root.querySelector('.oText'), l = root.querySelector('.oLoad');   // lo viejo se corre para dar espacio al título
+      o.style.left = lerp(70, 36, k) + 'px'; o.style.top = lerp(138, 214, k) + 'px'; o.style.width = lerp(600, 380, k) + 'px'; o.style.textAlign = k > .5 ? 'left' : 'center';
+      l.style.left = lerp(210, 430, k) + 'px'; l.style.top = lerp(258, 110, k) + 'px'; l.style.width = lerp(320, 280, k) + 'px'; l.style.height = lerp(118, 230, k) + 'px';
+      root.querySelector('.oBtns').style.top = lerp(212, 312, k) + 'px'; }
+    const k0 = ks[0]; root.querySelector('.body').style.background = `rgb(${Math.round(lerp(212, 255, k0))},${Math.round(lerp(212, 246, k0))},${Math.round(lerp(212, 234, k0))})`;
+    const mq = root.querySelector('.oMarq i'); mq.style.left = (740 - ((tt * 120) % 1500)) + 'px';
+    root.querySelector('.spin').style.transform = `rotate(${tt * 400}deg)`;
+  };
+  const prog = CH.map(c => seg(t, c, c + .55));
+  const L1 = window.VOICE.L1[0], typed = STRIKES[0].filter(x => t >= x[0]).length, loadK = seg(t, L1 + .25, L1 + .7);
+  { const site = $('site');
+    site.querySelector('.u').textContent = CARD.slice(0, typed) + (typed < CARD.length && Math.floor(t * 4) % 2 ? '|' : '');
+    site.querySelector('.body').style.opacity = loadK; site.querySelector('.body').style.transform = `translateY(${(1 - eo(loadK)) * 20}px)`;
+    st(site, prog, t);
+    site.querySelector('.vis').textContent = '0' + (12480 + Math.floor(Math.max(0, t - L1) * 37)).toLocaleString('es-CO');
+    const out = seg(t, SC[7] - .05, SC[7] + .25); site.style.opacity = 1 - out; site.style.transform = `scale(${1 - .1 * out})`;
+    $('steps').style.opacity = cl(seg(t, SC[1] + .3, SC[1] + .5)) * (1 - out);
+    $('steps').querySelectorAll('i').forEach((e, c) => { const k = seg(t, CH[c] + .45, CH[c] + .6); e.classList.toggle('ok', k > 0); e.textContent = k > 0 ? '✓' : c + 1; e.style.transform = `scale(${k > 0 && k < 1 ? 1 + .5 * Math.sin(k * Math.PI) : 1})`; });
+    P('zero', W_('nadie'), .3); $('zero').style.opacity = +$('zero').style.opacity * (1 - seg(t, SC[1] - .1, SC[1] + .1)); $('zero').style.transform += ' rotate(-5deg)'; }
+  // 8: las dos versiones, lado a lado
+  { const a = SC[7];
+    if (!window._mini) { $('mA').innerHTML = SITE_TPL; $('mB').innerHTML = SITE_TPL; window._mini = 1; }
+    st($('mA'), [0, 0, 0, 0, 0], t); st($('mB'), [1, 1, 1, 1, 1], t);
+    ['mA', 'mB'].forEach((id, k) => { const e = $(id), p = back(seg(t, a + .05 + k * .15, a + .5 + k * .15)); e.style.transform = `scale(${.6 * (.7 + .3 * p)})`; e.style.opacity = cl(seg(t, a + k * .15, a + .15 + k * .15));
+      e.style.boxShadow = (t > (k ? W_('b') : W_('a', 1)) - .05 && t < (k ? W_('b') : W_('a', 1)) + .7) ? '0 0 0 6px ' + (k ? '#E5342A' : '#8b93a3') + ', 0 20px 50px rgba(0,0,0,.6)' : '0 20px 50px rgba(0,0,0,.6)'; });
+    P('tA', W_('a', 1) - .05, .3); P('tB', W_('b') - .05, .3); P('vs8', a + .4, .5); }
+  // 9
+  { const a = SC[8]; P('wm9', a + .05, .7); P('tl9', a + .5, .85); P('hd9', a + .9, .8); }
+  // pixeles lanzados por Pixel hacia cada parte que cambia (animación nueva)
+  { const TGT = [[240, 150], [180, 355], [220, 260], [580, 270], [790, 460]], Z = ZOOM;
+    CH.forEach((c, k) => { if (t < c - .15 || t > c + .7) return; const [sx, sy] = TGT[k];
+      const tx = 540 + ((14 + 110 + sx - 494) * .93) * Z, ty = 921.6 + (986 - 921.6 + (14 + 24 + sy - 286) * .93) * Z, H = window.HAND || [540, 1400];
+      for (let j = 0; j < 26; j++) { const d = j * .018, u = seg(t, c - .15 + d, c + .3 + d); if (u <= 0 || u >= 1) continue;
+        const e = eio(u), x = lerp(H[0], tx, e) + Math.sin(j * 2.1) * 40 * Math.sin(u * Math.PI), y = lerp(H[1], ty, e) - Math.sin(u * Math.PI) * (160 + 60 * hash(j)), sz = 9 + 8 * hash(j * 3.3);
+        fx.fillStyle = j % 3 ? '#ff5a4f' : (j % 2 ? '#fff' : '#ffd34d'); fx.shadowColor = '#ff3b2f'; fx.shadowBlur = 12; fx.fillRect(x - sz / 2, y - sz / 2, sz, sz); }
+      fx.shadowBlur = 0; burst(t, c + .3, tx, ty, 26, 150); });
+  }
+
+  drawLine(t);
+
+  // ---------- Pixel ----------
+  drawPixel(t, i, kick);
+
+  // subtítulo único, arriba y grande: antes de que hable, el gancho; luego la frase que dice Lina, palabra por palabra
+  { const kw = $('kw'), V1 = window.VOICE.L1[0];
+    if (t < V1 - .05) { if (kw.dataset.j !== 'hook') { kw.innerHTML = `<div class="k">${KW[0][0]}</div><div class="k">${KW[0][1]}</div>`; kw.dataset.j = 'hook'; }
+      kw.style.opacity = 1; kw.style.transform = `scale(${1 + .02 * Math.sin(t * 3)}) rotate(1.5deg)`; }
+    else {
+      const SB = window.SUBS || []; let sb = null; for (let q = 0; q < SB.length; q++) if (t >= SB[q][0] - .05) sb = SB[q];
+      if (sb) { const cur = sb[2].filter(x => t >= x[1]).slice(-1)[0];
+        const id = String(sb[0]); if (kw.dataset.j !== id) { kw.innerHTML = '<div class="s">' + sb[2].map((w, q) => `<span data-q="${q}" class="${w[2] ? 'r' : ''}">${w[0].replace(/\*/g, '')}</span>`).join(' ') + '</div>'; kw.dataset.j = id; }
+        kw.querySelectorAll('span').forEach((sp, q) => { const w = sb[2][q], on = t >= w[1], k = back(seg(t, w[1], w[1] + .22));
+          sp.classList.toggle('dim', !on); sp.style.transform = on ? `scale(${w === cur ? .9 + .18 * k : 1}) translateY(${(1 - eo(seg(t, w[1], w[1] + .2))) * 18}px)` : 'scale(.92)'; });
+        const p0 = back(seg(t, sb[0] - .05, sb[0] + .25)); kw.style.opacity = 1; kw.style.transform = `scale(${.86 + .14 * p0})`; } }
+  }
+
+  const fl = Math.max(...SC.slice(1, N).map(c => t >= c && t < c + .12 ? .08 * (1 - seg(t, c, c + .12)) : 0), t < .15 ? .3 * (1 - seg(t, 0, .15)) : 0);
+  $('flash').style.opacity = fl;
+};
+window.render(0);
+</script>
+</body>
+</html>
