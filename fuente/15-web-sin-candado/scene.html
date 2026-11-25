@@ -31,7 +31,7 @@
       linear-gradient(180deg, #2a1d15 0%, #1a120d 45%, #0e0a08 100%); }
   #deskEdge { position: absolute; left: 0; right: 0; top: 1326px; height: 8px; background: linear-gradient(180deg, rgba(255,200,150,.18), rgba(0,0,0,0)); }
   #refl { position: absolute; left: 160px; right: 160px; top: 1340px; height: 260px; background: radial-gradient(ellipse at 50% 0%, rgba(229,52,42,.28), rgba(229,52,42,0) 70%); filter: blur(8px); }
-  #kbd { position: absolute; left: 230px; top: 1480px; width: 620px; height: 120px; border-radius: 14px; background: linear-gradient(180deg, #19191d, #0f0f12); box-shadow: 0 18px 40px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06); transform: perspective(900px) rotateX(55deg); }
+  #kbd { position: absolute; left: 430px; top: 1480px; width: 560px; height: 120px; border-radius: 14px; background: linear-gradient(180deg, #19191d, #0f0f12); box-shadow: 0 18px 40px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06); transform: perspective(900px) rotateX(55deg); }
   #kbd i { position: absolute; inset: 12px; background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 34px, rgba(0,0,0,0) 34px 40px), repeating-linear-gradient(180deg, rgba(255,255,255,.04) 0 18px, rgba(0,0,0,0) 18px 24px); border-radius: 6px; }
   #mouse { position: absolute; left: 880px; top: 1500px; width: 70px; height: 100px; border-radius: 35px; background: linear-gradient(180deg, #1c1c20, #0e0e11); transform: perspective(700px) rotateX(55deg); box-shadow: 0 14px 30px rgba(0,0,0,.7); }
 
@@ -84,17 +84,21 @@
   #cap span { display: inline-block; font-weight: 800; font-size: 50px; line-height: 1.25; margin: 0 7px; color: rgba(255,255,255,.95); text-shadow: 0 4px 18px rgba(0,0,0,.9); }
   #cap span.on { color: var(--red2); }
   #cap span.dim { color: rgba(255,255,255,.35); }
+  #pixw { position: absolute; left: 34px; top: 1110px; width: 420px; height: 500px; perspective: 900px; z-index: 30; }
+  #pix { position: absolute; left: 0; bottom: 0; transform-origin: 50% 92%; }
+  #pix svg { display: block; filter: drop-shadow(0 18px 24px rgba(0,0,0,.65)); }
   #fx { position: absolute; inset: 0; z-index: 90; pointer-events: none; }
   #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 95; pointer-events: none; }
 </style>
 <script src="timing.js"></script>
+<script src="pixel.js"></script>
 </head>
 <body>
 <div id="stage">
   <div id="room">
     <div id="wall"></div><div id="lamp"></div>
     <div id="desk"></div><div id="deskEdge"></div><div id="refl"></div>
-    <div id="kbd"><i></i></div><div id="mouse"></div>
+    <div id="kbd"><i></i></div>
     <div id="stand"></div><div id="base"></div>
     <div id="mon"><div id="scr">
       <div id="scrGrid"></div>
@@ -180,13 +184,14 @@
       <!-- 9: cierre de marca -->
       <div class="sc" id="s9">
         <div class="abs pop big" id="wm9" style="left:0;right:0;top:150px;text-align:center;font-size:110px;letter-spacing:.02em">Innova<span style="color:#E5342A">Sites</span></div>
-        <div class="abs pop" id="tl9" style="left:0;right:0;top:290px;text-align:center;font-family:var(--disp);font-weight:600;font-size:46px;text-transform:uppercase">Cada pixel cuenta… y tu seguridad <span style="color:#E5342A">también</span></div>
+        <div class="abs pop" id="tl9" style="left:0;right:0;top:290px;text-align:center;font-family:var(--disp);font-weight:600;font-size:46px;text-transform:uppercase">Cada pixel <span style="color:#E5342A">cuenta</span></div>
         <div class="abs pop lbl" id="hd9" style="left:0;right:0;top:380px;text-align:center;color:#fff;font-size:24px">@innova_sites</div>
       </div>
 
       <canvas id="line" width="960" height="540"></canvas>
       <div id="scrGlare"></div>
     </div></div>
+    <div id="pixw"><div id="pix"></div></div>
   </div>
 
   <div id="brand" class="abs"><span><i></i><b>InnovaSites</b></span><span>Seguridad digital</span></div>
@@ -217,7 +222,7 @@ const KW = [
   ['Las falsas', '<span class="r">también</span>'],
   ['Candado', '<span class="r">+ dirección</span>'],
   ['Comenta', '<span class="r">qué viste</span>'],
-  ['¿Tu página', '<span class="r">tiene candado?</span>']
+  ['InnovaSites', '<span class="r" style="font-size:.74em">cada pixel cuenta</span>']
 ];
 // preparar trazos dibujables
 document.querySelectorAll('.draw').forEach(p => { const L = p.getTotalLength ? p.getTotalLength() : 600; p.dataset.len = L; p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
@@ -261,6 +266,41 @@ function burst(t, at, x, y, n, sp) {
   for (let j = 0; j < n; j++) { const a = hash(j) * 6.283, r = sp * eo(k) * (.4 + .6 * hash(j + 9)), s = 10 * (1 - k);
     fx.fillStyle = j % 3 ? '#E5342A' : '#fff'; fx.globalAlpha = 1 - k; fx.fillRect(x + Math.cos(a) * r - s / 2, y + Math.sin(a) * r - s / 2, s, s); }
   fx.globalAlpha = 1;
+}
+
+
+// ---------- Pixel: la mascota ----------
+const PXC = {};
+function wt(word, n = 0) { let c = 0; for (const sb of (window.SUBS || [])) for (const w of sb[2]) { if (w[0].replace(/[*.,:¿?…]/g, '').toLowerCase() === word) { if (c === n) return w[1]; c++; } } return -99; }
+const WIDE = ['entera', 'candado', 'cualquiera', 'ojo', 'falsas'].map(w => wt(w));
+const WINK = [wt('dos'), wt('cuenta', 0) > 25 ? wt('cuenta', 0) : wt('cuenta', 1)];
+const OJO = wt('ojo');
+function drawPixel(t, i, kick) {
+  const f = Math.min((window.MOUTH || []).length - 1, Math.round(t * 30)), m = (window.MOUTH || [0])[Math.max(0, f)] || 0;
+  const wide = WIDE.some(w => t >= w && t < w + .85), wink = WINK.some(w => t >= w && t < w + .7);
+  const blink = !wide && !wink && (t % 2.7) > 2.58;
+  const eyes = wink ? 'wink' : wide ? 'wide' : blink ? 'blink' : 'open';
+  const mouth = m > .42 ? 'talk' : m > .16 ? 'mid' : (wide ? 'o' : 'smile');
+  const arm = i >= 7 ? 'wave' : (i === 4 ? 'none' : 'point');
+  const excl = t >= OJO && t < OJO + 1.1;
+  const key = eyes + mouth + arm + excl;
+  if (PXC.k !== key) { PXC.k = key; $('pix').innerHTML = pixelSVG({ eyes, mouth, arm, excl }, 13.6); }
+  // aparición: crece desde el escritorio con un giro
+  const ap = seg(t, .05, .6), app = back(ap);
+  // flotar, saltito en cada escena, sobresalto en "¡ojo!"
+  let hop = 0; for (let j = 1; j < N; j++) if (t >= SC[j] && t < SC[j] + .38) { const k = seg(t, SC[j], SC[j] + .38); hop = Math.max(hop, Math.sin(k * Math.PI) * 46); }
+  let jolt = 0; WIDE.forEach(w => { if (t >= w && t < w + .3) jolt = Math.max(jolt, Math.sin(seg(t, w, w + .3) * Math.PI) * 28); });
+  const fin = seg(t, SC[8], SC[8] + .5), finJump = t >= SC[8] && t < SC[8] + .6 ? Math.sin(seg(t, SC[8], SC[8] + .6) * Math.PI) * 90 : 0;
+  const bob = Math.sin(t * 3.2) * 9 + beatPulse(t) * 6;
+  const land = (t >= SC[1] ? 0 : 0) + (hop > 0 && hop < 8 ? 1 : 0);
+  const sq = 1 + .07 * Math.sin(seg(t % 100, 0, 1) * 0) - (hop > 30 ? -.04 : 0);
+  const ry = Math.sin(t * .9) * 14 - (arm === 'point' ? 8 : 0), rz = (arm === 'point' ? -4 : 0) + Math.sin(t * 2.1) * 2 + (wide ? Math.sin(t * 40) * 1.5 : 0);
+  const sc = app * (1 + .06 * fin) * (1 + .03 * m);
+  $('pix').style.transform = `translateY(${-(bob + hop + jolt + finJump) + (1 - ap) * 60}px) rotateY(${ry + (1 - ap) * 180}deg) rotateZ(${rz}deg) scale(${sc * (hop > 30 ? .96 : 1)}, ${sc * (hop > 30 ? 1.05 : 1)})`;
+  $('pix').style.opacity = cl(ap * 3);
+  // cubitos que se juntan al aparecer
+  if (t < .7) { const k = seg(t, 0, .6); for (let j = 0; j < 16; j++) { const a = hash(j) * 6.283, r = 260 * (1 - eo(k)), s = 18 * (1 - k) + 4;
+    fx.globalAlpha = 1 - k; fx.fillStyle = j % 3 ? '#E5342A' : '#fff'; fx.fillRect(230 + Math.cos(a) * r - s / 2, 1400 + Math.sin(a) * r * .8 - s / 2, s, s); } fx.globalAlpha = 1; }
 }
 
 window.render = function (t) {
@@ -316,6 +356,9 @@ window.render = function (t) {
   { const a = SC[8]; P('wm9', a + .05, .7); P('tl9', a + .5, .85); P('hd9', a + .9, .8); }
 
   drawLine(t);
+
+  // ---------- Pixel ----------
+  drawPixel(t, i, kick);
 
   // palabra clave grande arriba (frase completa desde el primer cuadro)
   { const kw = $('kw'), j = i, a = j === 0 ? -1 : SC[j];

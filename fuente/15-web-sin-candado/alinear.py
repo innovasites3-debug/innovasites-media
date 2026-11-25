@@ -31,8 +31,10 @@ proc, _ = sf.read(V / 'voz' / 'procesada.wav')
 
 W = json.load(open(V / 'voz' / 'palabras_scribe.json', encoding='utf-8'))
 norm = lambda w: re.sub(r'[^a-z0-9áéíóúüñ%$]', '', w.lower().replace('*', ''))
+EXT = {'L9'}   # frases grabadas aparte (ver l9.py)
 pos = 0; dur = {}; pal = {}; spans = []
 for k, txt in LINES:
+    if k in EXT: continue
     said = SAY.get(k, txt).replace('*', '').split()
     ws = W[pos:pos + len(said)]; pos += len(said)
     bad = [(x, y[0]) for x, y in zip(said, ws) if norm(x) != norm(y[0])]
@@ -55,6 +57,11 @@ for n, (k, txt, said, ws) in enumerate(spans):
             j = j1 + (d - i1) if op == 'equal' else min(j1, len(ws) - 1)
             tt[d] = round(nt(ws[j][1]) - a0, 3)
     pal[k] = tt
+old = json.load(open(V / 'voz' / 'duraciones.json')) if (V / 'voz' / 'duraciones.json').exists() else {}
+old_p = json.load(open(V / 'voz' / 'palabras.json')) if (V / 'voz' / 'palabras.json').exists() else {}
+for k in EXT:
+    if k in old: dur[k] = old[k]
+    if k in old_p: pal[k] = old_p[k]
 json.dump(dur, open(V / 'voz' / 'duraciones.json', 'w'))
 json.dump(pal, open(V / 'voz' / 'palabras.json', 'w'))
 print(dur)

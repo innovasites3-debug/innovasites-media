@@ -107,17 +107,25 @@ def ringtone(d):  # timbre tipo marimba
         f = nf(seq[k % len(seq)]); x = (tone(f, .3) + .3 * tone(f * 4, .3)) * env(int(.3 * SR), .002, .12, 4) * .35
         i0 = int(k * .16 * SR); out[i0:i0 + len(x)] += x[:len(out) - i0]
     return out
-add(sfx, 0.02, impact(.9))
-# cada escena entra con un barrido y un golpe; la línea roja suena al dibujarse
-for i in range(2, 10):
-    t0 = T['sc%d' % i]
-    add(sfx, t0 - .18, whoosh(.32), .45); add(sfx, t0, impact(.45), .7)
-add(sfx, T['sc2'] + .45, alert(), .6)                      # candado roto
-add(sfx, T['sc4'] + .5, notif(.35))                          # wifi
-add(sfx, T['sc6'] + .7, alert(), .6)                         # página falsa
-add(sfx, T['sc7'] + .5, ding(1568, .28)); add(sfx, T['sc7'] + 1.1, ding(2093, .28))
-add(sfx, T['sc8'] + .4, pop(820, .45))
-add(sfx, T['sc9'] + .1, sparkle(), .55)
+# ---------- librería de sonidos (ElevenLabs SFX, fuente/sonidos) ----------
+def smp(name, g=1.0):
+    x, r = sf.read(V.parent / 'sonidos' / f'{name}.wav'); x = x.mean(1) if x.ndim > 1 else x
+    if r != SR: x = resample_poly(x, SR, r)
+    return x * g
+SC = [T['sc%d' % i] for i in range(1, 10)]
+add(sfx, 0.0, smp('sfx_pixel_b', .55))                         # aparece Pixel
+add(sfx, SC[0] + .05, smp('sfx_tecleo_a', .7))                 # se escribe la tarjeta
+add(sfx, SC[0] + 1.45, smp('sfx_alerta_b', .35))               # el ojo
+for i in range(1, 9):
+    add(sfx, SC[i] - .16, smp('sfx_whoosh_a' if i % 2 else 'sfx_whoosh_b', .8))
+add(sfx, SC[1] + .02, smp('sfx_impacto_a', .45)); add(sfx, SC[1] + .45, smp('sfx_candado_a', .6))
+add(sfx, SC[2] + .5, smp('sfx_datos_a', .7))
+add(sfx, SC[3] + .6, smp('sfx_datos_b', 1.0)); add(sfx, SC[3] + 1.7, smp('sfx_alerta_a', .35))
+add(sfx, SC[4] + .05, smp('sfx_exito_b', .35)); add(sfx, SC[4] + .9, smp('sfx_impacto_b', .35))
+add(sfx, SC[5] + .7, smp('sfx_impacto_a', .55)); add(sfx, SC[5] + .72, smp('sfx_alerta_b', .3))
+add(sfx, SC[6] + .5, smp('sfx_exito_a', .45)); add(sfx, SC[6] + 1.1, smp('sfx_exito_b', .45))
+add(sfx, SC[7] + .3, smp('sfx_tecleo_b', .7))
+add(sfx, SC[8] - .02, smp('sfx_impacto_b', .45)); add(sfx, SC[8] + .1, smp('sfx_pixel_a', .7))
 
 # ---------- voz ----------
 voice = np.zeros(N)

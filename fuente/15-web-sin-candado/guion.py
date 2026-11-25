@@ -18,7 +18,7 @@ LINES = [
     ("L6", "Las páginas falsas *también lo tienen.*"),
     ("L7", "La regla: *candado* y *dirección correcta.* Las dos."),
     ("L8", "Revisa tu página favorita y *comenta* qué viste."),
-    ("L9", "Cada pixel cuenta… y tu *seguridad* también."),
+    ("L9", "*InnovaSites…* cada pixel cuenta."),
 ]
 SAY = {}
 TEXT = dict(LINES)
