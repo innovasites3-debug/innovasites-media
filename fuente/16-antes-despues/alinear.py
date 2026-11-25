@@ -42,10 +42,18 @@ for k, txt in LINES:
     if bad: print('AVISO', k, bad)
     spans.append((k, txt, said, ws))
 assert pos == len(W), ('sobran/faltan palabras', pos, len(W))
+# inicio real de cada frase: Scribe a veces marca tarde la primera palabra ("Uno:", "Dos:"...),
+# así que se retrocede desde esa marca hasta encontrar el silencio que la precede.
+pe = np.array([np.sqrt(np.mean(proc[i:i + hop] ** 2)) for i in range(0, len(proc) - hop, hop)])
+def onset(t):
+    f = int(t / .01)
+    while f > 0 and not np.all(pe[max(0, f - 12):f] < .006): f -= 1
+    return max(0, f * .01 - .03)
+starts = [onset(nt(sp[3][0][1])) for sp in spans]
 for n, (k, txt, said, ws) in enumerate(spans):
-    a0 = nt(ws[0][1]) - .04
+    a0 = starts[n]
     b0 = nt(ws[-1][2]) + .08
-    if n + 1 < len(spans): b0 = min(b0, nt(spans[n + 1][3][0][1]) - .04)
+    if n + 1 < len(spans): b0 = min(b0, starts[n + 1] - .02)
     else: b0 = min(b0, nt(NEXT_AFTER) - .14)   # no meter el inicio de la frase que se grabó aparte
     a0 = max(0, a0); seg = proc[int(a0 * SR):int(b0 * SR)].copy()
     f = int(.012 * SR); seg[:f] *= np.linspace(0, 1, f); seg[-f:] *= np.linspace(1, 0, f)
@@ -58,6 +66,7 @@ for n, (k, txt, said, ws) in enumerate(spans):
         for d in range(i1, i2):
             j = j1 + (d - i1) if op == 'equal' else min(j1, len(ws) - 1)
             tt[d] = round(nt(ws[j][1]) - a0, 3)
+    if tt and tt[0] is not None: tt[0] = min(tt[0], .08)   # la primera palabra arranca con la frase
     pal[k] = tt
 old = json.load(open(V / 'voz' / 'duraciones.json')) if (V / 'voz' / 'duraciones.json').exists() else {}
 old_p = json.load(open(V / 'voz' / 'palabras.json')) if (V / 'voz' / 'palabras.json').exists() else {}
