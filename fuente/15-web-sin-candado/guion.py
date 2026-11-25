@@ -103,7 +103,7 @@ def build(dur):
     prev = None
     for k, _ in LINES:                         # una escena por frase, seguidas
         s[k] = 0.2 if prev is None else e(prev) + 0.1
-        T['sc' + k[1:]] = max(0.0, s[k] - 0.12)   # la escena entra un poco antes que la voz
+        T['sc' + k[1:]] = max(0.0, s[k] - 0.04)   # la escena entra justo con la voz
         prev = k
     T['sc1'] = 0.0
     T['end'] = T['sc9']

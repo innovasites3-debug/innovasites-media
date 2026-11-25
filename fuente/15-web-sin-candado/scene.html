@@ -325,7 +325,7 @@ window.render = function (t) {
     kw.style.opacity = j === 0 ? 1 : cl(seg(t, a, a + .1)); kw.style.transform = `scale(${j === 0 ? 1 : .7 + .3 * p}) rotate(${j % 2 ? -1.5 : 1.5}deg)`; }
 
   // subtítulos abajo, palabra activa en rojo
-  { const cap = $('cap'); const sb = (window.SUBS || []).find(s => t >= s[0] && t < s[1] + .25);
+  { const cap = $('cap'); const sb = (window.SUBS || []).find(s => t >= s[0] && t < s[1] + .05);
     if (!sb) cap.innerHTML = '';
     else { const cur = sb[2].filter(x => t >= x[1]).slice(-1)[0];
       cap.innerHTML = sb[2].map(w => `<span class="${w === cur ? 'on' : (t >= w[1] ? '' : 'dim')}">${w[0]}</span>`).join(''); } }
