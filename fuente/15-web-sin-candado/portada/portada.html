@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:'Oswald';font-weight:700;src:url('../../../marca/pixel/fonts/oswald-latin-700-normal.woff2')}
+@font-face{font-family:'Space Mono';font-weight:700;src:url('../../../marca/pixel/fonts/space-mono-latin-700-normal.woff2')}
+@font-face{font-family:'Inter';font-weight:700;src:url('../../../marca/pixel/fonts/inter-latin-700-normal.woff2')}
+@font-face{font-family:'Inter';font-weight:500;src:url('../../../marca/pixel/fonts/inter-latin-500-normal.woff2')}
+*{box-sizing:border-box}
+body{margin:0;width:1080px;height:1920px;overflow:hidden;position:relative;font-family:Inter;color:#fff;
+ background:radial-gradient(ellipse 90% 45% at 50% 62%,#5a0d0a 0%,#1a0505 45%,#050507 80%)}
+#grid{position:absolute;left:-600px;right:-600px;top:1380px;height:900px;transform:perspective(500px) rotateX(62deg);transform-origin:50% 0;
+ background-image:linear-gradient(#ff3b2f 3px,transparent 3px),linear-gradient(90deg,#ff3b2f 3px,transparent 3px);background-size:120px 120px;opacity:.55;
+ -webkit-mask:linear-gradient(#000,transparent 85%)}
+#hz{position:absolute;left:0;right:0;top:1372px;height:6px;background:#ff5a4f;box-shadow:0 0 40px 12px rgba(255,59,47,.6)}
+.cube{position:absolute;background:#E5342A;box-shadow:0 0 18px #ff3b2f}
+.cube.w{background:#fff;box-shadow:0 0 14px #fff;opacity:.7}
+#tag{position:absolute;top:300px;left:0;right:0;text-align:center;font:700 30px 'Space Mono';letter-spacing:.22em;color:#c9ced8}
+#tag b{color:#E5342A}
+h1{position:absolute;top:350px;left:0;right:0;margin:0;text-align:center;font:700 190px/0.98 Oswald;text-transform:uppercase;letter-spacing:-.01em}
+h1 .r{color:#ff3b2f;text-shadow:0 0 40px rgba(255,59,47,.55)}
+#sub{position:absolute;top:768px;left:0;right:0;text-align:center;font:700 46px Oswald;text-transform:uppercase;color:#fff;letter-spacing:.04em}
+#sub span{background:#E5342A;padding:4px 18px}
+#bar{position:absolute;top:880px;left:80px;width:920px;height:150px;border-radius:75px;background:#14161d;border:4px solid #ff3b2f;
+ box-shadow:0 0 60px rgba(255,59,47,.55),inset 0 0 30px rgba(255,59,47,.15);display:flex;align-items:center;padding:0 46px;gap:26px;transform:rotate(-3deg)}
+#bar .lk{width:78px;height:78px;flex:none}
+#bar .ns{font:700 40px Inter;color:#ff5a4f;white-space:nowrap}
+#bar .url{font:500 44px Inter;color:#e8eaf0;white-space:nowrap}
+#bar .url b{color:#ff3b2f;font-weight:700}
+#card{position:absolute;top:1100px;left:560px;width:450px;padding:22px 26px;border-radius:22px;background:#1b1d25;border:2px solid #3a3d48;transform:rotate(6deg);
+ box-shadow:0 20px 50px rgba(0,0,0,.6)}
+#card p{margin:0 0 10px;font:700 24px Inter;color:#9aa0ad}
+#card .n{font:700 38px 'Space Mono';color:#ff5a4f;letter-spacing:.02em}
+#eye{position:absolute;top:1255px;left:860px;width:150px;filter:drop-shadow(0 0 18px #ff3b2f)}
+#f{position:absolute;left:90px;top:1085px}
+#sh{position:absolute;left:150px;top:1625px;width:300px;height:40px;border-radius:50%;background:rgba(0,0,0,.7);filter:blur(14px)}
+</style><script src="../../../marca/pixel/pixel.js"></script><script src="../../../marca/pixel/pixel-figura.js"></script></head><body>
+<div id="grid"></div><div id="hz"></div>
+<div id="tag"><b>■</b> INNOVASITES · SEGURIDAD DIGITAL</div>
+<h1>Leyeron<br><span class="r">su tarjeta</span></h1>
+<div id="sub"><span>por no mirar esto</span></div>
+<div id="bar">
+ <svg class="lk" viewBox="0 0 24 24"><path d="M7 11V7a5 5 0 0 1 9.6-2" fill="none" stroke="#ff3b2f" stroke-width="2.6" stroke-linecap="round"/><rect x="4" y="11" width="16" height="11" rx="2.5" fill="#ff3b2f"/><rect x="11" y="14.5" width="2" height="4" rx="1" fill="#14161d"/></svg>
+ <div class="ns">No es seguro</div><div class="url"><b>http</b>://pagos-tienda.co</div>
+</div>
+<div id="card"><p>Tarjeta</p><div class="n">4532 8810 2231</div></div>
+<svg id="eye" viewBox="0 0 64 40"><path d="M2 20 Q32 -8 62 20 Q32 48 2 20Z" fill="none" stroke="#ff3b2f" stroke-width="5"/><circle cx="32" cy="20" r="9" fill="#ff3b2f"/><circle cx="32" cy="20" r="3.5" fill="#050507"/></svg>
+<div id="sh"></div><div id="f"></div>
+<script>
+const fig = pixelFigura(document.getElementById('f'), 21); fig.cara({ eyes: 'wide', mouth: 'o' }); fig.pose({ brazoD: -150, brazoI: 35, cabeza: -5 });
+[[70,620,26,0],[980,560,20,1],[150,1300,22,1],[930,800,28,0],[520,1700,18,0],[60,980,16,1],[1000,1480,18,0],[300,700,14,1]].forEach(([x,y,s,w])=>{
+ const d=document.createElement('div');d.className='cube'+(w?' w':'');Object.assign(d.style,{left:x+'px',top:y+'px',width:s+'px',height:s+'px',transform:`rotate(${x%40}deg)`});document.body.prepend(d)});
+</script></body></html>
