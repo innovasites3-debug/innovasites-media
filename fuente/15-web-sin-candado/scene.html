@@ -84,9 +84,10 @@
   #cap span { display: inline-block; font-weight: 800; font-size: 50px; line-height: 1.25; margin: 0 7px; color: rgba(255,255,255,.95); text-shadow: 0 4px 18px rgba(0,0,0,.9); }
   #cap span.on { color: var(--red2); }
   #cap span.dim { color: rgba(255,255,255,.35); }
-  #pixw { position: absolute; left: 34px; top: 1110px; width: 420px; height: 500px; perspective: 900px; z-index: 30; }
-  #pix { position: absolute; left: 0; bottom: 0; transform-origin: 50% 92%; }
-  #pix svg { display: block; filter: drop-shadow(0 18px 24px rgba(0,0,0,.65)); }
+  #pix { position: absolute; left: 0; top: 0; width: 263px; height: 388px; z-index: 30; transform-origin: 50% 100%; }
+  #pix .pp { position: absolute; }
+  #pix svg { display: block; }
+  #pshadow { position: absolute; top: 1588px; width: 190px; height: 26px; border-radius: 50%; background: rgba(0,0,0,.55); filter: blur(10px); z-index: 29; }
   #fx { position: absolute; inset: 0; z-index: 90; pointer-events: none; }
   #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 95; pointer-events: none; }
 </style>
@@ -191,7 +192,7 @@
       <canvas id="line" width="960" height="540"></canvas>
       <div id="scrGlare"></div>
     </div></div>
-    <div id="pixw"><div id="pix"></div></div>
+    <div id="pshadow"></div><div id="pix"><div class="pp" id="pLegL"></div><div class="pp" id="pLegR"></div><div class="pp" id="pArmL"></div><div class="pp" id="pBody"></div><div class="pp" id="pHead"></div><div class="pp" id="pArmR"></div></div>
   </div>
 
   <div id="brand" class="abs"><span><i></i><b>InnovaSites</b></span><span>Seguridad digital</span></div>
@@ -269,40 +270,80 @@ function burst(t, at, x, y, n, sp) {
 }
 
 
-// ---------- Pixel: la mascota ----------
-const PXC = {};
+// ---------- Pixel: la mascota, por partes y libre ----------
+const PX = 12.5, PXC = {};
 function wt(word, n = 0) { let c = 0; for (const sb of (window.SUBS || [])) for (const w of sb[2]) { if (w[0].replace(/[*.,:¿?…]/g, '').toLowerCase() === word) { if (c === n) return w[1]; c++; } } return -99; }
 const WIDE = ['entera', 'candado', 'cualquiera', 'ojo', 'falsas'].map(w => wt(w));
-const WINK = [wt('dos'), wt('cuenta', 0) > 25 ? wt('cuenta', 0) : wt('cuenta', 1)];
+const WINK = [wt('dos'), wt('cuenta', 1) > 0 ? wt('cuenta', 1) : wt('cuenta', 0)];
 const OJO = wt('ojo');
+// dónde está Pixel en cada escena (x en pantalla) y hacia dónde apunta
+const SPOT = [40, 120, 300, 560, 330, 60, 600, 300, 330];
+const lay = (id, x, y, ox, oy) => { const e = $(id); e.style.left = x * PX + 'px'; e.style.top = y * PX + 'px'; e.style.transformOrigin = `${ox * PX}px ${oy * PX}px`; return e; };
+let pixInit = false;
+function initPixel() {
+  $('pBody').innerHTML = pixelBody(PX); $('pArmL').innerHTML = pixelLimb('arm', PX); $('pArmR').innerHTML = pixelLimb('arm', PX);
+  $('pLegL').innerHTML = pixelLimb('leg', PX); $('pLegR').innerHTML = pixelLimb('leg', PX);
+  lay('pHead', 0, 0, 10.5, 20.5); lay('pBody', 4, 21, 6, 7);
+  lay('pArmL', 1.2, 21.6, 1.5, .5); lay('pArmR', 16.8, 21.6, 1.5, .5);
+  lay('pLegL', 5.6, 27.6, 1.5, 0); lay('pLegR', 11.4, 27.6, 1.5, 0);
+  pixInit = true;
+}
+const win2 = (t, a, b, r = .25) => cl(seg(t, a, a + r)) * (1 - cl(seg(t, b - r, b)));   // ventana suave
 function drawPixel(t, i, kick) {
-  const f = Math.min((window.MOUTH || []).length - 1, Math.round(t * 30)), m = (window.MOUTH || [0])[Math.max(0, f)] || 0;
-  const wide = WIDE.some(w => t >= w && t < w + .85), wink = WINK.some(w => t >= w && t < w + .7);
+  if (!pixInit) initPixel();
+  const f = Math.min((window.MOUTH || []).length - 1, Math.round(t * 30)), M = window.MOUTH || [0];
+  const m = M[Math.max(0, f)] || 0, ms = ((M[Math.max(0, f - 3)] || 0) + m + (M[Math.min(M.length - 1, f + 3)] || 0)) / 3;
+  const wideW = Math.max(...WIDE.map(w => win2(t, w - .05, w + .85, .12)));
+  const wink = WINK.some(w => t >= w && t < w + .7), wide = wideW > .5;
   const blink = !wide && !wink && (t % 2.7) > 2.58;
   const eyes = wink ? 'wink' : wide ? 'wide' : blink ? 'blink' : 'open';
   const mouth = m > .42 ? 'talk' : m > .16 ? 'mid' : (wide ? 'o' : 'smile');
-  const arm = i >= 7 ? 'wave' : (i === 4 ? 'none' : 'point');
   const excl = t >= OJO && t < OJO + 1.1;
-  const key = eyes + mouth + arm + excl;
-  if (PXC.k !== key) { PXC.k = key; $('pix').innerHTML = pixelSVG({ eyes, mouth, arm, excl }, 13.6); }
-  // aparición: crece desde el escritorio con un giro
-  const ap = seg(t, .05, .6), app = back(ap);
-  // flotar, saltito en cada escena, sobresalto en "¡ojo!"
-  let hop = 0; for (let j = 1; j < N; j++) if (t >= SC[j] && t < SC[j] + .38) { const k = seg(t, SC[j], SC[j] + .38); hop = Math.max(hop, Math.sin(k * Math.PI) * 46); }
-  let jolt = 0; WIDE.forEach(w => { if (t >= w && t < w + .3) jolt = Math.max(jolt, Math.sin(seg(t, w, w + .3) * Math.PI) * 28); });
-  const fin = seg(t, SC[8], SC[8] + .5), finJump = t >= SC[8] && t < SC[8] + .6 ? Math.sin(seg(t, SC[8], SC[8] + .6) * Math.PI) * 90 : 0;
-  const bob = Math.sin(t * 3.2) * 9 + beatPulse(t) * 6;
-  const land = (t >= SC[1] ? 0 : 0) + (hop > 0 && hop < 8 ? 1 : 0);
-  const sq = 1 + .07 * Math.sin(seg(t % 100, 0, 1) * 0) - (hop > 30 ? -.04 : 0);
-  const ry = Math.sin(t * .9) * 14 - (arm === 'point' ? 8 : 0), rz = (arm === 'point' ? -4 : 0) + Math.sin(t * 2.1) * 2 + (wide ? Math.sin(t * 40) * 1.5 : 0);
-  const sc = app * (1 + .06 * fin) * (1 + .03 * m);
-  $('pix').style.transform = `translateY(${-(bob + hop + jolt + finJump) + (1 - ap) * 60}px) rotateY(${ry + (1 - ap) * 180}deg) rotateZ(${rz}deg) scale(${sc * (hop > 30 ? .96 : 1)}, ${sc * (hop > 30 ? 1.05 : 1)})`;
-  $('pix').style.opacity = cl(ap * 3);
-  // cubitos que se juntan al aparecer
-  if (t < .7) { const k = seg(t, 0, .6); for (let j = 0; j < 16; j++) { const a = hash(j) * 6.283, r = 260 * (1 - eo(k)), s = 18 * (1 - k) + 4;
-    fx.globalAlpha = 1 - k; fx.fillStyle = j % 3 ? '#E5342A' : '#fff'; fx.fillRect(230 + Math.cos(a) * r - s / 2, 1400 + Math.sin(a) * r * .8 - s / 2, s, s); } fx.globalAlpha = 1; }
-}
+  const key = eyes + mouth + excl;
+  if (PXC.k !== key) { PXC.k = key; $('pHead').innerHTML = pixelHead({ eyes, mouth, excl }, PX); }
 
+  // --- desplazamiento: camina de un sitio a otro al cambiar de escena ---
+  let x = SPOT[0], walk = 0;
+  for (let j = 1; j < N; j++) if (t >= SC[j]) { const k = eio(seg(t, SC[j], SC[j] + .7)); x = lerp(SPOT[j - 1], SPOT[j], k); walk = (k > 0 && k < 1) ? 1 : 0; }
+  const dir = (() => { for (let j = N - 1; j >= 1; j--) if (t >= SC[j]) return Math.sign(SPOT[j] - SPOT[j - 1]) || 1; return 1; })();
+  const ph = t * 14, step = walk * Math.sin(ph);
+  // --- saltos ---
+  let jump = 0; WIDE.forEach(w => { if (t >= w && t < w + .45) jump = Math.max(jump, Math.sin(seg(t, w, w + .45) * Math.PI) * 60); });
+  if (t >= SC[8] && t < SC[8] + .7) jump = Math.max(jump, Math.sin(seg(t, SC[8], SC[8] + .7) * Math.PI) * 120);
+  const ap = seg(t, .05, .6), app = back(ap);
+  const bob = Math.sin(t * 3.2) * 7 + beatPulse(t) * 5 + walk * Math.abs(Math.sin(ph)) * 14;
+  const lean = walk * dir * 7 + Math.sin(t * 1.7) * 2.5;
+  const squash = jump > 5 ? 1 + jump / 900 : 1 - .05 * beatPulse(t);
+  const P = $('pix');
+  P.style.left = x + 'px'; P.style.top = (1212 - bob - jump + (1 - ap) * 80) + 'px';
+  P.style.transform = `rotateZ(${lean}deg) scale(${app / Math.sqrt(squash)}, ${app * squash})`;
+  P.style.opacity = cl(ap * 3);
+  const sh = $('pshadow'); sh.style.left = (x + 36) + 'px'; sh.style.opacity = cl(ap) * (1 - jump / 160); sh.style.transform = `scale(${1 - jump / 260})`;
+
+  // --- brazos (0 = colgando; positivo levanta el izquierdo hacia afuera, negativo el derecho) ---
+  const talkL = 12 + 38 * ms + 14 * Math.sin(t * 5.3) * ms, talkR = -(12 + 42 * ms + 16 * Math.sin(t * 4.6 + 1.3) * ms);
+  const pointW = Math.max(...[0, 1, 2, 3, 5, 6].map(j => win2(t, SC[j] + .55, SC[j + 1] - .15, .3)));
+  const waveW = Math.max(win2(t, SC[7] + .2, SC[8] + .1, .3), win2(t, SC[8] + .5, T.dur + 1, .3));
+  const shrugW = win2(t, SC[4] + .1, SC[5] - .1, .3);                       // "pero ojo": manos arriba
+  let aL = talkL, aR = talkR;
+  aR = lerp(aR, -150 + 6 * Math.sin(t * 6), pointW);                     // señala la pantalla
+  aL = lerp(aL, 35 + 10 * Math.sin(t * 3), pointW * .6);
+  aR = lerp(aR, -165 + 28 * Math.sin(t * 13), waveW);                    // saluda
+  aL = lerp(aL, 140 + 10 * Math.sin(t * 8), shrugW); aR = lerp(aR, -140 - 10 * Math.sin(t * 8), shrugW);
+  aL = lerp(aL, 150, wideW * (1 - shrugW) * .9); aR = lerp(aR, -150, wideW * (1 - shrugW) * (1 - pointW * .5));  // sorpresa: brazos arriba
+  aL += walk * 30 * Math.sin(ph); aR += walk * 30 * Math.sin(ph);         // balanceo al caminar
+  $('pArmL').style.transform = `rotate(${aL}deg)`; $('pArmR').style.transform = `rotate(${aR}deg)`;
+  // --- piernas ---
+  $('pLegL').style.transform = `translateY(${-Math.max(0, step) * 14}px) rotate(${walk * 18 * Math.sin(ph)}deg)`;
+  $('pLegR').style.transform = `translateY(${-Math.max(0, -step) * 14}px) rotate(${-walk * 18 * Math.sin(ph)}deg)`;
+  // --- cabeza: asiente al hablar, se inclina hacia lo que señala ---
+  const nod = Math.sin(t * 8.5) * 5 * ms + Math.sin(t * 1.3) * 3 + (pointW * -6) + wideW * Math.sin(t * 40) * 2;
+  $('pHead').style.transform = `rotate(${nod}deg) translateY(${-3 * ms}px)`;
+  $('pBody').style.transform = `rotate(${Math.sin(t * 2.2) * 2}deg)`;
+
+  if (t < .7) { const k = seg(t, 0, .6); for (let j = 0; j < 16; j++) { const a = hash(j) * 6.283, r = 260 * (1 - eo(k)), s = 18 * (1 - k) + 4;
+    fx.globalAlpha = 1 - k; fx.fillStyle = j % 3 ? '#E5342A' : '#fff'; fx.fillRect(x + 130 + Math.cos(a) * r - s / 2, 1420 + Math.sin(a) * r * .8 - s / 2, s, s); } fx.globalAlpha = 1; }
+}
 window.render = function (t) {
   fx.clearRect(0, 0, 1080, 1920);
   const bp = beatPulse(t), i = sceneIdx(t), t0 = SC[i];

@@ -66,3 +66,32 @@ function pixelSVG(o,px=11.5){
    ${cubes}${sides}${fronts}<g filter="url(#pxbl)" style="mix-blend-mode:screen">${glow}</g></svg>`;
 }
 
+
+// ---------- Pixel por partes (cabeza, cuerpo, brazos, piernas) para animarlo libre ----------
+// Cada parte es una región de la matriz; se dibuja como voxel sin halo ni piso.
+function voxPart(g, px, x0, y0, x1, y1, uid) {
+  const D = px * .55; let sides = '', fronts = '', glow = '';
+  const has = (x, y) => y >= y0 && y <= y1 && x >= x0 && x <= x1 && g[y] && g[y][x] && g[y][x] !== '.' && g[y][x] !== 'O';
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+    const c = g[y] && g[y][x]; if (!c || c === '.' || c === 'O') continue;
+    const col = PAL[c], X = (x - x0) * px, Y = (y - y0) * px;
+    if (!has(x, y - 1)) sides += `<path d="M${X} ${Y} L${X + D} ${Y - D} L${X + px + D} ${Y - D} L${X + px} ${Y} Z" fill="${shade(col, .28)}"/>`;
+    if (!has(x + 1, y)) sides += `<path d="M${X + px} ${Y} L${X + px + D} ${Y - D} L${X + px + D} ${Y + px - D} L${X + px} ${Y + px} Z" fill="${shade(col, -.42)}"/>`;
+    const lit = .10 - (y / PH) * .22 - (x / PW) * .08;
+    const emis = (c === 'E' || c === 'W' && y >= 8 && y <= 16 && x >= 6 && x <= 19 || c === 'Y');
+    fronts += `<rect x="${X}" y="${Y}" width="${px + .4}" height="${px + .4}" fill="${emis ? col : shade(col, lit)}"/>`;
+    if (!emis && c !== 'K' && c !== 'k') fronts += `<rect x="${X + 1}" y="${Y + 1}" width="${px * .38}" height="${px * .16}" fill="rgba(255,255,255,.10)"/>`;
+    if (emis) glow += `<rect x="${X - 2}" y="${Y - 2}" width="${px + 4}" height="${px + 4}" rx="3" fill="${col}" opacity=".9"/>`;
+  }
+  const w = (x1 - x0 + 1) * px, h = (y1 - y0 + 1) * px, m = px * 1.2;
+  return `<svg width="${w + 2 * m}" height="${h + 2 * m}" viewBox="${-m} ${-m} ${w + 2 * m} ${h + 2 * m}" shape-rendering="crispEdges" style="position:absolute;left:${-m}px;top:${-m}px;overflow:visible">
+   <defs><filter id="gl${uid}" x="-.5" y="-.5" width="2" height="2"><feGaussianBlur stdDeviation="6"/></filter></defs>
+   ${sides}${fronts}${glow ? `<g filter="url(#gl${uid})" style="mix-blend-mode:screen">${glow}</g>` : ''}</svg>`;
+}
+// regiones (con ox=2 ya aplicado): cabeza 4..23 x -1..20, cuerpo 8..19 x 21..27
+function pixelHead(o, px) { const g = sprite(Object.assign({}, o, { arm: 'none' })); return voxPart(g, px, 4, 0, 24, 20, 'h'); }
+function pixelBody(px) { const g = sprite({ arm: 'none' }); for (let y = 22; y <= 25; y++) for (const x of [5, 6, 7, 20, 21, 22]) g[y][x] = '.'; return voxPart(g, px, 8, 21, 19, 27, 'b'); }
+function pixelLimb(kind, px) {   // brazo: 3x8 con mano blanca; pierna: 3x4
+  const g = kind === 'arm' ? ['RRR', 'RRr', 'RRr', 'RRr', 'RRr', 'rrr', 'WWW', 'WWW'] : ['rrr', 'rrr', 'rrr', 'SSSS'];
+  return voxPart(g.map(r => r.split('')), px, 0, 0, 3, g.length - 1, kind);
+}
