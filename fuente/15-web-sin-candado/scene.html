@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>La web sin candado</title>
+<style>
+  @font-face { font-family: 'Oswald'; font-weight: 600; src: url('fonts/oswald-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Oswald'; font-weight: 700; src: url('fonts/oswald-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 400; src: url('fonts/inter-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 500; src: url('fonts/inter-latin-500-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 600; src: url('fonts/inter-latin-600-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Inter'; font-weight: 700; src: url('fonts/inter-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 400; src: url('fonts/space-mono-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Space Mono'; font-weight: 700; src: url('fonts/space-mono-latin-700-normal.woff2') format('woff2'); }
+  :root { --red: #E5342A; --red2: #ff5a4f; --ok: #34c759; --ink: #F4F5F7; --mut: #8b93a3; --disp: 'Oswald', sans-serif; --ui: 'Inter', sans-serif; --mono: 'Space Mono', monospace; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #050506; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: var(--ui); color: var(--ink); }
+  .abs { position: absolute; }
+
+  /* ---------- cuarto: pared, lámpara, escritorio ---------- */
+  #room { position: absolute; inset: 0; transform-origin: 50% 48%; }
+  #wall { position: absolute; inset: 0; background:
+      radial-gradient(ellipse 520px 760px at 6% 40%, rgba(255,170,90,.20), rgba(255,170,90,0) 70%),
+      radial-gradient(ellipse 900px 620px at 50% 46%, rgba(229,52,42,.10), rgba(0,0,0,0) 70%),
+      linear-gradient(180deg, #0c0c0f 0%, #121217 55%, #0b0b0d 100%); }
+  #lamp { position: absolute; left: -40px; top: 520px; width: 120px; height: 760px; background: linear-gradient(180deg, rgba(255,214,160,.85), rgba(255,170,90,.35)); filter: blur(28px); opacity: .55; }
+  #desk { position: absolute; left: 0; right: 0; top: 1330px; bottom: 0; background:
+      linear-gradient(180deg, rgba(229,52,42,.10) 0%, rgba(0,0,0,0) 22%),
+      repeating-linear-gradient(92deg, rgba(255,255,255,.018) 0 3px, rgba(0,0,0,0) 3px 11px),
+      linear-gradient(180deg, #2a1d15 0%, #1a120d 45%, #0e0a08 100%); }
+  #deskEdge { position: absolute; left: 0; right: 0; top: 1326px; height: 8px; background: linear-gradient(180deg, rgba(255,200,150,.18), rgba(0,0,0,0)); }
+  #refl { position: absolute; left: 160px; right: 160px; top: 1340px; height: 260px; background: radial-gradient(ellipse at 50% 0%, rgba(229,52,42,.28), rgba(229,52,42,0) 70%); filter: blur(8px); }
+  #kbd { position: absolute; left: 230px; top: 1480px; width: 620px; height: 120px; border-radius: 14px; background: linear-gradient(180deg, #19191d, #0f0f12); box-shadow: 0 18px 40px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06); transform: perspective(900px) rotateX(55deg); }
+  #kbd i { position: absolute; inset: 12px; background: repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 34px, rgba(0,0,0,0) 34px 40px), repeating-linear-gradient(180deg, rgba(255,255,255,.04) 0 18px, rgba(0,0,0,0) 18px 24px); border-radius: 6px; }
+  #mouse { position: absolute; left: 880px; top: 1500px; width: 70px; height: 100px; border-radius: 35px; background: linear-gradient(180deg, #1c1c20, #0e0e11); transform: perspective(700px) rotateX(55deg); box-shadow: 0 14px 30px rgba(0,0,0,.7); }
+
+  /* ---------- monitor ---------- */
+  #mon { position: absolute; left: 46px; top: 640px; transform: scale(.93); transform-origin: 50% 50%; width: 988px; height: 572px; border-radius: 18px; background: #050505; box-shadow: 0 0 0 2px #1d1d21, 0 40px 90px rgba(0,0,0,.8), 0 0 140px rgba(229,52,42,.18); }
+  #scr { position: absolute; left: 14px; top: 14px; width: 960px; height: 540px; border-radius: 6px; overflow: hidden; background: #07080b; }
+  #stand { position: absolute; left: 470px; top: 1212px; width: 140px; height: 118px; background: linear-gradient(90deg, #121215, #1e1e22, #121215); }
+  #base { position: absolute; left: 380px; top: 1318px; width: 320px; height: 22px; border-radius: 10px; background: linear-gradient(180deg, #24242a, #101013); box-shadow: 0 10px 24px rgba(0,0,0,.7); }
+  #scrGlare { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 28%, rgba(255,255,255,0) 70%, rgba(255,255,255,.03) 100%); z-index: 50; }
+  #scrGrid { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1.4px); background-size: 24px 24px; opacity: .5; }
+  #line { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
+
+  /* escenas dentro del monitor (960 x 540) */
+  .sc { position: absolute; inset: 0; opacity: 0; }
+  .pop { opacity: 0; }
+  .browser { position: absolute; left: 150px; top: 60px; width: 660px; height: 420px; border-radius: 16px; background: #121419; box-shadow: 0 20px 50px rgba(0,0,0,.6); overflow: hidden; }
+  .bbar { height: 58px; background: #1b1e25; display: flex; align-items: center; gap: 12px; padding: 0 18px; }
+  .dots i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; background: #3a3f4b; }
+  .url { flex: 1; height: 36px; border-radius: 18px; background: #0d0f13; display: flex; align-items: center; gap: 10px; padding: 0 16px; font-size: 17px; color: #c9ced8; white-space: nowrap; }
+  .url .warn { color: var(--red2); font-weight: 700; font-size: 15px; }
+  .url .lk { color: var(--ok); }
+  .form { padding: 34px 40px; }
+  .form h5 { font-size: 26px; font-weight: 700; margin-bottom: 20px; }
+  .field { white-space: pre; height: 64px; border-radius: 12px; border: 2px solid #2b303b; display: flex; align-items: center; padding: 0 18px; font-family: var(--mono); font-size: 28px; letter-spacing: .04em; margin-bottom: 14px; }
+  .field small { font-family: var(--ui); font-size: 14px; color: var(--mut); position: absolute; margin-top: -58px; }
+  .field .c { color: var(--ink); } .field .c.hot { color: var(--red2); text-shadow: 0 0 14px rgba(229,52,42,.9); }
+  .row2 { display: flex; gap: 14px; } .row2 .field { flex: 1; }
+  .btn { height: 58px; border-radius: 12px; background: var(--red); display: grid; place-items: center; font-weight: 700; font-size: 21px; }
+  .eye { position: absolute; width: 150px; height: 150px; }
+  .big { font-family: var(--disp); font-weight: 700; text-transform: uppercase; letter-spacing: .01em; line-height: 1; }
+  .chip { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 30px; font-weight: 700; font-size: 22px; }
+  .stamp { position: absolute; padding: 10px 24px 4px; border: 7px solid var(--red); color: var(--red); font-family: var(--disp); font-weight: 700; font-size: 74px; line-height: 1.1; background: rgba(10,10,12,.85); }
+  .pkt { position: absolute; padding: 8px 14px; border-radius: 10px; background: #fff; color: #111; font-family: var(--mono); font-weight: 700; font-size: 22px; white-space: nowrap; box-shadow: 0 0 24px rgba(255,255,255,.35); }
+  .lbl { position: absolute; font-family: var(--mono); font-size: 18px; letter-spacing: .1em; text-transform: uppercase; color: var(--mut); }
+  .chk { position: absolute; left: 140px; width: 680px; height: 110px; border-radius: 18px; background: #12151b; border: 2px solid #252a35; display: flex; align-items: center; gap: 26px; padding: 0 30px; }
+  .chk .ic { width: 64px; height: 64px; flex: none; }
+  .chk b { display: block; font-size: 30px; } .chk span { display: block; font-size: 19px; color: var(--mut); margin-top: 4px; font-family: var(--mono); }
+  .chk .tick { margin-left: auto; width: 58px; height: 58px; }
+  .bubble { position: absolute; left: 170px; top: 120px; width: 620px; padding: 28px 34px; border-radius: 26px 26px 26px 6px; background: #f4f5f7; color: #111; font-size: 30px; font-weight: 600; line-height: 1.35; }
+  .bubble small { display: block; font-size: 18px; color: #6b7280; font-weight: 700; margin-bottom: 8px; }
+  .cur { display: inline-block; width: 3px; height: 32px; background: #111; vertical-align: -5px; margin-left: 2px; }
+
+  /* ---------- textos fuera del monitor ---------- */
+  #brand { left: 64px; right: 64px; top: 150px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 22px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  #brand b { color: #fff; } #brand i { display: inline-block; width: 12px; height: 12px; background: var(--red); margin-right: 12px; vertical-align: 1px; }
+  #kw { left: 40px; right: 40px; top: 260px; height: 330px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  #kw .k { font-family: var(--disp); font-weight: 700; text-transform: uppercase; font-size: 128px; line-height: 1.02; letter-spacing: .005em; text-shadow: 0 8px 40px rgba(0,0,0,.7); }
+  #kw .k .r { color: var(--red); }
+  #cap { left: 60px; right: 60px; top: 1640px; text-align: center; }
+  #cap span { display: inline-block; font-weight: 800; font-size: 50px; line-height: 1.25; margin: 0 7px; color: rgba(255,255,255,.95); text-shadow: 0 4px 18px rgba(0,0,0,.9); }
+  #cap span.on { color: var(--red2); }
+  #cap span.dim { color: rgba(255,255,255,.35); }
+  #fx { position: absolute; inset: 0; z-index: 90; pointer-events: none; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 95; pointer-events: none; }
+</style>
+<script src="timing.js"></script>
+</head>
+<body>
+<div id="stage">
+  <div id="room">
+    <div id="wall"></div><div id="lamp"></div>
+    <div id="desk"></div><div id="deskEdge"></div><div id="refl"></div>
+    <div id="kbd"><i></i></div><div id="mouse"></div>
+    <div id="stand"></div><div id="base"></div>
+    <div id="mon"><div id="scr">
+      <div id="scrGrid"></div>
+
+      <!-- 1: formulario de pago en una web sin candado; un ojo lee la tarjeta -->
+      <div class="sc" id="s1">
+        <div class="browser" id="b1"><div class="bbar"><span class="dots"><i></i><i></i><i></i></span><div class="url"><span class="warn">⚠ No es seguro</span><span>http://pagos-tienda.co</span></div></div>
+          <div class="form"><h5>Pagar $219.900</h5>
+            <div class="field" id="card"></div>
+            <div class="row2"><div class="field">08/29</div><div class="field">•••</div></div>
+            <div class="btn">Pagar ahora</div></div></div>
+        <svg class="eye pop" id="eye1" viewBox="0 0 100 100" style="left:790px;top:40px"><path d="M8 50 C28 18 72 18 92 50 C72 82 28 82 8 50 Z" fill="#0b0c10" stroke="#E5342A" stroke-width="5"/><circle cx="50" cy="50" r="17" fill="#E5342A"/><circle cx="50" cy="50" r="7" fill="#0b0c10"/></svg>
+      </div>
+
+      <!-- 2: la barra de dirección en grande + candado roto -->
+      <div class="sc" id="s2">
+        <div class="abs pop" id="bigUrl" style="left:70px;top:70px;width:820px;height:110px;border-radius:55px;background:#151821;display:flex;align-items:center;gap:22px;padding:0 40px;font-size:40px;color:#d6dae2;white-space:nowrap">
+          <span style="color:#ff5a4f;font-weight:800">⚠ No es seguro</span><span>http://pagos-tienda.co</span></div>
+        <svg class="abs" viewBox="0 0 200 220" style="left:380px;top:210px;width:200px;height:220px">
+          <path class="draw" data-a=".25" data-d=".6" d="M55 95 V60 C55 18 145 18 145 60 V72" fill="none" stroke="#E5342A" stroke-width="16" stroke-linecap="round"/>
+          <rect class="draw" data-a=".1" data-d=".55" x="30" y="100" width="140" height="110" rx="18" fill="none" stroke="#E5342A" stroke-width="12"/>
+          <path class="draw" data-a=".75" data-d=".3" d="M100 125 L88 150 L108 160 L94 190" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+        </svg>
+        <div class="abs pop lbl" id="s2lbl" style="left:0;right:0;top:470px;text-align:center;color:#ff5a4f">http:// sin “s” = sin candado</div>
+      </div>
+
+      <!-- 3: los datos viajan en texto plano -->
+      <div class="sc" id="s3">
+        <svg class="abs" viewBox="0 0 120 100" style="left:60px;top:170px;width:170px;height:150px"><rect class="draw" data-a=".05" data-d=".4" x="16" y="10" width="88" height="60" rx="6" fill="none" stroke="#F4F5F7" stroke-width="5"/><path class="draw" data-a=".25" data-d=".3" d="M4 84 H116" stroke="#F4F5F7" stroke-width="6" stroke-linecap="round"/></svg>
+        <svg class="abs" viewBox="0 0 100 120" style="left:740px;top:160px;width:150px;height:180px"><rect class="draw" data-a=".1" data-d=".4" x="18" y="8" width="64" height="104" rx="8" fill="none" stroke="#F4F5F7" stroke-width="5"/><path class="draw" data-a=".3" data-d=".3" d="M30 34 H70 M30 54 H70 M30 74 H70" stroke="#F4F5F7" stroke-width="5"/></svg>
+        <div class="lbl" style="left:70px;top:340px">Tu celular</div><div class="lbl" style="left:770px;top:350px">La tienda</div>
+        <div class="pkt" id="pk3">4532 8810 2231 7765</div>
+        <div class="abs pop big" id="s3w" style="left:0;right:0;top:420px;text-align:center;font-size:64px;color:#ff5a4f">Texto plano · sin cifrar</div>
+      </div>
+
+      <!-- 4: wifi público, alguien intercepta -->
+      <div class="sc" id="s4">
+        <svg class="abs" viewBox="0 0 200 160" style="left:380px;top:40px;width:200px;height:160px">
+          <path class="draw" data-a=".05" data-d=".35" d="M20 70 C70 20 130 20 180 70" fill="none" stroke="#F4F5F7" stroke-width="12" stroke-linecap="round"/>
+          <path class="draw" data-a=".2" data-d=".35" d="M48 98 C80 66 120 66 152 98" fill="none" stroke="#F4F5F7" stroke-width="12" stroke-linecap="round"/>
+          <path class="draw" data-a=".35" data-d=".3" d="M76 124 C92 110 108 110 124 124" fill="none" stroke="#F4F5F7" stroke-width="12" stroke-linecap="round"/>
+          <circle class="pop" id="wdot" cx="100" cy="146" r="10" fill="#F4F5F7"/></svg>
+        <div class="abs pop chip" id="wname" style="left:350px;top:210px;background:#1b1e25">📶 Wifi_Cafe_Gratis</div>
+        <svg class="abs pop" id="hood" viewBox="0 0 120 120" style="left:700px;top:250px;width:190px;height:190px"><path d="M60 8 C28 8 14 36 14 62 L14 112 L106 112 L106 62 C106 36 92 8 60 8 Z" fill="#14161c" stroke="#E5342A" stroke-width="4"/><ellipse cx="60" cy="62" rx="30" ry="34" fill="#050507"/><circle cx="48" cy="60" r="5" fill="#E5342A"/><circle cx="72" cy="60" r="5" fill="#E5342A"/></svg>
+        <div class="pkt" id="pk4">4532 8810 2231 7765</div>
+        <div class="pkt" id="pk4b" style="background:#ff5a4f;color:#fff">4532 8810 2231 7765</div>
+      </div>
+
+      <!-- 5: el candado cerrado... pero ojo -->
+      <div class="sc" id="s5">
+        <svg class="abs" id="lock5" viewBox="0 0 200 220" style="left:380px;top:70px;width:200px;height:220px">
+          <path class="draw" data-a=".05" data-d=".5" d="M55 100 V62 C55 18 145 18 145 62 V100" fill="none" stroke="#34c759" stroke-width="16" stroke-linecap="round"/>
+          <rect class="draw" data-a=".15" data-d=".5" x="30" y="100" width="140" height="110" rx="18" fill="none" stroke="#34c759" stroke-width="12"/>
+          <circle class="pop" id="kh5" cx="100" cy="150" r="14" fill="#34c759"/></svg>
+        <div class="abs pop big" id="s5a" style="left:0;right:0;top:320px;text-align:center;font-size:58px">Candado <span style="color:#ff5a4f">≠</span> página real</div>
+        <div class="abs pop lbl" id="s5b" style="left:0;right:0;top:410px;text-align:center">Solo protege el viaje de los datos</div>
+      </div>
+
+      <!-- 6: página falsa con candado -->
+      <div class="sc" id="s6">
+        <div class="browser" id="b6" style="top:50px"><div class="bbar"><span class="dots"><i></i><i></i><i></i></span><div class="url" id="u6"><span class="lk">🔒</span><span>https://bancoo-seguro.co</span></div></div>
+          <div class="form" style="padding-top:28px"><h5>Mi Banco · Ingresa</h5>
+            <div class="field" style="font-size:22px;color:#8b93a3">Usuario</div><div class="field" style="font-size:22px;color:#8b93a3">Clave</div>
+            <div class="btn" style="background:#1f6feb">Entrar</div></div></div>
+        <div class="stamp pop" id="st6" style="left:560px;top:250px">FALSA</div>
+      </div>
+
+      <!-- 7: la regla: las dos -->
+      <div class="sc" id="s7">
+        <div class="chk pop" id="c71" style="top:60px"><svg class="ic" viewBox="0 0 60 60"><path d="M18 28 V20 C18 6 42 6 42 20 V28" fill="none" stroke="#34c759" stroke-width="6"/><rect x="10" y="28" width="40" height="28" rx="6" fill="#34c759"/></svg><div><b>Candado</b><span>https://</span></div>
+          <svg class="tick" viewBox="0 0 60 60"><circle cx="30" cy="30" r="27" fill="none" stroke="#E5342A" stroke-width="5"/><path class="draw" data-a=".45" data-d=".3" d="M17 31 L27 41 L44 21" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="chk pop" id="c72" style="top:200px"><svg class="ic" viewBox="0 0 60 60"><circle cx="26" cy="26" r="16" fill="none" stroke="#F4F5F7" stroke-width="6"/><path d="M38 38 L52 52" stroke="#F4F5F7" stroke-width="7" stroke-linecap="round"/></svg><div><b>Dirección exacta</b><span>mibanco.com.co</span></div>
+          <svg class="tick" viewBox="0 0 60 60"><circle cx="30" cy="30" r="27" fill="none" stroke="#E5342A" stroke-width="5"/><path class="draw" data-a="1.05" data-d=".3" d="M17 31 L27 41 L44 21" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="abs pop big" id="s7w" style="left:0;right:0;top:360px;text-align:center;font-size:100px;color:#ff5a4f">Las dos</div>
+      </div>
+
+      <!-- 8: comenta qué viste -->
+      <div class="sc" id="s8">
+        <div class="bubble pop" id="bb8"><small>TÚ · comentando</small><span id="ty8"></span><span class="cur" id="cu8"></span></div>
+        <div class="abs pop" id="ic8" style="left:170px;top:330px;display:flex;gap:34px;font-size:46px">❤️ 💬 📌</div>
+      </div>
+
+      <!-- 9: cierre de marca -->
+      <div class="sc" id="s9">
+        <div class="abs pop big" id="wm9" style="left:0;right:0;top:150px;text-align:center;font-size:110px;letter-spacing:.02em">Innova<span style="color:#E5342A">Sites</span></div>
+        <div class="abs pop" id="tl9" style="left:0;right:0;top:290px;text-align:center;font-family:var(--disp);font-weight:600;font-size:46px;text-transform:uppercase">Cada pixel cuenta… y tu seguridad <span style="color:#E5342A">también</span></div>
+        <div class="abs pop lbl" id="hd9" style="left:0;right:0;top:380px;text-align:center;color:#fff;font-size:24px">@innova_sites</div>
+      </div>
+
+      <canvas id="line" width="960" height="540"></canvas>
+      <div id="scrGlare"></div>
+    </div></div>
+  </div>
+
+  <div id="brand" class="abs"><span><i></i><b>InnovaSites</b></span><span>Seguridad digital</span></div>
+  <div id="kw" class="abs"></div>
+  <div id="cap" class="abs"></div>
+  <canvas id="fx" width="1080" height="1920"></canvas>
+  <div id="flash"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const cl = x => Math.max(0, Math.min(1, x));
+const seg = (t, a, b) => cl((t - a) / (b - a));
+const eo = x => 1 - Math.pow(1 - x, 3), eo5 = x => 1 - Math.pow(1 - x, 5);
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const lerp = (a, b, k) => a + (b - a) * k;
+const hash = n => { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); };
+const BEATS = window.BEATS || [];
+function beatPulse(t) { let v = 0; for (const b of BEATS) { if (b > t) break; v = Math.max(v, Math.exp(-(t - b) * 9)); } return v; }
+
+const N = 9, SC = [...Array(N)].map((_, i) => T['sc' + (i + 1)]).concat([T.dur + 1]);
+const KW = [
+  ['Alguien leyó', '<span class="r">su tarjeta</span>'],
+  ['Sin', '<span class="r">candado</span>'],
+  ['Viaja', '<span class="r">sin cifrar</span>'],
+  ['Cualquiera', '<span class="r">lo ve</span>'],
+  ['Pero', '<span class="r">ojo</span>'],
+  ['Las falsas', '<span class="r">también</span>'],
+  ['Candado', '<span class="r">+ dirección</span>'],
+  ['Comenta', '<span class="r">qué viste</span>'],
+  ['¿Tu página', '<span class="r">tiene candado?</span>']
+];
+// preparar trazos dibujables
+document.querySelectorAll('.draw').forEach(p => { const L = p.getTotalLength ? p.getTotalLength() : 600; p.dataset.len = L; p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
+const ln = $('line').getContext('2d'), fx = $('fx').getContext('2d');
+const CARD = '4532 8810 2231 7765';
+const TYPE8 = 'Revisé mi tienda favorita y sí tiene candado 🔒';
+
+function sceneIdx(t) { let i = 0; while (i < N - 1 && t >= SC[i + 1]) i++; return i; }
+
+function drawLine(t) {
+  ln.clearRect(0, 0, 960, 540);
+  // barrido de la línea roja en cada cambio de escena
+  for (let i = 1; i < N; i++) {
+    const a = SC[i] - .22, b = SC[i] + .2;
+    if (t < a || t > b) continue;
+    const k = seg(t, a, b), x = lerp(-200, 1160, eio(k)), y = 270 + Math.sin(k * Math.PI * 2 + i) * 120;
+    ln.save(); ln.shadowColor = '#E5342A'; ln.shadowBlur = 30; ln.lineCap = 'round';
+    for (let j = 0; j < 14; j++) {
+      const x0 = x - j * 34, y0 = 270 + Math.sin((k - j * .025) * Math.PI * 2 + i) * 120;
+      ln.strokeStyle = `rgba(229,52,42,${(1 - j / 14) * .95})`; ln.lineWidth = 10 * (1 - j / 16);
+      ln.beginPath(); ln.moveTo(x0, y0); ln.lineTo(x0 - 36, 270 + Math.sin((k - (j + 1) * .025) * Math.PI * 2 + i) * 120); ln.stroke();
+    }
+    ln.fillStyle = '#fff'; ln.beginPath(); ln.arc(x, y, 9, 0, 7); ln.fill();
+    ln.restore();
+  }
+  // escena 3 y 4: el camino de los datos
+  const i = sceneIdx(t), t0 = SC[i];
+  if (i === 2 || i === 3) {
+    const k = eo(seg(t, t0 + .1, t0 + .6));
+    ln.save(); ln.strokeStyle = '#E5342A'; ln.lineWidth = 6; ln.shadowColor = '#E5342A'; ln.shadowBlur = 18; ln.setLineDash([]);
+    ln.beginPath();
+    if (i === 2) { ln.moveTo(240, 245); ln.bezierCurveTo(420, 120, 560, 370, 730, 245); }
+    else { ln.moveTo(120, 470); ln.bezierCurveTo(330, 300, 600, 300, 780, 330); }
+    const L = 900; ln.setLineDash([L]); ln.lineDashOffset = L * (1 - k); ln.stroke(); ln.restore();
+  }
+}
+function bez(p0, p1, p2, p3, u) { const v = 1 - u; return [v*v*v*p0[0] + 3*v*v*u*p1[0] + 3*v*u*u*p2[0] + u*u*u*p3[0], v*v*v*p0[1] + 3*v*v*u*p1[1] + 3*v*u*u*p2[1] + u*u*u*p3[1]]; }
+
+function burst(t, at, x, y, n, sp) {
+  if (t < at || t > at + .7) return; const k = seg(t, at, at + .7);
+  for (let j = 0; j < n; j++) { const a = hash(j) * 6.283, r = sp * eo(k) * (.4 + .6 * hash(j + 9)), s = 10 * (1 - k);
+    fx.fillStyle = j % 3 ? '#E5342A' : '#fff'; fx.globalAlpha = 1 - k; fx.fillRect(x + Math.cos(a) * r - s / 2, y + Math.sin(a) * r - s / 2, s, s); }
+  fx.globalAlpha = 1;
+}
+
+window.render = function (t) {
+  fx.clearRect(0, 0, 1080, 1920);
+  const bp = beatPulse(t), i = sceneIdx(t), t0 = SC[i];
+  // cámara: empuje lento + golpe en cada cambio
+  let kick = 0; for (let j = 1; j < N; j++) if (t >= SC[j] && t < SC[j] + .4) kick = Math.max(kick, 1 - seg(t, SC[j], SC[j] + .4));
+  const zoom = 1 + .05 * seg(t, 0, T.dur) + .018 * eo(kick) + bp * .004;
+  const shake = kick > .6 ? (hash(Math.floor(t * 60)) - .5) * 6 : 0;
+  $('room').style.transform = `translate(${shake}px, ${shake * .6}px) scale(${zoom})`;
+  $('mon').style.boxShadow = `0 0 0 2px #1d1d21, 0 40px 90px rgba(0,0,0,.8), 0 0 ${140 + bp * 60}px rgba(229,52,42,${.16 + bp * .08})`;
+
+  // escenas
+  for (let j = 0; j < N; j++) {
+    const el = $('s' + (j + 1)), a = SC[j], b = SC[j + 1];
+    const on = t >= a - .02 && t < b + .12;
+    if (!on) { el.style.opacity = 0; continue; }
+    const pin = eo5(seg(t, a, a + .35)), pout = seg(t, b - .02, b + .12);
+    el.style.opacity = (j === 0 ? 1 : cl(seg(t, a, a + .12))) * (1 - pout);
+    el.style.transform = `scale(${(j === 0 ? 1 : 1.12 - .12 * pin) * (1 + .03 * seg(t, a, b))})`;
+    el.querySelectorAll('.draw').forEach(p => { const L = +p.dataset.len, k = eo(seg(t, a + +p.dataset.a, a + +p.dataset.a + +p.dataset.d)); p.style.strokeDashoffset = L * (1 - k); });
+  }
+  const P = (id, at, from = .6) => { const e = $(id), p = back(seg(t, at, at + .4)); e.style.opacity = cl(seg(t, at, at + .1)); e.style.transform = `scale(${from + (1 - from) * p})`; };
+
+  // 1: la tarjeta se escribe sola y luego el ojo la lee
+  { const a = SC[0], n = Math.floor(CARD.length * seg(t, a + .05, a + 1.1)), hot = Math.floor(CARD.length * seg(t, a + 1.7, a + 2.8));
+    $('card').innerHTML = [...CARD.slice(0, Math.max(n, CARD.length * (t > a + 1.1)))].map((c, k) => `<span class="c${k < hot ? ' hot' : ''}">${c}</span>`).join('') + (n < CARD.length ? '<span class="cur" style="background:#fff;height:30px"></span>' : '');
+    P('eye1', a + 1.45, .3);
+    const eye = $('eye1'); if (t > a + 1.45) eye.style.transform += ` translateX(${Math.sin(t * 6) * 6}px)`; }
+  // 2
+  { const a = SC[1]; P('bigUrl', a + .02, .85); P('s2lbl', a + .9, .8); burst(t, a + .8, 540, 960, 24, 260); }
+  // 3: el paquete viaja por la curva
+  { const a = SC[2], k = eio(seg(t, a + .5, a + 2.0)), [x, y] = bez([240, 245], [420, 120], [560, 370], [730, 245], k), e = $('pk3');
+    e.style.left = (x - 130) + 'px'; e.style.top = (y - 70) + 'px'; e.style.opacity = cl(seg(t, a + .45, a + .6)); P('s3w', a + 1.0, .8); }
+  // 4: el paquete se desvía al encapuchado
+  { const a = SC[3]; P('wname', a + .45, .7); P('hood', a + .8, .3); P('wdot', a + .4, .2);
+    const k = eio(seg(t, a + .6, a + 1.7)), [x, y] = bez([120, 470], [330, 300], [600, 300], [780, 330], k), e = $('pk4');
+    e.style.left = (x - 130) + 'px'; e.style.top = (y - 60) + 'px'; e.style.opacity = cl(seg(t, a + .55, a + .7)) * (1 - seg(t, a + 1.6, a + 1.75));
+    const e2 = $('pk4b'), k2 = back(seg(t, a + 1.7, a + 2.1)); e2.style.left = '560px'; e2.style.top = '200px'; e2.style.opacity = cl(seg(t, a + 1.7, a + 1.8)); e2.style.transform = `scale(${.5 + .5 * k2}) rotate(-4deg)`; }
+  // 5
+  { const a = SC[4]; P('kh5', a + .55, .2); P('s5a', a + .9, .8); P('s5b', a + 1.4, .8);
+    $('lock5').style.transform = t > a + .9 ? `rotate(${Math.sin((t - a) * 18) * 6 * (1 - seg(t, a + .9, a + 1.8))}deg)` : ''; }
+  // 6
+  { const a = SC[5]; P('st6', a + .7, 2.2); $('st6').style.transform += ' rotate(-12deg)'; burst(t, a + .75, 820, 950, 30, 300);
+    $('u6').style.boxShadow = t > a + .25 ? `0 0 0 ${3 * cl(seg(t, a + .25, a + .4))}px #34c759` : 'none'; }
+  // 7
+  { const a = SC[6]; P('c71', a + .05, .8); P('c72', a + .6, .8); P('s7w', a + 1.5, 1.8); }
+  // 8: comentario que se escribe
+  { const a = SC[7]; P('bb8', a + .05, .7); P('ic8', a + .5, .6);
+    const n = Math.floor([...TYPE8].length * seg(t, a + .3, a + 2.0)); $('ty8').textContent = [...TYPE8].slice(0, n).join('');
+    $('cu8').style.opacity = Math.floor(t * 3) % 2 ? 1 : .2; }
+  // 9
+  { const a = SC[8]; P('wm9', a + .05, .7); P('tl9', a + .5, .85); P('hd9', a + .9, .8); }
+
+  drawLine(t);
+
+  // palabra clave grande arriba (frase completa desde el primer cuadro)
+  { const kw = $('kw'), j = i, a = j === 0 ? -1 : SC[j];
+    const html = KW[j][0] ? `<div class="k">${KW[j][0]}</div><div class="k">${KW[j][1]}</div>` : '';
+    if (kw.dataset.j != j) { kw.innerHTML = html; kw.dataset.j = j; }
+    const p = back(seg(t, a, a + .35));
+    kw.style.opacity = j === 0 ? 1 : cl(seg(t, a, a + .1)); kw.style.transform = `scale(${j === 0 ? 1 : .7 + .3 * p}) rotate(${j % 2 ? -1.5 : 1.5}deg)`; }
+
+  // subtítulos abajo, palabra activa en rojo
+  { const cap = $('cap'); const sb = (window.SUBS || []).find(s => t >= s[0] && t < s[1] + .25);
+    if (!sb) cap.innerHTML = '';
+    else { const cur = sb[2].filter(x => t >= x[1]).slice(-1)[0];
+      cap.innerHTML = sb[2].map(w => `<span class="${w === cur ? 'on' : (t >= w[1] ? '' : 'dim')}">${w[0]}</span>`).join(''); } }
+
+  const fl = Math.max(...SC.slice(1, N).map(c => t >= c && t < c + .12 ? .18 * (1 - seg(t, c, c + .12)) : 0), t < .15 ? .3 * (1 - seg(t, 0, .15)) : 0);
+  $('flash').style.opacity = fl;
+};
+window.render(0);
+</script>
+</body>
+</html>
