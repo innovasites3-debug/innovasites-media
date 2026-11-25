@@ -115,8 +115,9 @@ def smp(name, g=1.0):
     return x * g
 SC = [T['sc%d' % i] for i in range(1, 10)]
 add(sfx, 0.0, smp('sfx_pixel_b', .55))                         # aparece Pixel
-add(sfx, SC[0] + .05, smp('sfx_tecleo_a', .7))                 # se escribe la tarjeta
-add(sfx, SC[0] + 1.45, smp('sfx_alerta_b', .35))               # el ojo
+add(sfx, VOICE['L1'][0] - .1, smp('sfx_tecleo_a', .7))
+add(sfx, .05, smp('sfx_pixel_a', .5))                            # Pixel aparece                 # se escribe la tarjeta
+add(sfx, VOICE['L1'][0] + 1.45, smp('sfx_alerta_b', .35))               # el ojo
 for i in range(1, 9):
     add(sfx, SC[i] - .16, smp('sfx_whoosh_a' if i % 2 else 'sfx_whoosh_b', .8))
 add(sfx, SC[1] + .02, smp('sfx_impacto_a', .45)); add(sfx, SC[1] + .45, smp('sfx_candado_a', .6))

@@ -102,6 +102,11 @@
   #cubes i { position: absolute; width: 26px; height: 26px; background: #E5342A; box-shadow: inset -6px -6px 0 rgba(0,0,0,.3), inset 6px 6px 0 rgba(255,255,255,.25), 0 0 20px rgba(229,52,42,.7); }
   #cubes i.w { background: #fff; box-shadow: inset -6px -6px 0 rgba(0,0,0,.2), 0 0 16px rgba(255,255,255,.5); }
   :root { --gc: rgba(255,59,47,.85); --hc: rgba(255,80,60,.9); --lc: rgba(229,52,42,.35); }
+  #kw .s { font-family: var(--disp); font-weight: 700; text-transform: uppercase; font-size: 92px; line-height: 1.06; text-align: center; text-shadow: 0 8px 40px rgba(0,0,0,.8); }
+  #kw .s span { display: inline-block; margin: 0 .12em; transition: none; }
+  #kw .s span.r { color: var(--red); }
+  #kw .s span.dim { opacity: .28; }
+  #cap { display: none !important; }
   #fx { position: absolute; inset: 0; z-index: 90; pointer-events: none; }
   #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 95; pointer-events: none; }
 </style>
@@ -307,7 +312,8 @@ const nz = (t, k) => .5 * Math.sin(t * 1.37 + k * 2.1) + .3 * Math.sin(t * 2.71 
 const EDGE = 720, DESK = 1660, ON = .6;               // borde superior del monitor, piso del escritorio, escala sobre el monitor
 const W_ = (w, n = 0) => wt(w, n);
 // ---- coreografía: posiciones; 'tp' = teletransporte con pixeles, 'walk' = camina ----
-const KB = 1612;                                                      // pies detrás del teclado
+const KB = 1583;                                                      // pies detrás del teclado (las manos quedan sobre las teclas)
+const V1 = window.VOICE.L1[0];
 const MOVES = [
   [0, 0, 540, KB, .95, 'tp'],                                         // aparece en el teclado y teclea la tarjeta
   [SC[1] - .1, .55, 885, EDGE + 44 * ON, ON, 'tp'],                   // se teletransporta a la esquina del monitor y se sienta
@@ -335,7 +341,7 @@ function moveAt(t) {
 }
 // ---- caras por momento: [tiempo, duración, cara] ----
 const FACES = [
-  [0, 1.3, { eyes: 'open', dy: 1 }], [W_('página'), .9, { eyes: 'open', dx: 1, dy: -1 }],
+  [0, V1 - .1, { eyes: 'happy', mouth: 'grin' }], [V1 - .1, 1.4, { eyes: 'open', dy: 1 }], [W_('página'), .9, { eyes: 'open', dx: 1, dy: -1 }],
   [W_('entera'), .9, { eyes: 'x', mouth: 'zig' }], [W_('qué'), .75, { icon: 'q' }],
   [W_('arriba'), .9, { eyes: 'open', dx: -1, dy: 1 }], [W_('candado'), .9, { eyes: 'sad', mouth: 'frown' }],
   [W_('escribes'), .7, { eyes: 'think' }], [W_('cifrar'), .9, { eyes: 'sus', mouth: 'smirk' }],
@@ -348,7 +354,7 @@ const FACES = [
 ];
 // ---- brazos: [tiempo, izquierdo, derecho] ----
 const ARMS = [
-  [0, 12, -12], [W_('página'), 22, -150], [W_('entera'), 152, -152],
+  [0, 12, -12], [.55, 20, -160], [V1 - .3, 12, -12], [W_('página'), 22, -150], [W_('entera'), 152, -152],
   [SC[1] + .3, 28, -24], [W_('arriba'), 62, -14], [W_('candado'), 150, -150],
   [SC[2] + .05, 40, -72], [W_('escribes'), 30, -112], [W_('cifrar'), 92, -92],
   [SC[3] + .05, 26, -18], [W_('wifi'), 24, -64], [W_('cualquiera'), 150, -150], [W_('ver'), 30, -30],
@@ -363,7 +369,11 @@ function armsAt(t) {
   for (let j = 1; j < ARMS.length; j++) { const [t0, l, r] = ARMS[j]; if (t < t0) break; const k = back(cl((t - t0) / .28)); L = lerp(L, l, k); R = lerp(R, r, k); }
   return [L, R];
 }
-const TYPE = [[.05, 1.25], [SC[7] + .25, SC[7] + 2.05]];             // ventanas de tecleo
+const TYPE = [[window.VOICE.L1[0] - .1, window.VOICE.L1[0] + 1.25], [SC[7] + .25, SC[7] + 2.05]];   // ventanas de tecleo
+// un golpe de tecla por letra, con ritmo humano (pausas entre grupos), alternando manos
+const STRIKES = [[CARD, TYPE[0]], [TYPE8, TYPE[1]]].map(([txt, [a, b]], z) => { const ch = [...txt], out = []; let w = 0;
+  const ws = ch.map((c, k) => (c === ' ' ? 1.8 : 1) * (.7 + .6 * hash(k * 3.7 + z * 11))); const tot = ws.reduce((x, y) => x + y, 0);
+  ch.forEach((c, k) => { out.push([a + (b - a - .1) * w / tot, c === ' ' ? 'S' : (hash(k * 5.3 + z) < .5 ? 'L' : 'R'), c]); w += ws[k]; }); return out; });
 const typingW = t => Math.max(...TYPE.map(([a, b]) => win2(t, a, b, .15)));
 const kfx = () => document.getElementById('kfx').getContext('2d');
 let bgInit = false;
@@ -423,14 +433,15 @@ function drawPixel(t, i, kick) {
   const stepUp = mv.walking ? Math.abs(Math.sin(wp)) * 12 : 0;
   const vis = 1 - Math.max(mv.tpOut, mv.tpIn);
   const P = $('pix'), S = mv.sc;
-  const lean = (sitting ? 5 + 4 * nz(t, 2) : 0) + (mv.walking ? -6 : 0) + 2.5 * nz(t, 3) + tw * 6;
+  const lean = (sitting ? 5 + 4 * nz(t, 2) : 0) + (mv.walking ? -6 : 0) + 2.5 * nz(t, 3) * (1 - .7 * tw);
   const land = MOVES.slice(1).filter(mm => mm[5] === 'tp').map(mm => mm[0] + mm[1] * .5).reduce((acc, te) => t >= te && t < te + .3 ? Math.sin(seg(t, te, te + .3) * Math.PI) : acc, 0);
   const sqY = (1 - .1 * land) * (1 + 1.4 * Math.max(mv.tpOut, mv.tpIn)), sqX = (1 + .08 * land) * (1 - .85 * Math.max(mv.tpOut, mv.tpIn));
   P.style.left = (mv.cx - 131) + 'px';
-  P.style.top = (mv.fy - 388 - breathe - stepUp - tw * 2 * Math.abs(Math.sin(t * 20))) + 'px';
+  P.style.top = (mv.fy - 388 - breathe - stepUp + tw * 4) + 'px';
   P.style.transform = `rotate(${lean}deg) scale(${S * sqX}, ${S * sqY})`;
   P.style.opacity = vis; P.style.filter = vis < 1 ? `brightness(${1 + 2 * (1 - vis)})` : 'none';
-  P.style.zIndex = atKb ? 15 : 30;                                    // detrás del teclado cuando teclea
+  P.style.zIndex = atKb ? 25 : 30;
+  P.style.clipPath = atKb ? 'inset(-200px -200px 14px -200px)' : 'none';   // detrás del teclado: se le ocultan las piernas, las manos quedan sobre las teclas
   const sh = $('pshadow'); sh.style.left = (mv.cx - 95) + 'px'; sh.style.opacity = (onMon || atKb) ? 0 : vis * .8; sh.style.transform = `scale(${mv.sc})`;
   if (mv.from) { tpFx(t, mv.from[0], mv.from[1], mv.from[2], mv.from[3], true); tpFx(t, mv.to[0], mv.to[1], mv.to[2], mv.to[3], false); }
   if (t < .45) tpFx(t, mv.cx, mv.fy, mv.sc, .05, false);
@@ -439,15 +450,18 @@ function drawPixel(t, i, kick) {
   let [aL, aR] = armsAt(t);
   aL += ms * 16 * nz(t * 1.6, 5) + 3 * nz(t, 6); aR += ms * 18 * nz(t * 1.4, 7) + 3 * nz(t, 8);
   if (mv.walking) { aL += 28 * Math.sin(wp); aR += 28 * Math.sin(wp); }
-  if (tw > 0) { const k1 = Math.abs(Math.sin(t * 23 + Math.sin(t * 3))), k2 = Math.abs(Math.sin(t * 19 + 1.7 + Math.sin(t * 2.3)));
-    aL = lerp(aL, -8 + 22 * k1, tw); aR = lerp(aR, 8 - 22 * k2, tw); }
-  const waveW = win2(t, W_('viste') + .5, SC[8], .2) + win2(t, W_('pixel'), T.dur + 1, .2);
+  let pressL = 0, pressR = 0;
+  if (tw > 0) { STRIKES.forEach(st => st.forEach(([ts, h]) => { if (t >= ts && t < ts + .1) { const k = Math.sin(seg(t, ts, ts + .1) * Math.PI); if (h !== 'R') pressL = Math.max(pressL, k); if (h !== 'L') pressR = Math.max(pressR, k); } }));
+    aL = lerp(aL, -22 - 12 * pressL + 3 * nz(t * 3, 21), tw); aR = lerp(aR, 22 + 12 * pressR + 3 * nz(t * 3, 22), tw); }
+  const waveW = win2(t, .6, V1 - .3, .2) + win2(t, W_('viste') + .5, SC[8], .2) + win2(t, W_('pixel'), T.dur + 1, .2);
   aR += waveW * 24 * Math.sin(t * 13 + Math.sin(t * 2));
-  $('pArmL').style.transform = `rotate(${aL}deg)`; $('pArmR').style.transform = `rotate(${aR}deg)`;
+  $('pArmL').style.transform = `translateY(${8 * pressL}px) rotate(${aL}deg)`; $('pArmR').style.transform = `translateY(${8 * pressR}px) rotate(${aR}deg)`;
   // teclas que se encienden al teclear
   { const g = kfx(); g.clearRect(0, 0, 592, 122);
-    if (tw > 0) for (let j = 0; j < 4; j++) { const kk = Math.floor(t * 18) + j * 7, cx = Math.floor(hash(kk) * 14), cy = Math.floor(hash(kk + 50) * 4);
-      g.fillStyle = `rgba(255,90,79,${.9 * tw})`; g.shadowColor = '#ff3b2f'; g.shadowBlur = 14; g.fillRect(cx * 40 + 4, cy * 30 + 4, 34, 24); } }
+    STRIKES.forEach(st => st.forEach(([ts, h], k) => { if (t < ts || t > ts + .22) return; const a = 1 - seg(t, ts, ts + .22);
+      g.fillStyle = `rgba(255,90,79,${.95 * a})`; g.shadowColor = '#ff3b2f'; g.shadowBlur = 16;
+      if (h === 'S') g.fillRect(4 * 40 + 4, 3 * 30 + 4, 6 * 40 - 6, 24);
+      else { const cx = (h === 'L' ? 3 : 7) + Math.floor(hash(k * 2.7) * 4), cy = Math.floor(hash(k * 4.1) * 2); g.fillRect(cx * 40 + 4, cy * 30 + 4, 34, 24); } })); }
   // piernas
   let lL = 0, lR = 0, yL = 0, yR = 0;
   if (mv.walking) { lL = 20 * Math.sin(wp); lR = -20 * Math.sin(wp); yL = -Math.max(0, Math.sin(wp)) * 12; yR = -Math.max(0, -Math.sin(wp)) * 12; }
@@ -455,8 +469,9 @@ function drawPixel(t, i, kick) {
   else { lL = 4 * nz(t, 11); lR = 4 * nz(t, 12); }
   $('pLegL').style.transform = `translateY(${yL}px) rotate(${lL}deg)`; $('pLegR').style.transform = `translateY(${yR}px) rotate(${lR}deg)`;
   // cabeza
-  const nod = Math.sin(t * 8.3 + nz(t, 13)) * 6 * ms + 4 * nz(t * .8, 14) + (sitting ? -6 : 0) + tw * 8;
-  $('pHead').style.transform = `rotate(${nod}deg) translateY(${-3 * ms}px)`;
+  const nod = Math.sin(t * 8.3 + nz(t, 13)) * 6 * ms + 4 * nz(t * .8, 14) + (sitting ? -6 : 0);
+  const nodT = nod * (1 - .75 * tw);
+  $('pHead').style.transform = `rotate(${nodT}deg) translateY(${-3 * ms + 5 * tw}px)`;
   $('pBody').style.transform = `rotate(${2 * nz(t, 15)}deg)`;
 }
 window.render = function (t) {
@@ -482,10 +497,10 @@ window.render = function (t) {
   const P = (id, at, from = .6) => { const e = $(id), p = back(seg(t, at, at + .4)); e.style.opacity = cl(seg(t, at, at + .1)); e.style.transform = `scale(${from + (1 - from) * p})`; };
 
   // 1: la tarjeta se escribe sola y luego el ojo la lee
-  { const a = SC[0], n = Math.floor(CARD.length * seg(t, a + .05, a + 1.1)), hot = Math.floor(CARD.length * seg(t, a + 1.7, a + 2.8));
-    $('card').innerHTML = [...CARD.slice(0, Math.max(n, CARD.length * (t > a + 1.1)))].map((c, k) => `<span class="c${k < hot ? ' hot' : ''}">${c}</span>`).join('') + (n < CARD.length ? '<span class="cur" style="background:#fff;height:30px"></span>' : '');
-    P('eye1', a + 1.45, .3);
-    const eye = $('eye1'); if (t > a + 1.45) eye.style.transform += ` translateX(${Math.sin(t * 6) * 6}px)`; }
+  { const a = window.VOICE.L1[0] - .1, n = STRIKES[0].filter(x => t >= x[0]).length, hot = Math.floor(CARD.length * seg(t, a + 1.7, a + 2.8));
+    $('card').innerHTML = [...CARD.slice(0, n)].map((c, k) => `<span class="c${k < hot ? ' hot' : ''}">${c}</span>`).join('') + (n < CARD.length ? '<span class="cur" style="background:#fff;height:30px"></span>' : '');
+    P('eye1', a + 1.55, .3);
+    const eye = $('eye1'); if (t > a + 1.55) eye.style.transform += ` translateX(${Math.sin(t * 6) * 6}px)`; }
   // 2
   { const a = SC[1]; P('bigUrl', a + .02, .85); P('s2lbl', a + .9, .8); burst(t, a + .8, 540, 960, 24, 260); }
   // 3: el paquete viaja por la curva
@@ -506,7 +521,7 @@ window.render = function (t) {
   { const a = SC[6]; P('c71', a + .05, .8); P('c72', a + .6, .8); P('s7w', a + 1.5, 1.8); }
   // 8: comentario que se escribe
   { const a = SC[7]; P('bb8', a + .05, .7); P('ic8', a + .5, .6);
-    const n = Math.floor([...TYPE8].length * seg(t, a + .3, a + 2.0)); $('ty8').textContent = [...TYPE8].slice(0, n).join('');
+    const n = STRIKES[1].filter(x => t >= x[0]).length; $('ty8').textContent = [...TYPE8].slice(0, n).join('');
     $('cu8').style.opacity = Math.floor(t * 3) % 2 ? 1 : .2; }
   // 9
   { const a = SC[8]; P('wm9', a + .05, .7); P('tl9', a + .5, .85); P('hd9', a + .9, .8); }
@@ -516,18 +531,18 @@ window.render = function (t) {
   // ---------- Pixel ----------
   drawPixel(t, i, kick);
 
-  // palabra clave grande arriba (frase completa desde el primer cuadro)
-  { const kw = $('kw'), j = i, a = j === 0 ? -1 : SC[j];
-    const html = KW[j][0] ? `<div class="k">${KW[j][0]}</div><div class="k">${KW[j][1]}</div>` : '';
-    if (kw.dataset.j != j) { kw.innerHTML = html; kw.dataset.j = j; }
-    const p = back(seg(t, a, a + .35));
-    kw.style.opacity = j === 0 ? 1 : cl(seg(t, a, a + .1)); kw.style.transform = `scale(${j === 0 ? 1 : .7 + .3 * p}) rotate(${j % 2 ? -1.5 : 1.5}deg)`; }
-
-  // subtítulos abajo, palabra activa en rojo
-  { const cap = $('cap'); const sb = (window.SUBS || []).find(s => t >= s[0] && t < s[1] + .05);
-    if (!sb) cap.innerHTML = '';
-    else { const cur = sb[2].filter(x => t >= x[1]).slice(-1)[0];
-      cap.innerHTML = sb[2].map(w => `<span class="${w === cur ? 'on' : (t >= w[1] ? '' : 'dim')}">${w[0]}</span>`).join(''); } }
+  // subtítulo único, arriba y grande: antes de que hable, el gancho; luego la frase que dice Lina, palabra por palabra
+  { const kw = $('kw'), V1 = window.VOICE.L1[0];
+    if (t < V1 - .05) { if (kw.dataset.j !== 'hook') { kw.innerHTML = `<div class="k">${KW[0][0]}</div><div class="k">${KW[0][1]}</div>`; kw.dataset.j = 'hook'; }
+      kw.style.opacity = 1; kw.style.transform = `scale(${1 + .02 * Math.sin(t * 3)}) rotate(1.5deg)`; }
+    else {
+      const SB = window.SUBS || []; let sb = null; for (let q = 0; q < SB.length; q++) if (t >= SB[q][0] - .05) sb = SB[q];
+      if (sb) { const cur = sb[2].filter(x => t >= x[1]).slice(-1)[0];
+        const id = String(sb[0]); if (kw.dataset.j !== id) { kw.innerHTML = '<div class="s">' + sb[2].map((w, q) => `<span data-q="${q}" class="${w[2] ? 'r' : ''}">${w[0].replace(/\*/g, '')}</span>`).join(' ') + '</div>'; kw.dataset.j = id; }
+        kw.querySelectorAll('span').forEach((sp, q) => { const w = sb[2][q], on = t >= w[1], k = back(seg(t, w[1], w[1] + .22));
+          sp.classList.toggle('dim', !on); sp.style.transform = on ? `scale(${w === cur ? .9 + .18 * k : 1}) translateY(${(1 - eo(seg(t, w[1], w[1] + .2))) * 18}px)` : 'scale(.92)'; });
+        const p0 = back(seg(t, sb[0] - .05, sb[0] + .25)); kw.style.opacity = 1; kw.style.transform = `scale(${.86 + .14 * p0})`; } }
+  }
 
   const fl = Math.max(...SC.slice(1, N).map(c => t >= c && t < c + .12 ? .08 * (1 - seg(t, c, c + .12)) : 0), t < .15 ? .3 * (1 - seg(t, 0, .15)) : 0);
   $('flash').style.opacity = fl;

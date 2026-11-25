@@ -96,16 +96,19 @@ def pauses(k):
     return out
 
 
+INTRO = 1.3   # Pixel aparece, saluda y se pone a teclear antes de que hable Lina
+
 def build(dur):
     s = {}
     e = lambda k: s[k] + dur[k]
     T = {}
     prev = None
     for k, _ in LINES:                         # una escena por frase, seguidas
-        s[k] = 0.2 if prev is None else e(prev) + 0.1
+        s[k] = INTRO if prev is None else e(prev) + 0.1
         T['sc' + k[1:]] = max(0.0, s[k] - 0.04)   # la escena entra justo con la voz
         prev = k
     T['sc1'] = 0.0
+    T['v1'] = s['L1']
     T['end'] = T['sc9']
     T['bankEnd'] = 999; T['phEnd'] = 999
     T['dur'] = round(e('L9') + 0.9, 2)
