@@ -32,6 +32,7 @@ proc, _ = sf.read(V / 'voz' / 'procesada.wav')
 W = json.load(open(V / 'voz' / 'palabras_scribe.json', encoding='utf-8'))
 norm = lambda w: re.sub(r'[^a-z0-9áéíóúüñ%$]', '', w.lower().replace('*', ''))
 EXT = {'L9'}   # frases grabadas aparte (ver l9.py)
+NEXT_AFTER = 26.88   # en la toma original, ahí empezaba la frase vieja de L9 ("Cada…")
 pos = 0; dur = {}; pal = {}; spans = []
 for k, txt in LINES:
     if k in EXT: continue
@@ -45,6 +46,7 @@ for n, (k, txt, said, ws) in enumerate(spans):
     a0 = nt(ws[0][1]) - .04
     b0 = nt(ws[-1][2]) + .08
     if n + 1 < len(spans): b0 = min(b0, nt(spans[n + 1][3][0][1]) - .04)
+    else: b0 = min(b0, nt(NEXT_AFTER) - .14)   # no meter el inicio de la frase que se grabó aparte
     a0 = max(0, a0); seg = proc[int(a0 * SR):int(b0 * SR)].copy()
     f = int(.012 * SR); seg[:f] *= np.linspace(0, 1, f); seg[-f:] *= np.linspace(1, 0, f)
     sf.write(V / 'voz' / f'{k}.wav', seg, SR); dur[k] = round(len(seg) / SR, 3)
