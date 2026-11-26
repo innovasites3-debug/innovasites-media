@@ -9,6 +9,17 @@
 
 ---
 
+## ⚠️ REGLA OBLIGATORIA: todo se hace con Pixel
+
+Desde el 5 de diciembre de 2026, **todos los reels nuevos se hacen con el avatar Pixel v4 y la escena neón**, partiendo de la plantilla `fuente/16-antes-despues/`. **No se vuelve al formato viejo de pantalla de celular.**
+
+- **Reels:** Pixel aparece en todas las escenas, actúa lo que dice la voz y cierra con "InnovaSites… cada pixel cuenta".
+- **Miniaturas:** diseñadas, siempre con Pixel grande y con una cara que vaya con el tema.
+- **Carruseles, historias, publicaciones y web:** usar a Pixel con los PNG transparentes de `marca/pixel/png/`. Si hace falta otra pose, se agrega en `marca/pixel/poses.html` y se exporta con `exportar_png.py`.
+- **El diseño de Pixel no se cambia:** monitor rojo voxel, ojos `< >`, antena con punta amarilla, sin halo ni plataforma. Solo se agregan caras o animaciones nuevas cuando el guion lo pida, sin borrar las que existen (ver el documento de Pixel).
+
+---
+
 ## 1. Qué es y en qué va
 
 - **Cuenta:** InnovaSites (innovasites.co), agencia de diseño web y contenido en Colombia. Instagram @innova_sites, TikTok @innova.sites.
